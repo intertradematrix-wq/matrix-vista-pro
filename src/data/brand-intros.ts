@@ -34,11 +34,26 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
     ],
     origin: "Shenzhen, China (Est. 2004)",
     productCategories: [
-      { name: "LED Indoor Fine Pitch (P0.9–P2.5)", desc: "จอ LED ความละเอียดสูงสุด สำหรับห้องประชุม, Lobby, Showroom, Theater ให้ภาพคมชัดระดับ 4K/8K นั่งชิดจอได้ ความสว่าง 400–600 nits ทั่วไป สีคมชัดระดับ Broadcast" },
-      { name: "LED Outdoor High Brightness", desc: "จอ LED กลางแจ้งความสว่างสูง (1200–3000 nits) ทนแดด ทนฝน ทนอากาศเค็ม เหมาะสำหรับป้ายโฆษณา DOOH, งานอีเวนต์, สนามกีฬา" },
-      { name: "LED All-in-One Meeting Display (UMini)", desc: "จอ LED ประชุมแบบครบชุด ไม่ต้องต่ออุปกรณ์เพิ่ม Controller ในตัว ขนาด 108\"–163\" รองรับ 9 อุปกรณ์เชื่อมต่อพร้อมกัน ทดแทนโปรเจกเตอร์ได้เลย" },
-      { name: "LED Rental & Staging (Modular)", desc: "จอ LED แบบถอดประกอบง่าย สำหรับงานอีเวนต์, คอนเสิร์ต, Virtual Production มีให้เลือกหลายเบอร์และ Configuration, ติดตั้งรวดเร็ว น้ำหนักเบา" },
-      { name: "LED Creative & Transparent (Decorative)", desc: "จอ LED โปร่งใสและรูปทรงพิเศษ สำหรับงานตกแต่ง Retail, Showroom, Exhibition, Shopping Mall กลมกลืนสถาปัตยกรรม" },
+      {
+        name: "LED Indoor Fine Pitch (P0.9–P2.5)",
+        desc: "จอ LED ความละเอียดสูงสุด สำหรับห้องประชุม, Lobby, Showroom, Theater ให้ภาพคมชัดระดับ 4K/8K นั่งชิดจอได้ ความสว่าง 400–600 nits ทั่วไป สีคมชัดระดับ Broadcast",
+      },
+      {
+        name: "LED Outdoor High Brightness",
+        desc: "จอ LED กลางแจ้งความสว่างสูง (1200–3000 nits) ทนแดด ทนฝน ทนอากาศเค็ม เหมาะสำหรับป้ายโฆษณา DOOH, งานอีเวนต์, สนามกีฬา",
+      },
+      {
+        name: "LED All-in-One Meeting Display (UMini)",
+        desc: 'จอ LED ประชุมแบบครบชุด ไม่ต้องต่ออุปกรณ์เพิ่ม Controller ในตัว ขนาด 108"–163" รองรับ 9 อุปกรณ์เชื่อมต่อพร้อมกัน ทดแทนโปรเจกเตอร์ได้เลย',
+      },
+      {
+        name: "LED Rental & Staging (Modular)",
+        desc: "จอ LED แบบถอดประกอบง่าย สำหรับงานอีเวนต์, คอนเสิร์ต, Virtual Production มีให้เลือกหลายเบอร์และ Configuration, ติดตั้งรวดเร็ว น้ำหนักเบา",
+      },
+      {
+        name: "LED Creative & Transparent (Decorative)",
+        desc: "จอ LED โปร่งใสและรูปทรงพิเศษ สำหรับงานตกแต่ง Retail, Showroom, Exhibition, Shopping Mall กลมกลืนสถาปัตยกรรม",
+      },
     ],
   },
   "235610": {
@@ -64,13 +79,34 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
     ],
     origin: "Israel (Est. 1981)",
     productCategories: [
-      { name: "Switcher & Scaler", desc: "อุปกรณ์สลับและปรับสัญญาณภาพ/เสียง รองรับ 4K/8K HDR ให้ประสิทธิภาพสูงสำหรับห้องประชุม Auditorium และงาน Presentation ระดับโลก" },
-      { name: "AV over IP (KDS)", desc: "ระบบส่งสัญญาณ AV คุณภาพระดับ Broadcast ผ่านเครือข่าย IP มาตรฐาน รองรับ 4K60 HDR ส่งได้ระยะไกลไม่จำกัด ผ่านสาย LAN ธรรมดา สามารถปรับขนาดระบบได้อย่างยืดหยุ่น" },
-      { name: "Wireless Presentation (VIA)", desc: "ระบบนำเสนอไร้สาย BYOD ที่รองรับ Windows, macOS, iOS, Android เชื่อมต่อด้วยปุ่มเดียวหรือผ่านแอป แชร์หน้าจอ 4K ได้พร้อมกันหลายเครื่อง สำหรับห้องประชุม Smart Classroom และ Collaboration" },
-      { name: "Extender & Distribution", desc: "อุปกรณ์ขยายและกระจายสัญญาณ HDMI / HDBaseT / USB ระยะไกลสูงสุด 100+ เมตร รองรับ 4K/8K มีตัวเลือก Fiber Optic สำหรับระยะทางไกล" },
-      { name: "Control System (Kramer Control)", desc: "ระบบควบคุม AV ที่ใช้งานง่ายและยืดหยุ่น บนแพลตฟอร์มคลาวด์ สั่งงานอุปกรณ์ AV ทั้งหมดจาก Touch Panel หรือ Mobile App ลด​ความยุ่งยากในการจัดการห้องประชุม" },
-      { name: "Audio DSP & Amplifier", desc: "ระบบเสียงระดับมืออาชีพ ทั้ง DSP Processor, Mixer, Digital Amplifier สำหรับห้องประชุม Auditorium และ Large Venue โดยรายละเอียดและความชัดของเสียง" },
-      { name: "KVM Solutions", desc: "ระบบควบคุมคอมพิวเตอร์หลายเครื่องจากระยะไกล ด้วยชุดคีย์บอร์ด เมาส์ จอภาพเพียงชุดเดียว เหมาะสำหรับ Control Room, Data Center, Security Center, Broadcast Studio" },
+      {
+        name: "Switcher & Scaler",
+        desc: "อุปกรณ์สลับและปรับสัญญาณภาพ/เสียง รองรับ 4K/8K HDR ให้ประสิทธิภาพสูงสำหรับห้องประชุม Auditorium และงาน Presentation ระดับโลก",
+      },
+      {
+        name: "AV over IP (KDS)",
+        desc: "ระบบส่งสัญญาณ AV คุณภาพระดับ Broadcast ผ่านเครือข่าย IP มาตรฐาน รองรับ 4K60 HDR ส่งได้ระยะไกลไม่จำกัด ผ่านสาย LAN ธรรมดา สามารถปรับขนาดระบบได้อย่างยืดหยุ่น",
+      },
+      {
+        name: "Wireless Presentation (VIA)",
+        desc: "ระบบนำเสนอไร้สาย BYOD ที่รองรับ Windows, macOS, iOS, Android เชื่อมต่อด้วยปุ่มเดียวหรือผ่านแอป แชร์หน้าจอ 4K ได้พร้อมกันหลายเครื่อง สำหรับห้องประชุม Smart Classroom และ Collaboration",
+      },
+      {
+        name: "Extender & Distribution",
+        desc: "อุปกรณ์ขยายและกระจายสัญญาณ HDMI / HDBaseT / USB ระยะไกลสูงสุด 100+ เมตร รองรับ 4K/8K มีตัวเลือก Fiber Optic สำหรับระยะทางไกล",
+      },
+      {
+        name: "Control System (Kramer Control)",
+        desc: "ระบบควบคุม AV ที่ใช้งานง่ายและยืดหยุ่น บนแพลตฟอร์มคลาวด์ สั่งงานอุปกรณ์ AV ทั้งหมดจาก Touch Panel หรือ Mobile App ลด​ความยุ่งยากในการจัดการห้องประชุม",
+      },
+      {
+        name: "Audio DSP & Amplifier",
+        desc: "ระบบเสียงระดับมืออาชีพ ทั้ง DSP Processor, Mixer, Digital Amplifier สำหรับห้องประชุม Auditorium และ Large Venue โดยรายละเอียดและความชัดของเสียง",
+      },
+      {
+        name: "KVM Solutions",
+        desc: "ระบบควบคุมคอมพิวเตอร์หลายเครื่องจากระยะไกล ด้วยชุดคีย์บอร์ด เมาส์ จอภาพเพียงชุดเดียว เหมาะสำหรับ Control Room, Data Center, Security Center, Broadcast Studio",
+      },
     ],
   },
   "288209": {
@@ -84,7 +120,7 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
       "ความละเอียด 4K UHD — ภาพคมชัด สดใส ถนอมสายตา Anti-glare",
       "Multi-touch 40 จุด พร้อม MiraAir (9 อุปกรณ์ พร้อมกัน) — ไร้สายหรือ USB",
       "DMS+ & AI Quiz Generator — บริหารจัดการห้องเรียนจากระยะไกล",
-      "ขนาดหลากหลาย: 70\", 75\", 86\", 110\" — เลือกเหมาะกับพื้นที่",
+      'ขนาดหลากหลาย: 70", 75", 86", 110" — เลือกเหมาะกับพื้นที่',
     ],
     bestFor: [
       "ห้องเรียน K-12 / มหาวิทยาลัย / Smart Classroom",
@@ -96,11 +132,26 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
     ],
     origin: "Taiwan",
     productCategories: [
-      { name: "Interactive Flat Panel 4K (KTA-PRO-FULL)", desc: "จอสัมผัส 4K UHD ขนาด 70\", 75\", 86\", 110\" รองรับ Multi-touch 40 จุด เขียนลื่นเหมือนกระดาษ มาพร้อม Android 14 EDLA ใช้ Google Workspace / Classroom / Meet ได้แบบ Native พร้อมซอฟต์แวร์ Whiteboard และ Screen Share ในตัว" },
-      { name: "DMS+ (Classroom Management System)", desc: "ระบบจัดการห้องเรียนอินเตอร์แอคทีฟ บริหารจัดการจอจากระยะไกลผ่านเครือข่าย ดูแลสถานะจอทั้งหมด ปรับปรุงฟิร์มแวร์ และจัดการแอปพลิเคชัน ทั่วทั้งองค์กรได้ง่าย" },
-      { name: "MiraAir Screen Mirroring", desc: "ระบบแชร์หน้าจอไร้สาย BYOD รองรับทุกระบบปฏิบัติการ (Windows/macOS/iOS/Android) แชร์ได้พร้อมกัน 9 อุปกรณ์ เมาส์/คีย์บอร์ดควบคุมได้จากจอ Touch-Back, USB Plug & Play ที่ไม่ต้องซอฟต์แวร์" },
-      { name: "AI Quiz Generator & Interactive Tools", desc: "เครื่องมือสร้างแบบทดสอบ Quiz ด้วย AI, Whiteboard, Annotation Tools, Polling & Voting, Recording Video Lecture สำหรับการสอนแบบ Active Learning ที่มีประสิทธิภาพ" },
-      { name: "OPS PC & Advanced Connectivity", desc: "รองรับการต่ออุปกรณ์ภายนอก ท่า USB ที่ครบครัน (USB-C, HDMI, Audio, LAN) Slot-in PC ขนาดเล็ก ต่ออย่างยืดหยุ่นกับสิ่งแวดล้อม" },
+      {
+        name: "Interactive Flat Panel 4K (KTA-PRO-FULL)",
+        desc: 'จอสัมผัส 4K UHD ขนาด 70", 75", 86", 110" รองรับ Multi-touch 40 จุด เขียนลื่นเหมือนกระดาษ มาพร้อม Android 14 EDLA ใช้ Google Workspace / Classroom / Meet ได้แบบ Native พร้อมซอฟต์แวร์ Whiteboard และ Screen Share ในตัว',
+      },
+      {
+        name: "DMS+ (Classroom Management System)",
+        desc: "ระบบจัดการห้องเรียนอินเตอร์แอคทีฟ บริหารจัดการจอจากระยะไกลผ่านเครือข่าย ดูแลสถานะจอทั้งหมด ปรับปรุงฟิร์มแวร์ และจัดการแอปพลิเคชัน ทั่วทั้งองค์กรได้ง่าย",
+      },
+      {
+        name: "MiraAir Screen Mirroring",
+        desc: "ระบบแชร์หน้าจอไร้สาย BYOD รองรับทุกระบบปฏิบัติการ (Windows/macOS/iOS/Android) แชร์ได้พร้อมกัน 9 อุปกรณ์ เมาส์/คีย์บอร์ดควบคุมได้จากจอ Touch-Back, USB Plug & Play ที่ไม่ต้องซอฟต์แวร์",
+      },
+      {
+        name: "AI Quiz Generator & Interactive Tools",
+        desc: "เครื่องมือสร้างแบบทดสอบ Quiz ด้วย AI, Whiteboard, Annotation Tools, Polling & Voting, Recording Video Lecture สำหรับการสอนแบบ Active Learning ที่มีประสิทธิภาพ",
+      },
+      {
+        name: "OPS PC & Advanced Connectivity",
+        desc: "รองรับการต่ออุปกรณ์ภายนอก ท่า USB ที่ครบครัน (USB-C, HDMI, Audio, LAN) Slot-in PC ขนาดเล็ก ต่ออย่างยืดหยุ่นกับสิ่งแวดล้อม",
+      },
     ],
   },
   "288210": {
@@ -124,9 +175,18 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
       "ห้องเรียนยุคใหม่",
     ],
     productCategories: [
-      { name: "Wireless Presentation System", desc: "ตัวรับ-ส่งสัญญาณไร้สาย BYOD แชร์จอจาก Laptop / มือถือ ไปยังจอห้องประชุม รองรับ 4K และ Video Conference" },
-      { name: "Wireless Video Collaboration", desc: "ระบบ Video Conference ไร้สาย รองรับ USB Camera และไมค์ ช่วยให้การประชุม Hybrid เป็นเรื่องง่ายและสะดวก" },
-      { name: "Transmitter & Dongle", desc: "ตัวส่งสัญญาณ USB-C / HDMI Plug & Play กดปุ่มเดียวเพื่อแชร์หน้าจอ ไม่ต้องติดตั้งซอฟต์แวร์" },
+      {
+        name: "Wireless Presentation System",
+        desc: "ตัวรับ-ส่งสัญญาณไร้สาย BYOD แชร์จอจาก Laptop / มือถือ ไปยังจอห้องประชุม รองรับ 4K และ Video Conference",
+      },
+      {
+        name: "Wireless Video Collaboration",
+        desc: "ระบบ Video Conference ไร้สาย รองรับ USB Camera และไมค์ ช่วยให้การประชุม Hybrid เป็นเรื่องง่ายและสะดวก",
+      },
+      {
+        name: "Transmitter & Dongle",
+        desc: "ตัวส่งสัญญาณ USB-C / HDMI Plug & Play กดปุ่มเดียวเพื่อแชร์หน้าจอ ไม่ต้องติดตั้งซอฟต์แวร์",
+      },
     ],
   },
   "237068": {
@@ -151,11 +211,26 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
     ],
     origin: "Taiwan",
     productCategories: [
-      { name: "จอ Fixed Frame", desc: "จอติดตั้งถาวรบนผนัง ผ้าจอตึงเรียบสมบูรณ์แบบ ให้ภาพสมมาตรคงที่จากทุกมุมมอง มีอัตราส่วน 16:9 / 16:10 / 2.35:1 เหมาะสำหรับ Home Theater Premium และห้องประชุมถาวร" },
-      { name: "จอ Electric/Motorized", desc: "จอม้วนเก็บอัตโนมัติด้วยมอเตอร์ไฟฟ้าที่เงียบและทนทาน ควบคุมด้วยรีโมท หรือ Trigger 12V ประหยัดพื้นที่สำหรับห้องประชุม ห้องสัมมนา และสนามฝึกอบรม" },
-      { name: "จอ Manual (ดึงมือ)", desc: "จอดึงมือแบบง่าย ใช้งานง่ายและทนทาน ประหยัดราคา เหมาะสำหรับห้องประชุม Small Meeting Room และห้องฝึกอบรมที่มีงบประมาณจำกัด" },
-      { name: "จอ Portable (พกพา)", desc: "จอน้ำหนักเบา พับเก็บและพกพาได้สะดวก เหมาะสำหรับการนำเสนอเคลื่อนที่ Road Show งานอีเวนต์ และการศึกษา โดยไม่ต้องติดตั้งถาวร" },
-      { name: "จอ ALR (Ambient Light Rejecting)", desc: "จอเฉพาะตัวด้วยเทคโนโลยีสะท้อนแสงแวดล้อม ผ้าจอออกแบบพิเศษดูดซับแสงรบกวน ให้ภาพคมชัดและสีสันสดใสแม้ในห้องที่มีแสงสว่าง เหมาะสำหรับห้องประชุมที่ไม่สามารถปิดไฟได้" },
+      {
+        name: "จอ Fixed Frame",
+        desc: "จอติดตั้งถาวรบนผนัง ผ้าจอตึงเรียบสมบูรณ์แบบ ให้ภาพสมมาตรคงที่จากทุกมุมมอง มีอัตราส่วน 16:9 / 16:10 / 2.35:1 เหมาะสำหรับ Home Theater Premium และห้องประชุมถาวร",
+      },
+      {
+        name: "จอ Electric/Motorized",
+        desc: "จอม้วนเก็บอัตโนมัติด้วยมอเตอร์ไฟฟ้าที่เงียบและทนทาน ควบคุมด้วยรีโมท หรือ Trigger 12V ประหยัดพื้นที่สำหรับห้องประชุม ห้องสัมมนา และสนามฝึกอบรม",
+      },
+      {
+        name: "จอ Manual (ดึงมือ)",
+        desc: "จอดึงมือแบบง่าย ใช้งานง่ายและทนทาน ประหยัดราคา เหมาะสำหรับห้องประชุม Small Meeting Room และห้องฝึกอบรมที่มีงบประมาณจำกัด",
+      },
+      {
+        name: "จอ Portable (พกพา)",
+        desc: "จอน้ำหนักเบา พับเก็บและพกพาได้สะดวก เหมาะสำหรับการนำเสนอเคลื่อนที่ Road Show งานอีเวนต์ และการศึกษา โดยไม่ต้องติดตั้งถาวร",
+      },
+      {
+        name: "จอ ALR (Ambient Light Rejecting)",
+        desc: "จอเฉพาะตัวด้วยเทคโนโลยีสะท้อนแสงแวดล้อม ผ้าจอออกแบบพิเศษดูดซับแสงรบกวน ให้ภาพคมชัดและสีสันสดใสแม้ในห้องที่มีแสงสว่าง เหมาะสำหรับห้องประชุมที่ไม่สามารถปิดไฟได้",
+      },
     ],
   },
   "237477": {
@@ -176,9 +251,18 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
       "Digital Signage",
     ],
     productCategories: [
-      { name: "HDMI Copper Cable", desc: "สาย HDMI ทองแดง ความยาว 1–15 เมตร รองรับ 4K60 HDR เหมาะกับการเชื่อมต่อระยะสั้นถึงปานกลาง" },
-      { name: "HDMI Fiber Optic Cable", desc: "สาย HDMI ไฟเบอร์ออปติก ความยาว 10–100 เมตร รองรับ 4K60 / 8K สัญญาณไม่สูญเสียแม้ระยะไกล" },
-      { name: "HDMI Adapter & Converter", desc: "หัวแปลงและตัวแปลง HDMI เป็น USB-C, DisplayPort, VGA สำหรับเชื่อมต่ออุปกรณ์ที่หลากหลาย" },
+      {
+        name: "HDMI Copper Cable",
+        desc: "สาย HDMI ทองแดง ความยาว 1–15 เมตร รองรับ 4K60 HDR เหมาะกับการเชื่อมต่อระยะสั้นถึงปานกลาง",
+      },
+      {
+        name: "HDMI Fiber Optic Cable",
+        desc: "สาย HDMI ไฟเบอร์ออปติก ความยาว 10–100 เมตร รองรับ 4K60 / 8K สัญญาณไม่สูญเสียแม้ระยะไกล",
+      },
+      {
+        name: "HDMI Adapter & Converter",
+        desc: "หัวแปลงและตัวแปลง HDMI เป็น USB-C, DisplayPort, VGA สำหรับเชื่อมต่ออุปกรณ์ที่หลากหลาย",
+      },
     ],
   },
   "237677": {
@@ -199,8 +283,14 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
       "สถาบันการศึกษา",
     ],
     productCategories: [
-      { name: "Interactive Flat Panel", desc: "จอสัมผัส 4K ขนาด 55\"–98\" สำหรับห้องประชุม มาพร้อม Android ในตัว และ Whiteboard App" },
-      { name: "Unified Collaboration Display", desc: "จอประชุมแบบ All-in-One พร้อม Camera, Mic, Speaker ในตัว สำหรับ Video Conference" },
+      {
+        name: "Interactive Flat Panel",
+        desc: 'จอสัมผัส 4K ขนาด 55"–98" สำหรับห้องประชุม มาพร้อม Android ในตัว และ Whiteboard App',
+      },
+      {
+        name: "Unified Collaboration Display",
+        desc: "จอประชุมแบบ All-in-One พร้อม Camera, Mic, Speaker ในตัว สำหรับ Video Conference",
+      },
     ],
   },
   "237467": {
@@ -224,7 +314,10 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
       { name: "HDMI Splitter", desc: "แยกสัญญาณ HDMI จาก 1 แหล่ง ไปยังหลายจอพร้อมกัน รองรับ 4K60" },
       { name: "HDMI Switcher", desc: "สลับสัญญาณ HDMI จากหลายแหล่งไปยังจอเดียว พร้อมรีโมท" },
       { name: "HDMI Extender", desc: "ขยายสัญญาณ HDMI ผ่านสาย LAN ระยะไกลสูงสุด 70–150 เมตร" },
-      { name: "AV Converter", desc: "ตัวแปลงสัญญาณ SDI-to-HDMI, VGA-to-HDMI และอื่นๆ สำหรับเชื่อมต่ออุปกรณ์เดิม" },
+      {
+        name: "AV Converter",
+        desc: "ตัวแปลงสัญญาณ SDI-to-HDMI, VGA-to-HDMI และอื่นๆ สำหรับเชื่อมต่ออุปกรณ์เดิม",
+      },
     ],
   },
   "237596": {
@@ -246,9 +339,18 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
     ],
     origin: "USA",
     productCategories: [
-      { name: "Video Conference Camera", desc: "กล้อง 4K พร้อม AI Auto-framing, Speaker-tracking สำหรับห้องประชุมทุกขนาด" },
-      { name: "Conference Speaker & Phone", desc: "ลำโพงประชุมและโทรศัพท์สำหรับห้องประชุม เสียงชัด 360° Pickup" },
-      { name: "Teams Room System", desc: "ระบบ Video Conference แบบครบชุด (Camera + Mic + Speaker + Controller) สำหรับ Microsoft Teams Room" },
+      {
+        name: "Video Conference Camera",
+        desc: "กล้อง 4K พร้อม AI Auto-framing, Speaker-tracking สำหรับห้องประชุมทุกขนาด",
+      },
+      {
+        name: "Conference Speaker & Phone",
+        desc: "ลำโพงประชุมและโทรศัพท์สำหรับห้องประชุม เสียงชัด 360° Pickup",
+      },
+      {
+        name: "Teams Room System",
+        desc: "ระบบ Video Conference แบบครบชุด (Camera + Mic + Speaker + Controller) สำหรับ Microsoft Teams Room",
+      },
     ],
   },
   "237676": {
@@ -270,10 +372,22 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
     ],
     origin: "China",
     productCategories: [
-      { name: "Video Conference System", desc: "ระบบ Video Conference แบบครบชุดสำหรับห้องประชุม พร้อม Camera, Mic, Speaker รองรับ Teams/Zoom" },
-      { name: "USB Camera & Soundbar", desc: "กล้อง USB 4K และ Soundbar สำหรับห้องประชุมขนาดเล็ก-กลาง ต่อกับ Laptop ใช้ได้ทันที" },
-      { name: "IP Phone", desc: "โทรศัพท์ IP สำหรับสำนักงาน เสียง HD, หน้าจอสี, รองรับ PoE และ Teams/Zoom" },
-      { name: "Room System (MeetingBoard)", desc: "จอประชุม All-in-One พร้อม Camera, Mic, Speaker ในตัว สำหรับ Microsoft Teams Room" },
+      {
+        name: "Video Conference System",
+        desc: "ระบบ Video Conference แบบครบชุดสำหรับห้องประชุม พร้อม Camera, Mic, Speaker รองรับ Teams/Zoom",
+      },
+      {
+        name: "USB Camera & Soundbar",
+        desc: "กล้อง USB 4K และ Soundbar สำหรับห้องประชุมขนาดเล็ก-กลาง ต่อกับ Laptop ใช้ได้ทันที",
+      },
+      {
+        name: "IP Phone",
+        desc: "โทรศัพท์ IP สำหรับสำนักงาน เสียง HD, หน้าจอสี, รองรับ PoE และ Teams/Zoom",
+      },
+      {
+        name: "Room System (MeetingBoard)",
+        desc: "จอประชุม All-in-One พร้อม Camera, Mic, Speaker ในตัว สำหรับ Microsoft Teams Room",
+      },
     ],
   },
   "237678": {
@@ -295,10 +409,22 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
     ],
     origin: "China",
     productCategories: [
-      { name: "ไมค์ประชุมดิจิทัล (Conference Unit)", desc: "ชุดไมค์ประชุมแบบ Chairman / Delegate พร้อมลำโพงในตัว เชื่อมต่อด้วยสาย CAT5 หรือ Wireless" },
-      { name: "ระบบ Discussion & Voting", desc: "ระบบอภิปรายพร้อมระบบลงคะแนนอิเล็กทรอนิกส์ แสดงผลแบบ Real-time" },
-      { name: "ระบบแปลภาษาพร้อมกัน (Interpretation)", desc: "ระบบแปลภาษาสำหรับการประชุมนานาชาติ รองรับหลายภาษาพร้อมกัน" },
-      { name: "Central Control Unit", desc: "เครื่องควบคุมระบบไมค์ประชุมส่วนกลาง จัดการสิทธิ์การพูด บันทึกเสียง และเชื่อมต่อระบบ AV" },
+      {
+        name: "ไมค์ประชุมดิจิทัล (Conference Unit)",
+        desc: "ชุดไมค์ประชุมแบบ Chairman / Delegate พร้อมลำโพงในตัว เชื่อมต่อด้วยสาย CAT5 หรือ Wireless",
+      },
+      {
+        name: "ระบบ Discussion & Voting",
+        desc: "ระบบอภิปรายพร้อมระบบลงคะแนนอิเล็กทรอนิกส์ แสดงผลแบบ Real-time",
+      },
+      {
+        name: "ระบบแปลภาษาพร้อมกัน (Interpretation)",
+        desc: "ระบบแปลภาษาสำหรับการประชุมนานาชาติ รองรับหลายภาษาพร้อมกัน",
+      },
+      {
+        name: "Central Control Unit",
+        desc: "เครื่องควบคุมระบบไมค์ประชุมส่วนกลาง จัดการสิทธิ์การพูด บันทึกเสียง และเชื่อมต่อระบบ AV",
+      },
     ],
   },
   "237468": {
@@ -320,8 +446,14 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
     ],
     origin: "Lithuania",
     productCategories: [
-      { name: "Portable Press Box", desc: "กล่องกระจายสัญญาณเสียงแบบพกพา 8–16 ช่อง สำหรับงานแถลงข่าวเคลื่อนที่" },
-      { name: "Rack Mount Press Box", desc: "ระบบกระจายสัญญาณแบบติดตั้งในตู้ Rack รองรับ 32–124 ช่อง สำหรับห้องแถลงข่าวถาวร" },
+      {
+        name: "Portable Press Box",
+        desc: "กล่องกระจายสัญญาณเสียงแบบพกพา 8–16 ช่อง สำหรับงานแถลงข่าวเคลื่อนที่",
+      },
+      {
+        name: "Rack Mount Press Box",
+        desc: "ระบบกระจายสัญญาณแบบติดตั้งในตู้ Rack รองรับ 32–124 ช่อง สำหรับห้องแถลงข่าวถาวร",
+      },
     ],
   },
   "237069": {
@@ -342,10 +474,22 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
       "ระบบ AV สำหรับองค์กร",
     ],
     productCategories: [
-      { name: "HDMI Matrix Switcher", desc: "สลับและกระจายสัญญาณ HDMI จากหลายแหล่งไปยังหลายจอ (4x4, 8x8, 16x16)" },
-      { name: "Video Wall Controller", desc: "ตัวควบคุม Video Wall แสดงภาพเดียวข้ามหลายจอ รองรับหลาย Layout" },
-      { name: "KVM Extender", desc: "ขยายสัญญาณ Keyboard, Video, Mouse ระยะไกลผ่านสาย CAT/Fiber สำหรับ Control Room" },
-      { name: "AV over IP", desc: "ระบบส่งสัญญาณ AV ผ่านเครือข่าย LAN รองรับ 4K60 ส่งได้ไม่จำกัดระยะ" },
+      {
+        name: "HDMI Matrix Switcher",
+        desc: "สลับและกระจายสัญญาณ HDMI จากหลายแหล่งไปยังหลายจอ (4x4, 8x8, 16x16)",
+      },
+      {
+        name: "Video Wall Controller",
+        desc: "ตัวควบคุม Video Wall แสดงภาพเดียวข้ามหลายจอ รองรับหลาย Layout",
+      },
+      {
+        name: "KVM Extender",
+        desc: "ขยายสัญญาณ Keyboard, Video, Mouse ระยะไกลผ่านสาย CAT/Fiber สำหรับ Control Room",
+      },
+      {
+        name: "AV over IP",
+        desc: "ระบบส่งสัญญาณ AV ผ่านเครือข่าย LAN รองรับ 4K60 ส่งได้ไม่จำกัดระยะ",
+      },
     ],
   },
 };

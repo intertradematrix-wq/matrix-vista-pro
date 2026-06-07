@@ -40,7 +40,11 @@ const metaEN: Record<string, { tag: string; metric: string; metricLabel: string 
 
 type Industry = (typeof industries)[number];
 
-export function IndustriesShowcase({ industries: industryItems = industries }: { industries?: Industry[] }) {
+export function IndustriesShowcase({
+  industries: industryItems = industries,
+}: {
+  industries?: Industry[];
+}) {
   const { lang } = useLanguage();
   const meta = lang === "EN" ? metaEN : metaTH;
   const [openMobile, setOpenMobile] = useState<number | null>(0);
@@ -167,7 +171,7 @@ export function IndustriesShowcase({ industries: industryItems = industries }: {
                         textShadow: "0 2px 8px rgba(0,0,0,0.65)",
                       }}
                     >
-                      {ind.title}
+                      {t(lang, ind.title, ind.titleEn)}
                     </div>
                   </div>
 
@@ -186,7 +190,8 @@ export function IndustriesShowcase({ industries: industryItems = industries }: {
                       }`}
                     />
                     <Link
-                      to="/industry/$slug" params={{ slug: ind.slug }}
+                      to="/industry/$slug"
+                      params={{ slug: ind.slug }}
                       onClick={(e) => e.stopPropagation()}
                       className={`mt-3 inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white opacity-0 ring-1 ring-white/25 backdrop-blur-md transition-all duration-500 hover:bg-accent hover:ring-accent group-hover:opacity-100 ${
                         isActive ? "!opacity-100" : ""
@@ -233,7 +238,7 @@ export function IndustriesShowcase({ industries: industryItems = industries }: {
                   </div>
                   <div className="relative min-w-0 flex-1">
                     <div className="break-words text-base font-bold leading-snug text-white drop-shadow">
-                      {ind.title}
+                      {t(lang, ind.title, ind.titleEn)}
                     </div>
                     <div className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80">
                       {m.metric} · {m.metricLabel}
@@ -252,9 +257,10 @@ export function IndustriesShowcase({ industries: industryItems = industries }: {
                 >
                   <div className="overflow-hidden">
                     <div className="p-4">
-                      <p className="text-sm leading-relaxed text-muted-foreground">{ind.desc}</p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">{t(lang, ind.desc, ind.descEn)}</p>
                       <Link
-                        to="/industry/$slug" params={{ slug: ind.slug }}
+                        to="/industry/$slug"
+                        params={{ slug: ind.slug }}
                         className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-accent"
                       >
                         {t(lang, "ดูผลงาน", "View Projects")} <ArrowUpRight className="h-4 w-4" />

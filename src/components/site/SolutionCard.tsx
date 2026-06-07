@@ -17,14 +17,18 @@ const ORDER: Record<string, string> = {
 export function SolutionCard({
   slug,
   title,
+  titleEn,
   icon,
   desc,
+  descEn,
   imageUrl,
 }: {
   slug: string;
   title: string;
+  titleEn?: string;
   icon: string;
   desc: string;
+  descEn?: string;
   imageUrl?: string | null;
 }) {
   const { lang } = useLanguage();
@@ -69,7 +73,7 @@ export function SolutionCard({
         {/* Title — anchored, never overflows */}
         <div className="absolute inset-x-5 bottom-5">
           <h3 className="text-balance text-2xl font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.55)] sm:text-[26px]">
-            {title}
+            {t(lang, title, titleEn || title)}
           </h3>
           <div className="mt-2 h-[3px] w-10 rounded-full bg-gradient-accent transition-all duration-500 group-hover:w-20" />
         </div>
@@ -77,7 +81,7 @@ export function SolutionCard({
 
       {/* Body */}
       <div className="flex flex-1 flex-col p-6">
-        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{t(lang, desc, descEn || desc)}</p>
         <div className="mt-auto pt-5">
           <span className="inline-flex items-center gap-1.5 text-sm font-bold text-accent">
             {t(lang, "ดูรายละเอียด", "View Details")}

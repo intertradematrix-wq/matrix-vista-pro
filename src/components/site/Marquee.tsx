@@ -7,6 +7,7 @@ type Props = {
   className?: string;
   fade?: boolean;
   pauseOnHover?: boolean;
+  stepped?: boolean;
 };
 
 export function Marquee({
@@ -15,6 +16,7 @@ export function Marquee({
   className,
   fade = true,
   pauseOnHover = true,
+  stepped = false,
 }: Props) {
   return (
     <div
@@ -22,7 +24,8 @@ export function Marquee({
     >
       <div
         className={cn(
-          "marquee-track flex w-max gap-4 md:gap-12 will-change-transform",
+          "flex w-max gap-4 md:gap-12 will-change-transform",
+          stepped ? "marquee-track-stepped" : "marquee-track",
           pauseOnHover && "group-hover:[animation-play-state:paused]",
         )}
         style={{ animationDuration: `${speed}s` }}

@@ -197,17 +197,20 @@ function HomePage() {
               <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse shadow-glow" />
               {t(lang, "พันธมิตรที่ไว้วางใจ", "Trusted Partners")}
             </div>
-            <Marquee speed={40} className="flex-1">
+            <Marquee speed={120} className="flex-1">
               {brands.concat(brands).map((b, i) => {
                 const logo = b.logoUrl || brandLogos[b.slug];
-                const accent =
-                  (b.accent && typeof b.accent === "object" && "from" in b.accent && "to" in b.accent
-                    ? (b.accent as { from: string; to: string })
-                    : brandAccent[b.slug]) ?? { from: "#22d3ee", to: "#2563eb" };
+                const accent = (b.accent &&
+                typeof b.accent === "object" &&
+                "from" in b.accent &&
+                "to" in b.accent
+                  ? (b.accent as { from: string; to: string })
+                  : brandAccent[b.slug]) ?? { from: "#22d3ee", to: "#2563eb" };
                 return (
                   <Link
                     key={`${b.slug}-${i}`}
-                    to={"/brands/$slug"} params={{ slug: b.slug }}
+                    to={"/brands/$slug"}
+                    params={{ slug: b.slug }}
                     className="group inline-flex items-center gap-1.5 md:gap-2.5 rounded-full border border-white/10 bg-white/[0.04] hover:bg-white/[0.09] hover:border-accent/40 px-2 py-1 md:px-4 md:py-2 backdrop-blur transition-all duration-300 whitespace-nowrap"
                   >
                     <span

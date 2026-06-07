@@ -6,9 +6,7 @@ export type ViewMap = Record<string, number>;
 export const articleViewsQuery = {
   queryKey: ["article-views"] as const,
   queryFn: async (): Promise<ViewMap> => {
-    const { data, error } = await supabase
-      .from("article_views")
-      .select("slug, views");
+    const { data, error } = await supabase.from("article_views").select("slug, views");
     if (error) return {};
     const map: ViewMap = {};
     for (const row of data ?? []) map[row.slug as string] = Number(row.views) || 0;

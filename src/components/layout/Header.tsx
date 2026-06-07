@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import * as Icons from "lucide-react";
 import matrixLogo from "@/assets/matrix-logo.png";
-import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import { articleImages } from "@/data/article-images";
 import { brandImages } from "@/data/brand-images";
@@ -91,13 +91,13 @@ export function Header() {
           </div>
           <div className="flex items-center gap-4 opacity-90">
             <Link to="/aboutus" className="hover:text-cyan transition-colors">
-              เกี่ยวกับเรา
+              {t(lang, "เกี่ยวกับเรา", "About Us")}
             </Link>
             <Link to="/blog" className="hover:text-cyan transition-colors">
-              บทความ
+              {t(lang, "บทความ", "Articles")}
             </Link>
             <Link to="/contactus" className="hover:text-cyan transition-colors">
-              ติดต่อเรา
+              {t(lang, "ติดต่อเรา", "Contact Us")}
             </Link>
           </div>
         </div>
@@ -135,7 +135,7 @@ export function Header() {
                   )}
                 >
                   <span className="relative">
-                    {item.label}
+                    {t(lang, item.label, (item as any).labelEn || item.label)}
                     <span
                       className={cn(
                         "pointer-events-none absolute -bottom-1 left-0 h-[2px] rounded-full bg-gradient-accent transition-all duration-300",
@@ -160,7 +160,7 @@ export function Header() {
                   <SubmenuPanel
                     items={item.submenu}
                     parentHref={item.href}
-                    parentLabel={item.label}
+                    parentLabel={t(lang, item.label, (item as any).labelEn || item.label)}
                   />
                 )}
               </div>
@@ -169,22 +169,43 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setLang(lang === "TH" ? "EN" : "TH")}
-            className="hidden xl:inline-flex items-center gap-1.5 rounded-full border border-border bg-background/60 backdrop-blur px-3 py-1.5 text-[11px] font-bold text-foreground/80 hover:border-accent hover:text-accent transition-colors"
-            aria-label="เปลี่ยนภาษา"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            <span className={cn("transition-colors", lang === "TH" && "text-accent")}>TH</span>
-            <span className="text-border">/</span>
-            <span className={cn("transition-colors", lang === "EN" && "text-accent")}>EN</span>
-          </button>
+          <div className="relative hidden xl:flex items-center rounded-full border border-border/60 bg-muted/30 p-1 shadow-inner backdrop-blur-md">
+            {/* Animated Pill Background */}
+            <div
+              className={cn(
+                "absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-[#ffd24a] shadow-[0_2px_10px_rgba(255,204,25,0.4)] transition-transform duration-300 ease-out",
+                lang === "EN" ? "translate-x-full" : "translate-x-0"
+              )}
+            />
+            <button
+              onClick={() => setLang("TH")}
+              className={cn(
+                "relative z-10 flex w-16 items-center justify-center gap-1.5 rounded-full py-1 text-[11px] font-bold transition-colors duration-300",
+                lang === "TH" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
+              )}
+              aria-label="เปลี่ยนภาษาเป็นไทย"
+            >
+              <img src="https://flagcdn.com/w20/th.png" alt="" className="w-[14px] rounded-[2px] shadow-sm" />
+              TH
+            </button>
+            <button
+              onClick={() => setLang("EN")}
+              className={cn(
+                "relative z-10 flex w-16 items-center justify-center gap-1.5 rounded-full py-1 text-[11px] font-bold transition-colors duration-300",
+                lang === "EN" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
+              )}
+              aria-label="Change language to English"
+            >
+              <img src="https://flagcdn.com/w20/gb.png" alt="" className="w-[14px] rounded-[2px] shadow-sm" />
+              EN
+            </button>
+          </div>
           <Button
             asChild
             className="hidden lg:inline-flex bg-gradient-accent text-white hover:opacity-90 shadow-glow font-semibold"
           >
             <Link to="/contactus">
-              ขอใบเสนอราคา <ArrowUpRight className="ml-1 h-4 w-4" />
+              {t(lang, "ขอใบเสนอราคา", "Request Quote")} <ArrowUpRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
           <button
@@ -227,6 +248,7 @@ function SubmenuPanel({
   parentHref: string;
   parentLabel: string;
 }) {
+  const { lang } = useLanguage();
   const hasDesc = items.some((i) => i.desc);
   const hasImage = items.some((i) => getSubmenuImage(i));
   return (
@@ -255,7 +277,7 @@ function SubmenuPanel({
               to={parentHref}
               className="inline-flex items-center gap-1 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-white transition-colors"
             >
-              ดูทั้งหมด <ArrowUpRight className="h-3 w-3" />
+              {t(lang, "ดูทั้งหมด", "View All")} <ArrowUpRight className="h-3 w-3" />
             </Link>
           </div>
         </div>
@@ -286,11 +308,11 @@ function SubmenuPanel({
                 )}
                 <span className="flex-1 min-w-0">
                   <span className="block text-[14px] font-extrabold text-foreground leading-snug break-words group-hover/item:text-accent transition-colors">
-                    {s.label}
+                    {t(lang, s.label, (s as any).labelEn || s.label)}
                   </span>
                   {s.desc && (
                     <span className="mt-0.5 block text-[12px] text-muted-foreground leading-snug line-clamp-2">
-                      {s.desc}
+                      {t(lang, s.desc, (s as any).descEn || s.desc)}
                     </span>
                   )}
                 </span>
@@ -306,6 +328,7 @@ function SubmenuPanel({
 
 function BlogMegaMenu() {
   const { articleCategories } = useSiteContent();
+  const { lang } = useLanguage();
 
   return (
     <div className="absolute right-0 top-full pt-3 z-50 max-w-[calc(100vw-2rem)]">
@@ -313,7 +336,7 @@ function BlogMegaMenu() {
         <div className="grid grid-cols-[1.4fr_1fr]">
           <div className="p-5">
             <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              หมวดหมู่บทความ
+              {t(lang, "หมวดหมู่บทความ", "Article Categories")}
             </div>
             <div className="grid grid-cols-2 gap-2">
               {articleCategories.map((c) => (
@@ -333,7 +356,7 @@ function BlogMegaMenu() {
                     <span className="absolute inset-0 bg-gradient-to-t from-navy/25 to-transparent" />
                   </span>
                   <span className="min-w-0 flex-1 text-sm font-semibold leading-snug text-foreground group-hover:text-accent">
-                    {c.label}
+                    {t(lang, c.label, (c as any).labelEn || c.label)}
                   </span>
                   <ArrowUpRight className="h-4 w-4 shrink-0 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-accent" />
                 </Link>
@@ -347,16 +370,16 @@ function BlogMegaMenu() {
                 Knowledge Hub
               </div>
               <div className="mt-2 font-bold leading-snug">
-                บทความและคู่มือ AV Solutions สำหรับองค์กร
+                {t(lang, "บทความและคู่มือ AV Solutions สำหรับองค์กร", "AV Solutions Articles & Guides for Enterprises")}
               </div>
               <p className="mt-2 text-xs text-white/70 leading-relaxed">
-                รวมความรู้และ Case Study จากทีมผู้เชี่ยวชาญ
+                {t(lang, "รวมความรู้และ Case Study จากทีมผู้เชี่ยวชาญ", "Knowledge and Case Studies from our Experts")}
               </p>
               <Link
                 to="/blog"
                 className="mt-4 inline-flex items-center gap-1 rounded-lg bg-white text-navy px-3 py-2 text-xs font-bold hover:bg-cyan transition-colors"
               >
-                ดูบทความทั้งหมด <ArrowUpRight className="h-3.5 w-3.5" />
+                {t(lang, "ดูบทความทั้งหมด", "View All Articles")} <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>
@@ -425,7 +448,7 @@ function MobileDrawer({
                     onClick={onClose}
                     className="min-w-0 flex-1 break-words px-3 py-3.5 text-sm font-semibold leading-snug text-foreground hover:text-accent"
                   >
-                    {item.label}
+                    {t(lang, item.label, (item as any).labelEn || item.label)}
                   </Link>
                   {item.submenu && (
                     <button
@@ -473,7 +496,7 @@ function MobileDrawer({
                                 </span>
                               )}
                               <span className="min-w-0 flex-1 break-words font-semibold leading-snug">
-                                {s.label}
+                                {t(lang, s.label, (s as any).labelEn || s.label)}
                               </span>
                               <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-50" />
                             </Link>
@@ -490,27 +513,46 @@ function MobileDrawer({
 
         <div className="p-4 space-y-3 border-t border-border bg-secondary/30">
           <div className="hidden">
-            <span className="text-sm font-semibold">โหมดสี</span>
+            <span className="text-sm font-semibold">{t(lang, "โหมดสี", "Color Mode")}</span>
           </div>
-          <button
-            onClick={() => setLang(lang === "TH" ? "EN" : "TH")}
-            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm font-semibold inline-flex items-center justify-center gap-2"
-          >
-            <Globe className="h-4 w-4" />
-            <span>ภาษา:</span>
-            <span className={cn("transition-colors", lang === "TH" && "text-accent")}>TH</span>
-            <span className="text-border">/</span>
-            <span className={cn("transition-colors", lang === "EN" && "text-accent")}>EN</span>
-          </button>
+          <div className="relative grid grid-cols-2 rounded-xl border border-border/80 bg-muted/30 p-1 shadow-inner">
+            {/* Animated Pill Background */}
+            <div
+              className={cn(
+                "absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[#ffd24a] shadow-[0_2px_10px_rgba(255,204,25,0.4)] transition-transform duration-300 ease-out",
+                lang === "EN" ? "translate-x-full" : "translate-x-0"
+              )}
+            />
+            <button
+              onClick={() => { setLang("TH"); onClose(); }}
+              className={cn(
+                "relative z-10 flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors duration-300",
+                lang === "TH" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <img src="https://flagcdn.com/w20/th.png" alt="" className="w-4 rounded-[2px] shadow-sm" />
+              ภาษาไทย
+            </button>
+            <button
+              onClick={() => { setLang("EN"); onClose(); }}
+              className={cn(
+                "relative z-10 flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors duration-300",
+                lang === "EN" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <img src="https://flagcdn.com/w20/gb.png" alt="" className="w-4 rounded-[2px] shadow-sm" />
+              English
+            </button>
+          </div>
           <Button asChild className="w-full bg-gradient-accent text-white shadow-glow h-11">
             <Link to="/contactus" onClick={onClose}>
-              ขอใบเสนอราคา <ArrowUpRight className="ml-1 h-4 w-4" />
+              {t(lang, "ขอใบเสนอราคา", "Request Quote")} <ArrowUpRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full h-11">
             <Link to="/contactus" onClick={onClose}>
               <Phone className="mr-1.5 h-4 w-4" />
-              ติดต่อฝ่ายขาย
+              {t(lang, "ติดต่อฝ่ายขาย", "Contact Sales")}
             </Link>
           </Button>
         </div>

@@ -16,6 +16,7 @@ import {
 import { productById } from "@/data/products";
 import { productDetailById } from "@/data/product-details";
 import { loadProductDetailContent } from "@/lib/content/products";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/product/$id")({
   head: (ctx: any) => {
@@ -84,20 +85,21 @@ export const Route = createFileRoute("/product/$id")({
 });
 
 function ProductPage() {
+  const { lang } = useLanguage();
   const { product: p, relatedProducts: related } = Route.useLoaderData() as any;
   const hasPrice = p.price && p.price !== "0.00";
   const detail = productDetailById(p.id);
   const descriptionHtml = p.descriptionHtml ?? detail?.descriptionHtml;
   const serviceHighlights = [
-    { icon: Headset, label: "ปรึกษาทีมขาย" },
-    { icon: Ruler, label: "ออกแบบระบบ" },
-    { icon: Wrench, label: "ติดตั้งหน้างาน" },
-    { icon: ShieldCheck, label: "รับประกันสินค้า" },
+    { icon: Headset, label: t(lang, "ปรึกษาทีมขาย", "Consult Sales") },
+    { icon: Ruler, label: t(lang, "ออกแบบระบบ", "System Design") },
+    { icon: Wrench, label: t(lang, "ติดตั้งหน้างาน", "On-site Installation") },
+    { icon: ShieldCheck, label: t(lang, "รับประกันสินค้า", "Product Warranty") },
   ];
   const promiseItems = [
-    "ให้คำปรึกษาและออกแบบระบบโดยทีมวิศวกร",
-    "ติดตั้งโดยช่างผู้ชำนาญ พร้อมตรวจเช็กหน้างาน",
-    "ดูแลหลังการขายและบำรุงรักษาระยะยาว",
+    t(lang, "ให้คำปรึกษาและออกแบบระบบโดยทีมวิศวกร", "Consultation and system design by engineers"),
+    t(lang, "ติดตั้งโดยช่างผู้ชำนาญ พร้อมตรวจเช็กหน้างาน", "Installation by specialists with on-site inspection"),
+    t(lang, "ดูแลหลังการขายและบำรุงรักษาระยะยาว", "After-sales care and long-term maintenance"),
   ];
 
   return (
@@ -107,7 +109,7 @@ function ProductPage() {
         <div className="relative mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
           <Breadcrumb
             items={[
-              { label: "สินค้า", href: "/category/0" },
+              { label: t(lang, "สินค้า", "Products"), href: "/category/0" },
               ...(p.brand ? [{ label: p.brand, href: `/category/${p.brandCategoryId}` }] : []),
               { label: p.name },
             ]}
@@ -124,30 +126,29 @@ function ProductPage() {
               {p.name}
             </h1>
             <p className="mt-4 max-w-xl break-words text-sm leading-relaxed text-muted-foreground md:text-base">
-              เลือกสินค้า AV พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการออกแบบ ติดตั้ง
-              และดูแลระบบในองค์กร
+              {t(lang, "เลือกสินค้า AV พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการออกแบบ ติดตั้ง และดูแลระบบในองค์กร", "Select AV products with advice from the Matrix Intertrade team for corporate system design, installation, and maintenance.")}
             </p>
 
             <div className="mt-6 min-w-0 rounded-xl border border-border bg-white p-4">
-              <div className="text-xs font-medium text-muted-foreground">ราคา</div>
+              <div className="text-xs font-medium text-muted-foreground">{t(lang, "ราคา", "Price")}</div>
               {hasPrice ? (
                 <div className="mt-1 break-words text-3xl font-bold text-primary">
-                  {p.price} บาท
+                  {p.price} {t(lang, "บาท", "THB")}
                 </div>
               ) : (
                 <div className="mt-1 break-words text-xl font-bold text-primary sm:text-2xl">
-                  ติดต่อสอบถามราคา
+                  {t(lang, "ติดต่อสอบถามราคา", "Contact for Price")}
                 </div>
               )}
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                ราคาอาจเปลี่ยนตามรุ่น สเปก และเงื่อนไขโครงการ กรุณายืนยันกับฝ่ายขาย
+                {t(lang, "ราคาอาจเปลี่ยนตามรุ่น สเปก และเงื่อนไขโครงการ กรุณายืนยันกับฝ่ายขาย", "Prices may vary based on model, specs, and project conditions. Please confirm with sales.")}
               </p>
             </div>
 
             <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" className="min-h-11 min-w-0 sm:min-w-48">
                 <Link to="/contactus">
-                  ขอใบเสนอราคา <ArrowRight className="ml-1 h-4 w-4" />
+                  {t(lang, "ขอใบเสนอราคา", "Request Quote")} <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="min-h-11 min-w-0">
@@ -168,7 +169,7 @@ function ProductPage() {
               rel="noopener noreferrer"
               className="mt-4 inline-flex max-w-full items-center gap-1 break-words text-xs font-medium text-muted-foreground transition-colors hover:text-accent"
             >
-              ดูข้อมูลต้นทางบน matrixintertrade.com <ExternalLink className="h-3 w-3" />
+              {t(lang, "ดูข้อมูลต้นทางบน matrixintertrade.com", "View original source on matrixintertrade.com")} <ExternalLink className="h-3 w-3" />
             </a>
           </div>
 
@@ -222,7 +223,7 @@ function ProductPage() {
       {descriptionHtml && (
         <section className="border-t border-border bg-white py-10 md:py-14">
           <div className="mx-auto max-w-5xl px-4 md:px-6">
-            <h2 className="mb-6 text-xl font-bold text-primary md:text-2xl">รายละเอียดสินค้า</h2>
+            <h2 className="mb-6 text-xl font-bold text-primary md:text-2xl">{t(lang, "รายละเอียดสินค้า", "Product Details")}</h2>
             <article
               className="product-detail-content min-w-0 leading-relaxed text-foreground/90"
               dangerouslySetInnerHTML={{ __html: descriptionHtml }}
@@ -237,15 +238,15 @@ function ProductPage() {
             <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 className="text-xl font-bold text-primary md:text-2xl">
-                  สินค้าอื่นในกลุ่ม {p.brand}
+                  {t(lang, `สินค้าอื่นในกลุ่ม ${p.brand}`, `Other products by ${p.brand}`)}
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  เปรียบเทียบรุ่นใกล้เคียงก่อนขอใบเสนอราคา
+                  {t(lang, "เปรียบเทียบรุ่นใกล้เคียงก่อนขอใบเสนอราคา", "Compare similar models before requesting a quote")}
                 </p>
               </div>
               <Button asChild variant="outline" className="min-h-11">
                 <Link to="/category/$id" params={{ id: p.brandCategoryId }}>
-                  ดูทั้งหมด
+                  {t(lang, "ดูทั้งหมด", "View All")}
                 </Link>
               </Button>
             </div>
@@ -270,7 +271,7 @@ function ProductPage() {
                       {r.name}
                     </div>
                     <div className="mt-2 text-xs font-semibold text-accent">
-                      {r.price && r.price !== "0.00" ? `${r.price} บาท` : "ติดต่อสอบถามราคา"}
+                      {r.price && r.price !== "0.00" ? `${r.price} ${t(lang, "บาท", "THB")}` : t(lang, "ติดต่อสอบถามราคา", "Contact for Price")}
                     </div>
                   </div>
                 </Link>

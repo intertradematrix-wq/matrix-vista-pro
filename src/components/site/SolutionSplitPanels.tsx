@@ -3,7 +3,13 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { solutionImages } from "@/data/solution-images";
 
-type Solution = { slug: string; title: string; icon: string; desc: string; imageUrl?: string | null };
+type Solution = {
+  slug: string;
+  title: string;
+  icon: string;
+  desc: string;
+  imageUrl?: string | null;
+};
 
 /**
  * Editorial horizontal slider inspired by the reference (Nike / TOIOMI / Sitre style).
@@ -117,7 +123,6 @@ export function SolutionSplitPanels({ solutions }: { solutions: Solution[] }) {
     el.addEventListener("wheel", handler, { passive: false });
     return () => el.removeEventListener("wheel", handler);
   }, []);
-
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowLeft") {

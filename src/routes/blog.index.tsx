@@ -4,13 +4,11 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { CTASection } from "@/components/site/CTASection";
 import { Input } from "@/components/ui/input";
-import {
-  fallbackArticleListContent,
-  loadArticleListContent,
-} from "@/lib/content/articles";
+import { fallbackArticleListContent, loadArticleListContent } from "@/lib/content/articles";
 import { Search } from "lucide-react";
 import { z } from "zod";
 import heroBlog from "@/assets/hero-blog.jpg";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
 const search = z.object({ category: z.string().optional() });
 
@@ -31,6 +29,7 @@ export const Route = createFileRoute("/blog/")({
 });
 
 function BlogPage() {
+  const { lang } = useLanguage();
   const { category } = Route.useSearch();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | undefined>(category);
@@ -54,13 +53,14 @@ function BlogPage() {
     (a) => (!cat || a.category === cat) && (!q || a.title.toLowerCase().includes(q.toLowerCase())),
   );
   const featured = articles.slice(0, 3);
+  const currentCat = cat ? articleCategories.find((c) => c.slug === cat) : null;
   return (
     <>
       <PageHeader
         eyebrow="Knowledge Hub"
-        title="บทความและคู่มือ AV Solutions"
-        desc="ความรู้ คู่มือเลือกซื้อ และ Case Study สำหรับองค์กรที่กำลังวางระบบ AV"
-        breadcrumbs={[{ label: "บทความ" }]}
+        title={t(lang, "บทความและคู่มือ AV Solutions", "Articles and AV Solutions Guide")}
+        desc={t(lang, "ความรู้ คู่มือเลือกซื้อ และ Case Study สำหรับองค์กรที่กำลังวางระบบ AV", "Knowledge, buying guides, and case studies for organizations planning AV systems.")}
+        breadcrumbs={[{ label: t(lang, "บทความ", "Articles") }]}
         bgImage={heroBlog}
       />
       <section className="py-12">
@@ -71,7 +71,7 @@ function BlogPage() {
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="ค้นหาบทความ..."
+                placeholder={t(lang, "ค้นหาบทความ...", "Search articles...")}
                 className="pl-9"
               />
             </div>
@@ -80,7 +80,7 @@ function BlogPage() {
                 onClick={() => setCat(undefined)}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${!cat ? "bg-gradient-accent text-white shadow-glow" : "bg-secondary text-foreground hover:bg-secondary/70"}`}
               >
-                ทั้งหมด
+                {t(lang, "ทั้งหมด", "All")}
               </button>
               {articleCategories.map((c) => (
                 <button
@@ -88,7 +88,7 @@ function BlogPage() {
                   onClick={() => setCat(c.slug)}
                   className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${cat === c.slug ? "bg-gradient-accent text-white shadow-glow" : "bg-secondary text-foreground hover:bg-secondary/70"}`}
                 >
-                  {c.label}
+                  {t(lang, c.label, c.labelEn)}
                 </button>
               ))}
             </div>
@@ -96,7 +96,7 @@ function BlogPage() {
 
           {!cat && !q && (
             <div className="mb-12">
-              <h2 className="mb-5 text-lg font-bold text-primary">บทความแนะนำ</h2>
+              <h2 className="mb-5 text-lg font-bold text-primary">{t(lang, "บทความแนะนำ", "Featured Articles")}</h2>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {featured.map((a) => (
                   <ArticleCard key={a.id} article={a} />
@@ -106,12 +106,12 @@ function BlogPage() {
           )}
 
           <h2 className="mb-5 text-lg font-bold text-primary">
-            {cat ? articleCategories.find((c) => c.slug === cat)?.label : "บทความล่าสุด"}{" "}
+            {cat && currentCat ? t(lang, currentCat.label, currentCat.labelEn) : t(lang, "บทความล่าสุด", "Latest Articles")}{" "}
             <span className="text-sm font-normal text-muted-foreground">({filtered.length})</span>
           </h2>
           {filtered.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
-              ไม่พบบทความที่ตรงกับการค้นหา
+              {t(lang, "ไม่พบบทความที่ตรงกับการค้นหา", "No articles match your search")}
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

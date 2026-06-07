@@ -22,6 +22,7 @@ export const Route = createFileRoute("/wireless-presentation")({
       title="Wireless Presentation"
       iconName="Wifi"
       intro="tranScreen ระบบนำเสนอไร้สายระดับองค์กร รองรับ BYOD ทุกอุปกรณ์ Windows / Mac / iOS / Android"
+      introEn="tranScreen Enterprise-grade wireless presentation system, supporting BYOD for all devices (Windows / Mac / iOS / Android)"
       bullets={[
         "ส่งภาพไร้สายแบบ Real-time ไม่มี Lag",
         "รองรับการแชร์พร้อมกันสูงสุด 4 หน้าจอ",
@@ -29,12 +30,26 @@ export const Route = createFileRoute("/wireless-presentation")({
         "ระบบความปลอดภัยระดับองค์กร",
         "รองรับ AirPlay / Miracast / Google Cast",
       ]}
+      bulletsEn={[
+        "Real-time wireless screen casting with no lag",
+        "Supports up to 4 simultaneous screen shares",
+        "Plug-and-Play, easy to use without driver installation",
+        "Enterprise-grade security systems",
+        "Supports AirPlay / Miracast / Google Cast",
+      ]}
       applications={[
         "ห้องประชุม Huddle Room",
         "Boardroom",
         "Training Room",
         "Hybrid Meeting",
         "Innovation Lab",
+      ]}
+      applicationsEn={[
+        "Huddle Rooms",
+        "Boardrooms",
+        "Training Rooms",
+        "Hybrid Meetings",
+        "Innovation Labs",
       ]}
     />
   ),

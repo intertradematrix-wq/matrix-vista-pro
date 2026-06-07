@@ -1,80 +1,94 @@
-export type SubItem = { label: string; href: string; desc?: string; image?: string };
-export type NavItem = { label: string; href: string; submenu?: SubItem[] };
+export type SubItem = { label: string; labelEn?: string; href: string; desc?: string; descEn?: string; image?: string };
+export type NavItem = { label: string; labelEn?: string; href: string; submenu?: SubItem[] };
 
 export const nav: NavItem[] = [
-  { label: "หน้าแรก", href: "/" },
+  { label: "หน้าแรก", labelEn: "Home", href: "/" },
   {
     label: "เกี่ยวกับเรา",
+    labelEn: "About Us",
     href: "/aboutus",
     submenu: [
-      { label: "โรงเรียน และสถาบันการศึกษา", href: "/industry/education" },
-      { label: "โรงแรมและห้องประชุมขนาดใหญ่", href: "/industry/hotel" },
-      { label: "สำนักงานและองค์กรธุรกิจ", href: "/industry/corporate" },
-      { label: "ระบบวิดีโอคอนเฟอเร้นซ์ เพื่อทุกหน่วยงาน", href: "/industry/video-conference" },
+      { label: "โรงเรียน และสถาบันการศึกษา", labelEn: "Schools & Education", href: "/industry/education" },
+      { label: "โรงแรมและห้องประชุมขนาดใหญ่", labelEn: "Hotels & Convention Centers", href: "/industry/hotel" },
+      { label: "สำนักงานและองค์กรธุรกิจ", labelEn: "Corporate Offices", href: "/industry/corporate" },
+      { label: "ระบบวิดีโอคอนเฟอเร้นซ์ เพื่อทุกหน่วยงาน", labelEn: "Video Conferencing Systems", href: "/industry/video-conference" },
     ],
   },
   {
     label: "โซลูชั่นของเรา",
+    labelEn: "Our Solutions",
     href: "/solutions",
     submenu: [
       {
         label: "LED Display",
+        labelEn: "LED Display",
         href: "/led-display",
         desc: "จอ LED ระดับมืออาชีพสำหรับองค์กร",
+        descEn: "Professional LED Displays for Enterprises",
         image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/a6492e1dbcf9-led_display1.png",
       },
       {
         label: "Interactive Display",
+        labelEn: "Interactive Display",
         href: "/interactive-display",
         desc: "จอสัมผัสอัจฉริยะสำหรับการเรียนและประชุม",
+        descEn: "Smart Touch Displays for Active Learning & Meetings",
         image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/f7c323982191-interactive_display12.png",
       },
       {
         label: "Projector",
+        labelEn: "Projector",
         href: "/projector",
         desc: "โปรเจกเตอร์ความสว่างสูง",
+        descEn: "High Brightness Projectors",
         image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/3ddadb3d3dff-projector11.png",
       },
       {
         label: "Wireless Presentation",
+        labelEn: "Wireless Presentation",
         href: "/wireless-presentation",
         desc: "ระบบนำเสนอไร้สาย",
+        descEn: "Wireless Presentation Systems",
         image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/55c7fda91436-wireless_presentation1.png",
       },
       {
         label: "AV Solutions",
+        labelEn: "AV Solutions",
         href: "/av-solutions",
         desc: "ออกแบบระบบภาพและเสียงครบวงจร",
+        descEn: "Complete Audio & Visual System Integration",
         image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/7b9fc0dd456f-av_solutions1.png",
       },
     ],
   },
   {
     label: "ผลงาน",
+    labelEn: "Our Brands",
     href: "/brands",
     submenu: [
-      { label: "Unilumin", href: "/brands/unilumin" },
-      { label: "KramerAV", href: "/brands/kramerav" },
-      { label: "Grandview", href: "/brands/grandview" },
-      { label: "Persona", href: "/brands/persona" },
-      { label: "tranScreen", href: "/brands/transcreen" },
+      { label: "Unilumin", labelEn: "Unilumin", href: "/brands/unilumin" },
+      { label: "KramerAV", labelEn: "KramerAV", href: "/brands/kramerav" },
+      { label: "Grandview", labelEn: "Grandview", href: "/brands/grandview" },
+      { label: "Persona", labelEn: "Persona", href: "/brands/persona" },
+      { label: "tranScreen", labelEn: "tranScreen", href: "/brands/transcreen" },
     ],
   },
   {
     label: "สินค้า",
+    labelEn: "Products",
     href: "/category/0",
     submenu: [
-      { label: "Unilumin", href: "/category/288194" },
-      { label: "Kramer", href: "/category/235610" },
-      { label: "Persona", href: "/category/288209" },
-      { label: "tranScreen", href: "/category/288210" },
-      { label: "Grandview", href: "/category/237068" },
-      { label: "HDMI Cable", href: "/category/237477" },
-      { label: "Product Line", href: "/product-line" },
+      { label: "Unilumin", labelEn: "Unilumin", href: "/category/288194" },
+      { label: "Kramer", labelEn: "Kramer", href: "/category/235610" },
+      { label: "Persona", labelEn: "Persona", href: "/category/288209" },
+      { label: "tranScreen", labelEn: "tranScreen", href: "/category/288210" },
+      { label: "Grandview", labelEn: "Grandview", href: "/category/237068" },
+      { label: "HDMI Cable", labelEn: "HDMI Cable", href: "/category/237477" },
+      { label: "Product Line", labelEn: "Product Line", href: "/product-line" },
     ],
   },
-  { label: "ติดต่อเรา", href: "/contactus" },
-  { label: "บทความ", href: "/blog" },
+  { label: "ติดต่อเรา", labelEn: "Contact Us", href: "/contactus" },
+  { label: "บทความ", labelEn: "Articles", href: "/blog" },
 ];
 
 export const brands = [
@@ -83,6 +97,7 @@ export const brands = [
     name: "Unilumin",
     category: "LED Display",
     desc: "ผู้นำระดับโลกด้านจอ LED Display คุณภาพสูง สำหรับ Indoor และ Outdoor",
+    descEn: "Global leader in high-quality Indoor and Outdoor LED Displays",
     color: "from-blue-500 to-cyan-500",
   },
   {
@@ -90,6 +105,7 @@ export const brands = [
     name: "KramerAV",
     category: "AV / Switching",
     desc: "อุปกรณ์ AV และระบบ switching ระดับมืออาชีพจากอิสราเอล",
+    descEn: "Professional AV equipment and switching systems from Israel",
     color: "from-indigo-500 to-blue-500",
   },
   {
@@ -97,6 +113,7 @@ export const brands = [
     name: "Grandview",
     category: "Projector Screen",
     desc: "จอรับภาพระดับพรีเมียมสำหรับห้องประชุมและโฮมเธียเตอร์",
+    descEn: "Premium projector screens for meeting rooms and home theaters",
     color: "from-slate-500 to-slate-700",
   },
   {
@@ -104,6 +121,7 @@ export const brands = [
     name: "Persona",
     category: "Interactive Display",
     desc: "จอสัมผัสอัจฉริยะอันดับ 1 จากไต้หวัน รับรอง Google EDLA",
+    descEn: "No.1 Interactive Display from Taiwan with Google EDLA certification",
     color: "from-cyan-500 to-teal-500",
   },
   {
@@ -111,6 +129,7 @@ export const brands = [
     name: "tranScreen",
     category: "Wireless Presentation",
     desc: "ระบบนำเสนอไร้สายสำหรับห้องประชุมยุคใหม่",
+    descEn: "Wireless presentation systems for modern meeting rooms",
     color: "from-sky-500 to-blue-600",
   },
 ];
@@ -119,32 +138,42 @@ export const solutions = [
   {
     slug: "led-display",
     title: "LED Display",
+    titleEn: "LED Display",
     icon: "Monitor",
     desc: "จอ LED Indoor / Outdoor / All-in-One สำหรับองค์กร ห้องประชุม และงานอีเวนต์",
+    descEn: "Indoor / Outdoor / All-in-One LED Displays for enterprises, meeting rooms, and events",
   },
   {
     slug: "interactive-display",
     title: "Interactive Display",
+    titleEn: "Interactive Display",
     icon: "Hand",
     desc: "จอสัมผัสอัจฉริยะ รองรับการเรียนการสอนและการประชุมแบบ Active",
+    descEn: "Smart touch displays supporting active learning and meetings",
   },
   {
     slug: "projector",
     title: "Projector",
+    titleEn: "Projector",
     icon: "Projector",
     desc: "โปรเจกเตอร์ความสว่างสูง คมชัด พร้อมจอรับภาพคุณภาพ",
+    descEn: "High brightness, clear projectors with quality screens",
   },
   {
     slug: "wireless-presentation",
     title: "Wireless Presentation",
+    titleEn: "Wireless Presentation",
     icon: "Wifi",
     desc: "ระบบนำเสนอไร้สาย รองรับ BYOD ทุกอุปกรณ์",
+    descEn: "Wireless presentation systems supporting BYOD on all devices",
   },
   {
     slug: "av-solutions",
     title: "AV Solutions",
+    titleEn: "AV Solutions",
     icon: "Cable",
     desc: "ออกแบบและติดตั้งระบบภาพและเสียงครบวงจรสำหรับองค์กร",
+    descEn: "Complete audio and visual system design and installation for enterprises",
   },
 ];
 
@@ -152,46 +181,58 @@ export const industries = [
   {
     slug: "education",
     title: "โรงเรียน และสถาบันการศึกษา",
+    titleEn: "Schools & Education",
     icon: "GraduationCap",
     desc: "Smart Classroom พร้อมจอ Interactive และระบบนำเสนอ",
+    descEn: "Smart Classrooms with Interactive Displays and presentation systems",
   },
   {
     slug: "hotel",
     title: "โรงแรมและห้องประชุมขนาดใหญ่",
+    titleEn: "Hotels & Convention Centers",
     icon: "Building2",
     desc: "ระบบ AV ครบวงจรสำหรับ Ballroom และห้องสัมมนา",
+    descEn: "Comprehensive AV systems for Ballrooms and seminar rooms",
   },
   {
     slug: "corporate",
     title: "สำนักงานและองค์กรธุรกิจ",
+    titleEn: "Corporate Offices",
     icon: "Briefcase",
     desc: "Smart Meeting Room รองรับ Hybrid Meeting",
+    descEn: "Smart Meeting Rooms supporting Hybrid Meetings",
   },
   {
     slug: "government",
     title: "หน่วยงานรัฐ",
+    titleEn: "Government Agencies",
     icon: "Landmark",
     desc: "จอ LED Outdoor และห้องประชุมระดับองค์กรรัฐ",
+    descEn: "Outdoor LED Displays and enterprise-grade meeting rooms for government",
   },
   {
     slug: "hospital",
     title: "โรงพยาบาล / Smart Hospital",
+    titleEn: "Smart Hospitals",
     icon: "HeartPulse",
     desc: "ระบบจัดการข้อมูลและประชุมทางการแพทย์",
+    descEn: "Data management and medical conferencing systems",
   },
   {
     slug: "video-conference",
     title: "ห้องประชุม Hybrid Meeting",
+    titleEn: "Hybrid Meeting Rooms",
     icon: "Video",
     desc: "ระบบ Video Conference เพื่อทุกหน่วยงาน",
+    descEn: "Video Conference systems for all departments",
   },
 ];
 
 export const articleCategories = [
-  { slug: "led-display", label: "LED Display" },
-  { slug: "interactive-display", label: "Interactive Display" },
-  { slug: "smart-classroom", label: "Smart Classroom" },
-  { slug: "meeting-room", label: "Meeting Room & AV" },
-  { slug: "knowledge", label: "Technology Knowledge" },
-  { slug: "case-study", label: "Case Study / News" },
+  { slug: "led-display", label: "LED Display", labelEn: "LED Display" },
+  { slug: "interactive-display", label: "Interactive Display", labelEn: "Interactive Display" },
+  { slug: "smart-classroom", label: "Smart Classroom", labelEn: "Smart Classroom" },
+  { slug: "meeting-room", label: "Meeting Room & AV", labelEn: "Meeting Room & AV" },
+  { slug: "knowledge", label: "Technology Knowledge", labelEn: "Technology Knowledge" },
+  { slug: "case-study", label: "Case Study / News", labelEn: "Case Study / News" },
 ];

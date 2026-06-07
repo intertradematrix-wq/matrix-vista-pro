@@ -4,6 +4,7 @@ import { SolutionCard } from "@/components/site/SolutionCard";
 import { CTASection } from "@/components/site/CTASection";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import heroSolutions from "@/assets/hero-solutions.jpg";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/solutions")({
   head: () => ({
@@ -24,15 +25,16 @@ export const Route = createFileRoute("/solutions")({
 });
 
 function SolutionsPage() {
+  const { lang } = useLanguage();
   const { solutions } = useSiteContent();
 
   return (
     <>
       <PageHeader
         eyebrow="Solutions"
-        title="โซลูชั่นของเรา"
-        desc="ทุกโซลูชั่นออกแบบมาเพื่อรองรับการใช้งานจริงในระดับองค์กร พร้อมการดูแลตลอดอายุการใช้งาน"
-        breadcrumbs={[{ label: "โซลูชั่นของเรา" }]}
+        title={t(lang, "โซลูชั่นของเรา", "Our Solutions")}
+        desc={t(lang, "ทุกโซลูชั่นออกแบบมาเพื่อรองรับการใช้งานจริงในระดับองค์กร พร้อมการดูแลตลอดอายุการใช้งาน", "Every solution is designed for real-world enterprise use, complete with lifetime support.")}
+        breadcrumbs={[{ label: t(lang, "โซลูชั่นของเรา", "Our Solutions") }]}
         bgImage={heroSolutions}
       />
       <section className="py-16 md:py-24">

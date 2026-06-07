@@ -11,6 +11,7 @@ import {
   loadProductsByCategoryContent,
 } from "@/lib/content/products";
 import { loadBrandIntroContent, type SiteBrandIntro } from "@/lib/content/site";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
 const catMap: Record<string, string> = {
   "0": "สินค้าทั้งหมด",
@@ -45,13 +46,14 @@ export const Route = createFileRoute("/category/$id")({
 });
 
 function CategoryPage() {
+  const { lang } = useLanguage();
   const { id } = Route.useParams();
-  const name = catMap[id] ?? "หมวดสินค้า";
+  const name = catMap[id] ? (id === "0" ? t(lang, "สินค้าทั้งหมด", "All Products") : catMap[id]) : t(lang, "หมวดสินค้า", "Category");
   const [productContent, setProductContent] = useState(() => fallbackProductsByCategoryId(id));
   const [intro, setIntro] = useState<SiteBrandIntro | undefined>(() => brandIntrosByCategoryId[id]);
   const products = productContent.products;
   const featuredProducts = products.slice(0, 3);
-  const introImage = intro ? (intro.imageUrl || brandImages[intro.brandSlug]) : undefined;
+  const introImage = intro ? intro.imageUrl || brandImages[intro.brandSlug] : undefined;
 
   useEffect(() => {
     let isCurrent = true;
@@ -81,9 +83,9 @@ function CategoryPage() {
         desc={
           intro
             ? intro.tagline
-            : `${products.length} รายการ พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการเลือกสินค้าและออกแบบระบบ AV`
+            : t(lang, `${products.length} รายการ พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการเลือกสินค้าและออกแบบระบบ AV`, `${products.length} items with advice from Matrix Intertrade team for product selection and AV design.`)
         }
-        breadcrumbs={[{ label: "สินค้า", href: "/category/0" }, { label: name }]}
+        breadcrumbs={[{ label: t(lang, "สินค้า", "Products"), href: "/category/0" }, { label: name }]}
         variant="clean"
       />
 
@@ -92,12 +94,12 @@ function CategoryPage() {
           <div className="mx-auto max-w-7xl px-4 md:px-6 grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-accent">
-                <Sparkles className="h-3.5 w-3.5" /> รู้จักแบรนด์
+                <Sparkles className="h-3.5 w-3.5" /> {t(lang, "รู้จักแบรนด์", "About the Brand")}
               </div>
               <h2 className="mt-3 text-2xl md:text-3xl font-bold tracking-tight text-primary">
                 {name} — {intro.tagline}
               </h2>
-              <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
+              <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {intro.description}
               </p>
               {intro.origin && (
@@ -108,7 +110,7 @@ function CategoryPage() {
 
               <div className="mt-6 grid gap-6 sm:grid-cols-2">
                 <div>
-                  <h3 className="text-sm font-bold text-primary mb-3">จุดเด่นของแบรนด์</h3>
+                  <h3 className="text-sm font-bold text-primary mb-3">{t(lang, "จุดเด่นของแบรนด์", "Brand Highlights")}</h3>
                   <ul className="space-y-2">
                     {intro.highlights.map((h) => (
                       <li key={h} className="flex items-start gap-2 text-sm text-foreground/85">
@@ -121,7 +123,7 @@ function CategoryPage() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-primary mb-3">เหมาะกับการใช้งาน</h3>
+                  <h3 className="text-sm font-bold text-primary mb-3">{t(lang, "เหมาะกับการใช้งาน", "Best For")}</h3>
                   <ul className="grid grid-cols-1 gap-2">
                     {intro.bestFor.map((b) => (
                       <li key={b} className="flex items-center gap-2 text-sm text-foreground/80">
@@ -136,12 +138,12 @@ function CategoryPage() {
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild className="bg-gradient-accent text-white shadow-glow">
                   <Link to="/contactus">
-                    ขอใบเสนอราคา <ArrowRight className="ml-1 h-4 w-4" />
+                    {t(lang, "ขอใบเสนอราคา", "Request a Quote")} <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
                   <Link to="/brands/$slug" params={{ slug: intro.brandSlug }}>
-                    ข้อมูลแบรนด์เพิ่มเติม
+                    {t(lang, "ข้อมูลแบรนด์เพิ่มเติม", "More Brand Info")}
                   </Link>
                 </Button>
               </div>
@@ -173,13 +175,13 @@ function CategoryPage() {
           <div className="mx-auto max-w-7xl px-4 md:px-6">
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 rounded-full bg-primary/8 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary/70">
-                <Layers className="h-3.5 w-3.5" /> หมวดสินค้าของแบรนด์
+                <Layers className="h-3.5 w-3.5" /> {t(lang, "หมวดสินค้าของแบรนด์", "Brand Product Categories")}
               </div>
               <h2 className="mt-3 text-xl md:text-2xl font-bold tracking-tight text-primary">
-                สินค้าภายใต้แบรนด์ {name}
+                {t(lang, `สินค้าภายใต้แบรนด์ ${name}`, `Products under ${name}`)}
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                ภาพรวมกลุ่มสินค้าทั้งหมดที่ {name} ครอบคลุม เพื่อช่วยให้คุณเลือกโซลูชันที่เหมาะสมกับการใช้งาน
+                {t(lang, `ภาพรวมกลุ่มสินค้าทั้งหมดที่ ${name} ครอบคลุม เพื่อช่วยให้คุณเลือกโซลูชันที่เหมาะสมกับการใช้งาน`, `Overview of all product lines covered by ${name} to help you choose the right solution.`)}
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -194,9 +196,7 @@ function CategoryPage() {
                     </div>
                     <h3 className="text-sm font-bold text-primary leading-snug">{cat.name}</h3>
                   </div>
-                  <p className="text-[13px] leading-relaxed text-muted-foreground">
-                    {cat.desc}
-                  </p>
+                  <p className="text-[13px] leading-relaxed text-muted-foreground">{cat.desc}</p>
                   <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-accent/0 via-accent/50 to-accent/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </div>
               ))}
@@ -234,7 +234,7 @@ function CategoryPage() {
                     </div>
                     <div className="flex min-w-0 items-center justify-between gap-3">
                       <span className="min-w-0 break-words text-sm font-semibold text-primary">
-                        {p.price && p.price !== "0.00" ? `${p.price} บาท` : "ติดต่อสอบถามราคา"}
+                        {p.price && p.price !== "0.00" ? `${p.price} ${t(lang, "บาท", "THB")}` : t(lang, "ติดต่อสอบถามราคา", "Contact for Price")}
                       </span>
                       <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
                     </div>
@@ -251,23 +251,23 @@ function CategoryPage() {
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-primary md:text-3xl">
-                รายการสินค้า
+                {t(lang, "รายการสินค้า", "Product List")}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                เลือกดูรายละเอียดสินค้า หรือส่งข้อมูลให้ทีมขายช่วยประเมินสเปกที่เหมาะกับหน้างาน
+                {t(lang, "เลือกดูรายละเอียดสินค้า หรือส่งข้อมูลให้ทีมขายช่วยประเมินสเปกที่เหมาะกับหน้างาน", "Browse product details or send info to our sales team to evaluate the right specs for your site.")}
               </p>
             </div>
             <Button asChild variant="outline" className="min-h-11">
               <Link to="/contactus">
                 <MessageCircle className="mr-1 h-4 w-4" />
-                ปรึกษาทีมขาย
+                {t(lang, "ปรึกษาทีมขาย", "Consult Sales")}
               </Link>
             </Button>
           </div>
 
           {products.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
-              ไม่พบสินค้าในหมวดนี้
+              {t(lang, "ไม่พบสินค้าในหมวดนี้", "No products found in this category")}
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -302,10 +302,10 @@ function CategoryPage() {
                         </h3>
                         <div className="mt-2 text-sm">
                           {hasPrice ? (
-                            <span className="font-bold text-primary">{p.price} บาท</span>
+                            <span className="font-bold text-primary">{p.price} {t(lang, "บาท", "THB")}</span>
                           ) : (
                             <span className="font-semibold text-muted-foreground">
-                              ติดต่อสอบถามราคา
+                              {t(lang, "ติดต่อสอบถามราคา", "Contact for Price")}
                             </span>
                           )}
                         </div>
@@ -313,11 +313,11 @@ function CategoryPage() {
                       <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
                         <Button asChild size="sm" className="h-11 min-w-0">
                           <Link to="/product/$id" params={{ id: p.id }}>
-                            <Eye className="mr-1 h-3.5 w-3.5" /> ดูรายละเอียด
+                            <Eye className="mr-1 h-3.5 w-3.5" /> {t(lang, "ดูรายละเอียด", "View Details")}
                           </Link>
                         </Button>
                         <Button asChild variant="outline" size="sm" className="h-11 w-11 px-0">
-                          <Link to="/contactus" aria-label={`ขอใบเสนอราคา ${p.name}`}>
+                          <Link to="/contactus" aria-label={t(lang, `ขอใบเสนอราคา ${p.name}`, `Request quote for ${p.name}`)}>
                             <ArrowRight className="h-3.5 w-3.5" />
                           </Link>
                         </Button>

@@ -6,8 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: "Noto Sans Thai", "Inter", system-ui, sans-serif;
-  --font-display: "Noto Sans Thai", "Inter", system-ui, sans-serif;
+  --font-sans: "Schibsted Grotesk", "Anuphan", system-ui, sans-serif;
+  --font-display: "Schibsted Grotesk", "Anuphan", system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -38,6 +38,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
+  --color-brand-red: var(--brand-red);
+  --color-brand-red-dark: var(--brand-red-dark);
+  --color-brand-gold: var(--brand-gold);
 }
 
 :root {
@@ -65,6 +68,9 @@
   --border: oklch(0.918 0.012 250);
   --input: oklch(0.918 0.012 250);
   --ring: oklch(0.6 0.2 248);
+  --brand-red: #a01d22;
+  --brand-red-dark: #c62828;
+  --brand-gold: #d3a860;
 
   --gradient-hero:
     radial-gradient(ellipse 80% 60% at 20% 0%, oklch(0.42 0.2 245 / 0.4) 0%, transparent 60%),
@@ -655,9 +661,12 @@
     transform-origin: left center;
   }
 
-  /* ==== Marquee (infinite smooth scroll) ==== */
+  /* ==== Marquee (infinite smooth scroll or stepped) ==== */
   .marquee-track {
     animation: marqueeScroll linear infinite;
+  }
+  .marquee-track-stepped {
+    animation: marqueeTicker 25s infinite;
   }
   @keyframes marqueeScroll {
     from {
@@ -666,6 +675,14 @@
     to {
       transform: translate3d(-50%, 0, 0);
     }
+  }
+  @keyframes marqueeTicker {
+    0%, 15% { transform: translate3d(0, 0, 0); }
+    20%, 35% { transform: translate3d(-10%, 0, 0); }
+    40%, 55% { transform: translate3d(-20%, 0, 0); }
+    60%, 75% { transform: translate3d(-30%, 0, 0); }
+    80%, 95% { transform: translate3d(-40%, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
   }
   .marquee-fade {
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);

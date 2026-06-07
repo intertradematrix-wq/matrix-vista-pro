@@ -134,9 +134,7 @@ export async function loadArticleDetailContent(slug: string): Promise<
   return {
     ...listContent,
     article,
-    category: article
-      ? sourceCategories.find((item) => item.slug === article.category)
-      : undefined,
+    category: article ? sourceCategories.find((item) => item.slug === article.category) : undefined,
     relatedArticles: article
       ? sourceArticles
           .filter((item) => item.category === article.category && item.id !== article.id)

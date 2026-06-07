@@ -5,11 +5,7 @@
   "bucket": "admin-media",
   "inventoryOnly": false,
   "apply": true,
-  "files": [
-    "src/data/site.ts",
-    "src/data/brand-images.ts",
-    "src/data/article-images.ts"
-  ],
+  "files": ["src/data/site.ts", "src/data/brand-images.ts", "src/data/article-images.ts"],
   "candidates": [
     {
       "url": "https://www.matrixintertrade.com/images/ready-template/crop-1671007714983.png",

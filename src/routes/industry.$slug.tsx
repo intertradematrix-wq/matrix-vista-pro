@@ -54,8 +54,8 @@ function IndustryPage() {
   const hotelTitleEN = "Hotels & Large Conference Halls";
   const hotelDescEN =
     "End-to-end AV solutions for hotels, ballrooms, conference halls, live events, theatres and museums — built on Top-Class, mission-critical equipment.";
-  const displayTitle = isHotel ? t(lang, ind.title, hotelTitleEN) : ind.title;
-  const displayDesc = isHotel ? t(lang, ind.desc, hotelDescEN) : ind.desc;
+  const displayTitle = isHotel ? t(lang, ind.title, hotelTitleEN) : t(lang, ind.title, ind.titleEn);
+  const displayDesc = isHotel ? t(lang, ind.desc, hotelDescEN) : t(lang, ind.desc, ind.descEn);
 
   return (
     <>
@@ -249,7 +249,9 @@ function EducationContent() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/category/$id" params={{ id: "237068" }}>ดูสินค้า Grandview</Link>
+                <Link to="/category/$id" params={{ id: "237068" }}>
+                  ดูสินค้า Grandview
+                </Link>
               </Button>
             </div>
           </div>
@@ -281,7 +283,9 @@ function EducationContent() {
                 variant="outline"
                 className="border-white/40 text-white hover:bg-white/10"
               >
-                <Link to="/category/$id" params={{ id: "237677" }}>ดูสินค้าทั้งหมด</Link>
+                <Link to="/category/$id" params={{ id: "237677" }}>
+                  ดูสินค้าทั้งหมด
+                </Link>
               </Button>
             </div>
           </div>

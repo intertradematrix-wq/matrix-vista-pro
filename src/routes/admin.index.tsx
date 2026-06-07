@@ -1,7 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState, useRef } from "react";
-import { ExternalLink, ImageIcon, Loader2, Lock, LogOut, Save, Search, Bold, Italic, Strikethrough, Heading1, Heading2, Heading3, List, ListOrdered, Link as LinkIcon } from "lucide-react";
+import {
+  ExternalLink,
+  ImageIcon,
+  Loader2,
+  Lock,
+  LogOut,
+  Save,
+  Search,
+  Bold,
+  Italic,
+  Strikethrough,
+  Heading1,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  Link as LinkIcon,
+} from "lucide-react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import LinkExtension from "@tiptap/extension-link";
@@ -544,7 +561,9 @@ function ContentList({
                 <div className="line-clamp-2 text-sm font-semibold text-primary">
                   {text(item[config.title]) || id}
                 </div>
-                <div className="mt-1 truncate text-xs text-muted-foreground">{config.subtitle(item)}</div>
+                <div className="mt-1 truncate text-xs text-muted-foreground">
+                  {config.subtitle(item)}
+                </div>
               </div>
             </button>
           );
@@ -568,7 +587,9 @@ function ContentEditor({
     <Card>
       <CardHeader>
         <CardTitle>Edit {config.label}</CardTitle>
-        <CardDescription>Changes are saved to Supabase only. File fallbacks are not edited.</CardDescription>
+        <CardDescription>
+          Changes are saved to Supabase only. File fallbacks are not edited.
+        </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         {config.fields.map((field) => {
@@ -665,7 +686,11 @@ function ContentPreview({
           <div className="overflow-hidden rounded-2xl border border-border bg-white">
             <div className="relative aspect-[16/10] bg-secondary/60">
               {image ? (
-                <img src={image} alt={title} className="absolute inset-0 h-full w-full object-cover" />
+                <img
+                  src={image}
+                  alt={title}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
               ) : (
                 <div className="grid h-full place-items-center text-sm text-muted-foreground">
                   No preview image
@@ -754,11 +779,7 @@ function RichTextField({
   readOnly?: boolean;
 }) {
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      LinkExtension.configure({ openOnClick: false }),
-      ImageExtension,
-    ],
+    extensions: [StarterKit, LinkExtension.configure({ openOnClick: false }), ImageExtension],
     content: value,
     editable: !readOnly,
     onUpdate: ({ editor }) => {
@@ -780,26 +801,105 @@ function RichTextField({
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/20 transition-all">
         {!readOnly && (
           <div className="flex flex-wrap items-center gap-1 border-b border-border bg-muted/40 p-1.5">
-            <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleBold().run()} className={`h-8 w-8 p-0 ${editor.isActive('bold') ? 'bg-accent/15 text-accent' : ''}`}><Bold className="h-4 w-4" /></Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleItalic().run()} className={`h-8 w-8 p-0 ${editor.isActive('italic') ? 'bg-accent/15 text-accent' : ''}`}><Italic className="h-4 w-4" /></Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleStrike().run()} className={`h-8 w-8 p-0 ${editor.isActive('strike') ? 'bg-accent/15 text-accent' : ''}`}><Strikethrough className="h-4 w-4" /></Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              className={`h-8 w-8 p-0 ${editor.isActive("bold") ? "bg-accent/15 text-accent" : ""}`}
+            >
+              <Bold className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => editor.chain().focus().toggleItalic().run()}
+              className={`h-8 w-8 p-0 ${editor.isActive("italic") ? "bg-accent/15 text-accent" : ""}`}
+            >
+              <Italic className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => editor.chain().focus().toggleStrike().run()}
+              className={`h-8 w-8 p-0 ${editor.isActive("strike") ? "bg-accent/15 text-accent" : ""}`}
+            >
+              <Strikethrough className="h-4 w-4" />
+            </Button>
             <div className="w-px h-4 bg-border mx-1" />
-            <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={`h-8 w-8 p-0 ${editor.isActive('heading', { level: 2 }) ? 'bg-accent/15 text-accent' : ''}`}><Heading2 className="h-4 w-4" /></Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={`h-8 w-8 p-0 ${editor.isActive('heading', { level: 3 }) ? 'bg-accent/15 text-accent' : ''}`}><Heading3 className="h-4 w-4" /></Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+              className={`h-8 w-8 p-0 ${editor.isActive("heading", { level: 2 }) ? "bg-accent/15 text-accent" : ""}`}
+            >
+              <Heading2 className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+              className={`h-8 w-8 p-0 ${editor.isActive("heading", { level: 3 }) ? "bg-accent/15 text-accent" : ""}`}
+            >
+              <Heading3 className="h-4 w-4" />
+            </Button>
             <div className="w-px h-4 bg-border mx-1" />
-            <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleBulletList().run()} className={`h-8 w-8 p-0 ${editor.isActive('bulletList') ? 'bg-accent/15 text-accent' : ''}`}><List className="h-4 w-4" /></Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`h-8 w-8 p-0 ${editor.isActive('orderedList') ? 'bg-accent/15 text-accent' : ''}`}><ListOrdered className="h-4 w-4" /></Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+              className={`h-8 w-8 p-0 ${editor.isActive("bulletList") ? "bg-accent/15 text-accent" : ""}`}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+              className={`h-8 w-8 p-0 ${editor.isActive("orderedList") ? "bg-accent/15 text-accent" : ""}`}
+            >
+              <ListOrdered className="h-4 w-4" />
+            </Button>
             <div className="w-px h-4 bg-border mx-1" />
-            <Button type="button" variant="ghost" size="sm" onClick={() => {
-              const url = window.prompt('URL:');
-              if (url === null) return;
-              if (url === '') { editor.chain().focus().extendMarkRange('link').unsetLink().run(); return; }
-              editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-            }} className={`h-8 w-8 p-0 ${editor.isActive('link') ? 'bg-accent/15 text-accent' : ''}`}><LinkIcon className="h-4 w-4" /></Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => {
-              const url = window.prompt('Image URL (You can upload from another tab and paste here):');
-              if (url) { editor.chain().focus().setImage({ src: url }).run(); }
-            }} className="h-8 w-8 p-0"><ImageIcon className="h-4 w-4" /></Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const url = window.prompt("URL:");
+                if (url === null) return;
+                if (url === "") {
+                  editor.chain().focus().extendMarkRange("link").unsetLink().run();
+                  return;
+                }
+                editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+              }}
+              className={`h-8 w-8 p-0 ${editor.isActive("link") ? "bg-accent/15 text-accent" : ""}`}
+            >
+              <LinkIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const url = window.prompt(
+                  "Image URL (You can upload from another tab and paste here):",
+                );
+                if (url) {
+                  editor.chain().focus().setImage({ src: url }).run();
+                }
+              }}
+              className="h-8 w-8 p-0"
+            >
+              <ImageIcon className="h-4 w-4" />
+            </Button>
           </div>
         )}
         <div className="p-3 min-h-[250px] prose prose-sm max-w-none text-foreground/90 focus:outline-none">
@@ -870,23 +970,23 @@ function ImageField({
     <div className="grid gap-1.5 text-sm font-medium text-primary">
       <div className="flex items-center justify-between">
         <span>{label}</span>
-        <Button 
-          type="button" 
-          variant="secondary" 
-          size="sm" 
-          className="h-7 text-xs" 
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="h-7 text-xs"
           disabled={uploading}
           onClick={() => fileInputRef.current?.click()}
         >
           {uploading ? "Uploading..." : "Upload Image"}
         </Button>
       </div>
-      <input 
-        type="file" 
-        accept="image/*" 
-        className="hidden" 
-        ref={fileInputRef} 
-        onChange={handleUpload} 
+      <input
+        type="file"
+        accept="image/*"
+        className="hidden"
+        ref={fileInputRef}
+        onChange={handleUpload}
       />
       <Input
         type="text"
@@ -946,7 +1046,8 @@ function toDraft(item: ContentItem, fields: FieldConfig[]): Draft {
   return Object.fromEntries(
     fields.map((field) => {
       const value = item[field.key];
-      if (field.type === "json") return [field.key, JSON.stringify(value ?? defaultJsonValue(field.key), null, 2)];
+      if (field.type === "json")
+        return [field.key, JSON.stringify(value ?? defaultJsonValue(field.key), null, 2)];
       return [field.key, text(value)];
     }),
   );
@@ -1033,10 +1134,7 @@ function previewImage(
   if (kind === "brands") {
     const slug = text(item.slug);
     return (
-      brandLogos[slug] ||
-      brandImages[slug] ||
-      firstProductImageForBrand(slug, allContent) ||
-      null
+      brandLogos[slug] || brandImages[slug] || firstProductImageForBrand(slug, allContent) || null
     );
   }
 
@@ -1093,7 +1191,9 @@ function imageForHref(href: string, allContent: Partial<Record<ContentKind, Cont
   const brandMatch = href.match(/^\/brands\/([^/]+)$/);
   if (brandMatch?.[1]) {
     const slug = brandMatch[1];
-    return brandLogos[slug] || brandImages[slug] || firstProductImageForBrand(slug, allContent) || null;
+    return (
+      brandLogos[slug] || brandImages[slug] || firstProductImageForBrand(slug, allContent) || null
+    );
   }
 
   const categoryMatch = href.match(/^\/category\/([^/]+)$/);
@@ -1102,7 +1202,12 @@ function imageForHref(href: string, allContent: Partial<Record<ContentKind, Cont
       (candidate) => text(candidate.category_id) === categoryMatch[1],
     );
     const brandSlug = text(intro?.brand_slug);
-    return brandLogos[brandSlug] || brandImages[brandSlug] || firstProductImageForBrand(brandSlug, allContent) || null;
+    return (
+      brandLogos[brandSlug] ||
+      brandImages[brandSlug] ||
+      firstProductImageForBrand(brandSlug, allContent) ||
+      null
+    );
   }
 
   return null;

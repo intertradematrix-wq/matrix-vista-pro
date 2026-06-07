@@ -6,6 +6,7 @@ import { brandImages } from "@/data/brand-images";
 import { loadBrandDetailContent } from "@/lib/content/site";
 import { Check, ArrowRight } from "lucide-react";
 import heroBrands from "@/assets/hero-brands.jpg";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/brands/$slug")({
   loader: async ({ params }) => {
@@ -27,21 +28,22 @@ export const Route = createFileRoute("/brands/$slug")({
 });
 
 function BrandPage() {
+  const { lang } = useLanguage();
   const { brand } = Route.useLoaderData();
   const img = brand.imageUrl || brandImages[brand.slug];
   const highlights = [
-    "ผู้ผลิตที่ได้รับการรับรองมาตรฐานสากล",
-    "รับประกันสินค้าและบริการหลังการขาย",
-    "อะไหล่และทีมเทคนิคพร้อมในประเทศ",
-    "ผลิตภัณฑ์ครอบคลุมทุกการใช้งาน",
+    t(lang, "ผู้ผลิตที่ได้รับการรับรองมาตรฐานสากล", "Manufacturer certified to international standards"),
+    t(lang, "รับประกันสินค้าและบริการหลังการขาย", "Product warranty and after-sales service"),
+    t(lang, "อะไหล่และทีมเทคนิคพร้อมในประเทศ", "Local spare parts and technical team ready"),
+    t(lang, "ผลิตภัณฑ์ครอบคลุมทุกการใช้งาน", "Products covering all applications"),
   ];
   return (
     <>
       <PageHeader
         eyebrow="Brand"
         title={brand.name}
-        desc={brand.desc}
-        breadcrumbs={[{ label: "ผลิตภัณฑ์ของเรา", href: "/brands" }, { label: brand.name }]}
+        desc={t(lang, brand.desc, brand.descEn)}
+        breadcrumbs={[{ label: t(lang, "ผลิตภัณฑ์ของเรา", "Our Brands"), href: "/brands" }, { label: brand.name }]}
         bgImage={heroBrands}
       />
       <section className="py-16 md:py-20">
@@ -73,11 +75,11 @@ function BrandPage() {
               {brand.category}
             </div>
             <h2 className="text-3xl font-bold text-primary tracking-tight">
-              เกี่ยวกับ {brand.name}
+              {t(lang, `เกี่ยวกับ ${brand.name}`, `About ${brand.name}`)}
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
-              {brand.desc} เราเป็นตัวแทนจำหน่ายอย่างเป็นทางการในประเทศไทย พร้อมทีม Sales Engineer
-              และทีมช่างที่ผ่านการอบรมโดยตรงจากผู้ผลิต
+              {t(lang, brand.desc, brand.descEn)}{" "}
+              {t(lang, "เราเป็นตัวแทนจำหน่ายอย่างเป็นทางการในประเทศไทย พร้อมทีม Sales Engineer และทีมช่างที่ผ่านการอบรมโดยตรงจากผู้ผลิต", "We are an official authorized distributor in Thailand, equipped with a Sales Engineering and technical team directly trained by the manufacturer.")}
             </p>
             <ul className="mt-6 space-y-2.5">
               {highlights.map((h) => (
@@ -92,11 +94,13 @@ function BrandPage() {
             <div className="mt-7 flex gap-3 flex-wrap">
               <Button asChild className="bg-gradient-accent text-white shadow-glow">
                 <Link to="/contactus">
-                  ขอใบเสนอราคา <ArrowRight className="ml-1 h-4 w-4" />
+                  {t(lang, "ขอใบเสนอราคา", "Request Quote")} <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/category/$id" params={{ id: "0" }}>ดูสินค้าทั้งหมด</Link>
+                <Link to="/category/$id" params={{ id: "0" }}>
+                  {t(lang, "ดูสินค้าทั้งหมด", "View All Products")}
+                </Link>
               </Button>
             </div>
           </div>

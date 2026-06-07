@@ -3,9 +3,11 @@ import { Mail, MapPin, Phone, Facebook, Youtube, Music2, ArrowUpRight, Send } fr
 import { Button } from "@/components/ui/button";
 import matrixLogo from "@/assets/matrix-logo.png";
 import { useSiteContent } from "@/lib/content/use-site-content";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
 export function Footer() {
   const { solutions, brands, articleCategories } = useSiteContent();
+  const { lang } = useLanguage();
 
   return (
     <footer className="relative mt-24 overflow-hidden bg-navy text-navy-foreground">
@@ -18,10 +20,10 @@ export function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-5 px-4 py-8 md:flex-row md:items-center md:px-6">
           <div className="min-w-0">
             <h3 className="break-words text-xl font-bold tracking-tight md:text-2xl">
-              พร้อมเริ่มโปรเจ็คของคุณแล้วหรือยัง?
+              {t(lang, "พร้อมเริ่มโปรเจ็คของคุณแล้วหรือยัง?", "Ready to start your project?")}
             </h3>
             <p className="mt-1.5 break-words text-sm text-white/80">
-              ขอใบเสนอราคา หรือนัด Site Survey ฟรีจากทีมผู้เชี่ยวชาญ
+              {t(lang, "ขอใบเสนอราคา หรือนัด Site Survey ฟรีจากทีมผู้เชี่ยวชาญ", "Request a quote or schedule a free site survey with our experts")}
             </p>
           </div>
           <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap">
@@ -30,7 +32,7 @@ export function Footer() {
               className="min-h-11 w-full bg-gradient-accent font-semibold text-white shadow-glow hover:opacity-90 sm:w-auto"
             >
               <Link to="/contactus">
-                ขอใบเสนอราคา <ArrowUpRight className="ml-1 h-4 w-4" />
+                {t(lang, "ขอใบเสนอราคา", "Request Quote")} <ArrowUpRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
             <Button
@@ -51,8 +53,7 @@ export function Footer() {
         <div className="lg:col-span-4 space-y-5">
           <img src={matrixLogo} alt="Matrix Intertrade Co., Ltd." className="h-14 w-auto" />
           <p className="max-w-md break-words text-sm leading-relaxed text-white/80">
-            บจก.แมทริกซ์ อินเตอร์เทรด — ผู้เชี่ยวชาญด้าน AV Solutions, LED Display, Interactive
-            Display, Projector, Wireless Presentation และ Smart Classroom สำหรับองค์กรในประเทศไทย
+            {t(lang, "บจก.แมทริกซ์ อินเตอร์เทรด — ผู้เชี่ยวชาญด้าน AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation และ Smart Classroom สำหรับองค์กรในประเทศไทย", "Matrix Intertrade Co., Ltd. — Experts in AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation, and Smart Classroom for enterprises in Thailand.")}
           </p>
           <div className="space-y-2.5 text-sm text-white/85">
             <div className="flex items-start gap-3">
@@ -60,7 +61,7 @@ export function Footer() {
                 <MapPin className="h-4 w-4 text-cyan" />
               </div>
               <span className="min-w-0 break-words pt-1">
-                111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000
+                {t(lang, "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000", "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000")}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -112,24 +113,24 @@ export function Footer() {
 
         <FooterCol
           className="lg:col-span-2"
-          title="โซลูชั่น"
-          items={solutions.map((s) => ({ label: s.title, href: `/${s.slug}` }))}
+          title={t(lang, "โซลูชั่น", "Solutions")}
+          items={solutions.map((s) => ({ label: t(lang, s.title, (s as any).titleEn || s.title), href: `/${s.slug}` }))}
         />
         <FooterCol
           className="lg:col-span-2"
-          title="แบรนด์สินค้า"
+          title={t(lang, "แบรนด์สินค้า", "Brands")}
           items={brands.map((b) => ({ label: b.name, href: `/brands/${b.slug}` }))}
         />
         <FooterCol
           className="lg:col-span-2"
-          title="บทความ"
-          items={articleCategories.slice(0, 6).map((c) => ({ label: c.label, href: "/blog" }))}
+          title={t(lang, "บทความ", "Articles")}
+          items={articleCategories.slice(0, 6).map((c) => ({ label: t(lang, c.label, (c as any).labelEn || c.label), href: "/blog" }))}
         />
 
         <div className="lg:col-span-2 space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-white">Newsletter</h4>
           <p className="text-xs text-white/80 leading-relaxed">
-            รับบทความและคู่มือเลือก AV ใหม่ก่อนใคร
+            {t(lang, "รับบทความและคู่มือเลือก AV ใหม่ก่อนใคร", "Get the latest AV articles and guides before anyone else")}
           </p>
           <form
             className="flex min-w-0 overflow-hidden rounded-xl border border-white/15 bg-white/5 transition-colors focus-within:border-cyan"
@@ -137,12 +138,12 @@ export function Footer() {
           >
             <input
               type="email"
-              placeholder="อีเมลของคุณ"
+              placeholder={lang === "EN" ? "Your email" : "อีเมลของคุณ"}
               className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-xs text-white outline-none placeholder:text-white/60"
             />
             <button
               type="submit"
-              aria-label="สมัคร"
+              aria-label={lang === "EN" ? "Subscribe" : "สมัคร"}
               className="grid h-11 w-11 shrink-0 place-items-center bg-gradient-accent transition-opacity hover:opacity-90"
             >
               <Send className="h-4 w-4" />
@@ -156,15 +157,15 @@ export function Footer() {
           <div>© {new Date().getFullYear()} Matrix Intertrade Co., Ltd. All rights reserved.</div>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             <Link to="/aboutus" className="hover:text-cyan transition-colors">
-              เกี่ยวกับเรา
+              {t(lang, "เกี่ยวกับเรา", "About Us")}
             </Link>
             <Link to="/contactus" className="hover:text-cyan transition-colors">
-              ติดต่อเรา
+              {t(lang, "ติดต่อเรา", "Contact Us")}
             </Link>
             <Link to="/blog" className="hover:text-cyan transition-colors">
-              บทความ
+              {t(lang, "บทความ", "Articles")}
             </Link>
-            <span>นโยบายความเป็นส่วนตัว</span>
+            <span>{t(lang, "นโยบายความเป็นส่วนตัว", "Privacy Policy")}</span>
           </div>
         </div>
       </div>

@@ -30,9 +30,11 @@ function parseArgs(argv) {
     const arg = argv[index];
 
     if (arg === "--manifest-file") options.manifestFile = path.resolve(cwd, argv[++index]);
-    else if (arg.startsWith("--manifest-file=")) options.manifestFile = path.resolve(cwd, arg.slice(16));
+    else if (arg.startsWith("--manifest-file="))
+      options.manifestFile = path.resolve(cwd, arg.slice(16));
     else if (arg === "--summary-file") options.summaryFile = path.resolve(cwd, argv[++index]);
-    else if (arg.startsWith("--summary-file=")) options.summaryFile = path.resolve(cwd, arg.slice(15));
+    else if (arg.startsWith("--summary-file="))
+      options.summaryFile = path.resolve(cwd, arg.slice(15));
     else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -78,7 +80,9 @@ function dedupeMappings(reports) {
     }
   }
 
-  return [...bySourceUrl.values()].sort((left, right) => left.sourceUrl.localeCompare(right.sourceUrl));
+  return [...bySourceUrl.values()].sort((left, right) =>
+    left.sourceUrl.localeCompare(right.sourceUrl),
+  );
 }
 
 function buildScopeSummary(reports) {

@@ -5,9 +5,7 @@
   "bucket": "admin-media",
   "inventoryOnly": true,
   "apply": false,
-  "files": [
-    "src/data/product-details.ts"
-  ],
+  "files": ["src/data/product-details.ts"],
   "candidates": [
     {
       "url": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",

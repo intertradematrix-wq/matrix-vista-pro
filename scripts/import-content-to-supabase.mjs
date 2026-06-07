@@ -43,7 +43,8 @@ function parseArgs(argv) {
 
     if (arg === "--dry-run") options.dryRun = true;
     else if (arg === "--report-file") options.reportFile = path.resolve(cwd, argv[++index]);
-    else if (arg.startsWith("--report-file=")) options.reportFile = path.resolve(cwd, arg.slice("--report-file=".length));
+    else if (arg.startsWith("--report-file="))
+      options.reportFile = path.resolve(cwd, arg.slice("--report-file=".length));
     else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -96,7 +97,10 @@ async function writeReport(filePath, data) {
 async function transpileDataModules() {
   await fs.rm(transpiledDir, { recursive: true, force: true });
   await fs.mkdir(transpiledDir, { recursive: true });
-  await fs.writeFile(path.join(transpiledDir, "package.json"), JSON.stringify({ type: "commonjs" }, null, 2));
+  await fs.writeFile(
+    path.join(transpiledDir, "package.json"),
+    JSON.stringify({ type: "commonjs" }, null, 2),
+  );
 
   const entries = await fs.readdir(dataSourceDir, { withFileTypes: true });
 
@@ -165,7 +169,14 @@ function buildNavRows(nav) {
   return rows;
 }
 
-function buildBrandRows(brands, brandImages, brandLogos, brandAccent, brandIntrosByCategoryId, products) {
+function buildBrandRows(
+  brands,
+  brandImages,
+  brandLogos,
+  brandAccent,
+  brandIntrosByCategoryId,
+  products,
+) {
   const rows = brands.map((brand) => ({
     slug: brand.slug,
     name: brand.name,
@@ -302,7 +313,8 @@ function buildPayload() {
     navItems: buildNavRows(nav),
     articles: articles.map((article) => {
       const content = articleContents[article.slug] ?? { url: null, blocks: [] };
-      const coverImageUrl = firstArticleImage(content.blocks) ?? articleImages[article.category] ?? null;
+      const coverImageUrl =
+        firstArticleImage(content.blocks) ?? articleImages[article.category] ?? null;
 
       return {
         slug: article.slug,
@@ -349,7 +361,10 @@ async function runPreflight(supabase) {
 
   for (const tableName of requiredTables) {
     try {
-      const { error } = await supabase.from(tableName).select("*", { head: true, count: "exact" }).limit(1);
+      const { error } = await supabase
+        .from(tableName)
+        .select("*", { head: true, count: "exact" })
+        .limit(1);
       checks[tableName] = {
         ok: !error,
         error: error?.message ?? null,
@@ -409,11 +424,18 @@ async function main() {
 
   if (!preflight.ok) {
     await writeReport(options.reportFile, report);
-    throw new Error("One or more required content tables are missing. Apply the Supabase migration first.");
+    throw new Error(
+      "One or more required content tables are missing. Apply the Supabase migration first.",
+    );
   }
 
   report.upserted = {
-    content_article_categories: await upsertTable(supabase, "content_article_categories", payload.articleCategories, "slug"),
+    content_article_categories: await upsertTable(
+      supabase,
+      "content_article_categories",
+      payload.articleCategories,
+      "slug",
+    ),
     content_brands: await upsertTable(supabase, "content_brands", payload.brands, "slug"),
     content_brand_category_intros: await upsertTable(
       supabase,
@@ -422,10 +444,20 @@ async function main() {
       "category_id",
     ),
     content_solutions: await upsertTable(supabase, "content_solutions", payload.solutions, "slug"),
-    content_industries: await upsertTable(supabase, "content_industries", payload.industries, "slug"),
+    content_industries: await upsertTable(
+      supabase,
+      "content_industries",
+      payload.industries,
+      "slug",
+    ),
     content_nav_items: await upsertTable(supabase, "content_nav_items", payload.navItems, "id"),
     content_articles: await upsertTable(supabase, "content_articles", payload.articles, "slug"),
-    content_products: await upsertTable(supabase, "content_products", payload.products, "product_id"),
+    content_products: await upsertTable(
+      supabase,
+      "content_products",
+      payload.products,
+      "product_id",
+    ),
   };
 
   await writeReport(options.reportFile, report);

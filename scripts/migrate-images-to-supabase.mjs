@@ -59,7 +59,9 @@ function parseArgs(argv) {
   }
 
   if (!(options.scope in scopeFiles)) {
-    throw new Error(`Unknown scope "${options.scope}". Use one of: ${Object.keys(scopeFiles).join(", ")}`);
+    throw new Error(
+      `Unknown scope "${options.scope}". Use one of: ${Object.keys(scopeFiles).join(", ")}`,
+    );
   }
 
   if (options.limit !== undefined && (!Number.isFinite(options.limit) || options.limit < 1)) {
@@ -88,13 +90,15 @@ function getTargetFiles(scope) {
 }
 
 function sanitizeSegment(value) {
-  return value
-    .normalize("NFKD")
-    .replace(/[^\x00-\x7F]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9._-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80) || "asset";
+  return (
+    value
+      .normalize("NFKD")
+      .replace(/[^\x00-\x7F]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "asset"
+  );
 }
 
 function detectFileExtension(url, contentType) {
@@ -136,7 +140,9 @@ async function fetchImageWithFallback(url) {
       };
     }
 
-    lastError = new Error(`Failed to fetch ${candidateUrl}: ${response.status} ${response.statusText}`);
+    lastError = new Error(
+      `Failed to fetch ${candidateUrl}: ${response.status} ${response.statusText}`,
+    );
   }
 
   throw lastError ?? new Error(`Failed to fetch ${url}`);
@@ -162,7 +168,9 @@ function isSupabaseHostedUrl(url, supabaseUrl) {
   try {
     const parsed = new URL(url);
     const supabase = new URL(supabaseUrl);
-    return parsed.origin === supabase.origin && parsed.pathname.startsWith("/storage/v1/object/public/");
+    return (
+      parsed.origin === supabase.origin && parsed.pathname.startsWith("/storage/v1/object/public/")
+    );
   } catch {
     return false;
   }
@@ -255,7 +263,10 @@ async function runPreflight(runtimeConfig, bucketName) {
   checks.supabaseApiReachable = true;
 
   for (const tableName of requiredTables) {
-    const { error } = await supabase.from(tableName).select("*", { head: true, count: "exact" }).limit(1);
+    const { error } = await supabase
+      .from(tableName)
+      .select("*", { head: true, count: "exact" })
+      .limit(1);
     if (!error) {
       checks.requiredTables.push(tableName);
       continue;
@@ -318,9 +329,11 @@ async function upsertMapping(supabase, candidate, bucket, publicUrl, contentType
     source_ref: candidate.sourceRef,
   };
 
-  const { error: mappingError } = await supabase.from("media_import_mappings").upsert(mappingPayload, {
-    onConflict: "source_url",
-  });
+  const { error: mappingError } = await supabase
+    .from("media_import_mappings")
+    .upsert(mappingPayload, {
+      onConflict: "source_url",
+    });
   if (mappingError) throw mappingError;
 }
 
@@ -389,7 +402,9 @@ async function main() {
 
   if (options.inventoryOnly) {
     await writeReport(options.reportFile, report);
-    console.log(`Found ${candidates.length} candidate image URL(s). Report written to ${options.reportFile}`);
+    console.log(
+      `Found ${candidates.length} candidate image URL(s). Report written to ${options.reportFile}`,
+    );
     return;
   }
 
@@ -414,14 +429,18 @@ async function main() {
       const contentType = normalizeContentType(response.headers.get("content-type"));
       const parsedUrl = new URL(resolvedUrl);
       const hash = crypto.createHash("sha1").update(candidate.url).digest("hex").slice(0, 12);
-      const baseName = sanitizeSegment(path.basename(parsedUrl.pathname, path.extname(parsedUrl.pathname)) || "asset");
+      const baseName = sanitizeSegment(
+        path.basename(parsedUrl.pathname, path.extname(parsedUrl.pathname)) || "asset",
+      );
       const extension = detectFileExtension(resolvedUrl, contentType);
       const objectPath = `legacy-imports/${sanitizeSegment(parsedUrl.hostname)}/${hash}-${baseName}${extension}`;
 
-      const { error: uploadError } = await supabase.storage.from(options.bucket).upload(objectPath, bytes, {
-        contentType,
-        upsert: true,
-      });
+      const { error: uploadError } = await supabase.storage
+        .from(options.bucket)
+        .upload(objectPath, bytes, {
+          contentType,
+          upsert: true,
+        });
 
       if (uploadError) throw uploadError;
 

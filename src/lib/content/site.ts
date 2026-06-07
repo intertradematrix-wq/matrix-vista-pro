@@ -128,7 +128,9 @@ export const fallbackSiteContent: SiteContent = {
 };
 
 function asStringArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
 }
 
 function asProductCategories(value: unknown): BrandIntro["productCategories"] {
@@ -146,7 +148,9 @@ function asProductCategories(value: unknown): BrandIntro["productCategories"] {
     .filter((item): item is { name: string; desc: string } => item !== null);
 }
 
-function orderBySort<T extends { sort_order?: number | null; slug?: string; id?: string }>(rows: T[]) {
+function orderBySort<T extends { sort_order?: number | null; slug?: string; id?: string }>(
+  rows: T[],
+) {
   return [...rows].sort((a, b) => {
     const left = a.sort_order ?? Number.MAX_SAFE_INTEGER;
     const right = b.sort_order ?? Number.MAX_SAFE_INTEGER;
@@ -225,6 +229,7 @@ function mapBrands(rows: BrandRow[] | null | undefined): SiteBrand[] {
       name: row.name || fallback.name,
       category: row.category || fallback.category,
       desc: row.description || fallback.desc,
+      descEn: (fallback as any).descEn,
       color: row.color || fallback.color,
       imageUrl: row.image_url || undefined,
       logoUrl: row.logo_url || undefined,
@@ -233,19 +238,22 @@ function mapBrands(rows: BrandRow[] | null | undefined): SiteBrand[] {
   });
 
   const fallbackSlugs = new Set(fallbackBrands.map((brand) => brand.slug));
-  const additions = rows.filter((row) => !fallbackSlugs.has(row.slug)).map((row) => {
-    const fallback = fallbackBrands.find((brand) => brand.slug === row.slug);
-    return {
-      slug: row.slug,
-      name: row.name,
-      category: row.category ?? fallback?.category ?? "",
-      desc: row.description ?? fallback?.desc ?? "",
-      color: row.color ?? fallback?.color ?? "from-blue-500 to-cyan-500",
-      imageUrl: row.image_url,
-      logoUrl: row.logo_url,
-      accent: row.accent,
-    };
-  });
+  const additions = rows
+    .filter((row) => !fallbackSlugs.has(row.slug))
+    .map((row) => {
+      const fallback = fallbackBrands.find((brand) => brand.slug === row.slug);
+      return {
+        slug: row.slug,
+        name: row.name,
+        category: row.category ?? fallback?.category ?? "",
+        desc: row.description ?? fallback?.desc ?? "",
+        descEn: (fallback as any)?.descEn,
+        color: row.color ?? fallback?.color ?? "from-blue-500 to-cyan-500",
+        imageUrl: row.image_url,
+        logoUrl: row.logo_url,
+        accent: row.accent,
+      };
+    });
   return [...mapped, ...additions];
 }
 
@@ -258,23 +266,29 @@ function mapSolutions(rows: SolutionRow[] | null | undefined): SiteSolution[] {
     return {
       slug: row.slug,
       title: row.title || fallback.title,
+      titleEn: (fallback as any)?.titleEn,
       icon: row.icon || fallback.icon,
       desc: row.description || fallback.desc,
+      descEn: (fallback as any)?.descEn,
       imageUrl: row.image_url || undefined,
     };
   });
 
   const fallbackSlugs = new Set(fallbackSolutions.map((solution) => solution.slug));
-  const additions = rows.filter((row) => !fallbackSlugs.has(row.slug)).map((row) => {
-    const fallback = fallbackSolutions.find((solution) => solution.slug === row.slug);
-    return {
-      slug: row.slug,
-      title: row.title,
-      icon: row.icon ?? fallback?.icon ?? "Monitor",
-      desc: row.description ?? fallback?.desc ?? "",
-      imageUrl: row.image_url,
-    };
-  });
+  const additions = rows
+    .filter((row) => !fallbackSlugs.has(row.slug))
+    .map((row) => {
+      const fallback = fallbackSolutions.find((solution) => solution.slug === row.slug);
+      return {
+        slug: row.slug,
+        title: row.title,
+        titleEn: (fallback as any)?.titleEn,
+        icon: row.icon ?? fallback?.icon ?? "Monitor",
+        desc: row.description ?? fallback?.desc ?? "",
+        descEn: (fallback as any)?.descEn,
+        imageUrl: row.image_url,
+      };
+    });
   return [...mapped, ...additions];
 }
 
@@ -287,27 +301,35 @@ function mapIndustries(rows: IndustryRow[] | null | undefined): SiteIndustry[] {
     return {
       slug: row.slug,
       title: row.title || fallback.title,
+      titleEn: (fallback as any)?.titleEn,
       icon: row.icon || fallback.icon,
       desc: row.description || fallback.desc,
+      descEn: (fallback as any)?.descEn,
       imageUrl: row.image_url || undefined,
     };
   });
 
   const fallbackSlugs = new Set(fallbackIndustries.map((industry) => industry.slug));
-  const additions = rows.filter((row) => !fallbackSlugs.has(row.slug)).map((row) => {
-    const fallback = fallbackIndustries.find((industry) => industry.slug === row.slug);
-    return {
-      slug: row.slug,
-      title: row.title,
-      icon: row.icon ?? fallback?.icon ?? "Building2",
-      desc: row.description ?? fallback?.desc ?? "",
-      imageUrl: row.image_url,
-    };
-  });
+  const additions = rows
+    .filter((row) => !fallbackSlugs.has(row.slug))
+    .map((row) => {
+      const fallback = fallbackIndustries.find((industry) => industry.slug === row.slug);
+      return {
+        slug: row.slug,
+        title: row.title,
+        titleEn: (fallback as any)?.titleEn,
+        icon: row.icon ?? fallback?.icon ?? "Building2",
+        desc: row.description ?? fallback?.desc ?? "",
+        descEn: (fallback as any)?.descEn,
+        imageUrl: row.image_url,
+      };
+    });
   return [...mapped, ...additions];
 }
 
-function mapArticleCategories(rows: ArticleCategoryRow[] | null | undefined): SiteArticleCategory[] {
+function mapArticleCategories(
+  rows: ArticleCategoryRow[] | null | undefined,
+): SiteArticleCategory[] {
   if (!rows?.length) return fallbackArticleCategories;
   const rowsBySlug = new Map(rows.map((row) => [row.slug, row]));
   const mapped = fallbackArticleCategories.map((fallback) => {
@@ -315,6 +337,7 @@ function mapArticleCategories(rows: ArticleCategoryRow[] | null | undefined): Si
     return {
       slug: fallback.slug,
       label: row?.label || fallback.label,
+      labelEn: (fallback as any).labelEn,
       imageUrl: row?.image_url || undefined,
     };
   });
@@ -421,8 +444,13 @@ export async function loadSiteContent(): Promise<SiteContent> {
       brands,
       solutions: mapSolutions(solutionsResult.data as SolutionRow[] | null),
       industries: mapIndustries(industriesResult.data as IndustryRow[] | null),
-      articleCategories: mapArticleCategories(articleCategoriesResult.data as ArticleCategoryRow[] | null),
-      brandIntrosByCategoryId: mapBrandIntros(brandIntrosResult.data as BrandIntroRow[] | null, brands),
+      articleCategories: mapArticleCategories(
+        articleCategoriesResult.data as ArticleCategoryRow[] | null,
+      ),
+      brandIntrosByCategoryId: mapBrandIntros(
+        brandIntrosResult.data as BrandIntroRow[] | null,
+        brands,
+      ),
       source: "supabase",
     };
   } catch (error) {
@@ -441,7 +469,9 @@ export async function loadIndustryDetailContent(slug: string): Promise<SiteIndus
   return content.industries.find((industry) => industry.slug === slug);
 }
 
-export async function loadBrandIntroContent(categoryId: string): Promise<SiteBrandIntro | undefined> {
+export async function loadBrandIntroContent(
+  categoryId: string,
+): Promise<SiteBrandIntro | undefined> {
   const content = await loadSiteContent();
   return content.brandIntrosByCategoryId[categoryId];
 }

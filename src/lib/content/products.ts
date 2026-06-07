@@ -100,7 +100,9 @@ export async function loadProductListContent(): Promise<ProductListContent> {
   }
 }
 
-export async function loadProductsByCategoryContent(categoryId: string): Promise<ProductListContent> {
+export async function loadProductsByCategoryContent(
+  categoryId: string,
+): Promise<ProductListContent> {
   const listContent = await loadProductListContent();
   const products =
     categoryId === "0" || !categoryId
@@ -131,7 +133,9 @@ export async function loadProductDetailContent(productId: string): Promise<Produ
     product,
     relatedProducts: product
       ? sourceProducts
-          .filter((item) => item.brandCategoryId === product.brandCategoryId && item.id !== product.id)
+          .filter(
+            (item) => item.brandCategoryId === product.brandCategoryId && item.id !== product.id,
+          )
           .slice(0, 4)
       : [],
   };

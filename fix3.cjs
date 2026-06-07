@@ -1,18 +1,22 @@
-const fs = require('fs');
-let pdTs = fs.readFileSync('src/data/product-details.ts', 'utf8');
-const lines = pdTs.split('\n');
+const fs = require("fs");
+let pdTs = fs.readFileSync("src/data/product-details.ts", "utf8");
+const lines = pdTs.split("\n");
 
 for (let i = 0; i < lines.length; i++) {
-  if (lines[i].trim().endsWith('",') && !lines[i].includes('descriptionHtml') && !lines[i].includes('": {')) {
+  if (
+    lines[i].trim().endsWith('",') &&
+    !lines[i].includes("descriptionHtml") &&
+    !lines[i].includes('": {')
+  ) {
     // If a line ends with ", but the string didn't start on this line (it's part of a multiline string),
-    // wait, descriptionText starts with `descriptionText:\n "....` 
+    // wait, descriptionText starts with `descriptionText:\n "....`
     // It's a multiline string using `"`? No, TS doesn't support multiline strings with `"` unless there's a `\` at the end.
     // The previous view_file showed:
     // 1341:     descriptionText:
     // 1342:       "PORTS1 RS... PRODUCT DIMENSIONSUS:&nbsp;16.20cm x 2.30cm x 11.43cm (6.38",
-    
+
     // Ah! It's all on ONE line! The string starts with `"PORTS1...` and ends with `(6.38",`
-    
+
     // Let's just fix any line that matches a dimension ending in `",`
     lines[i] = lines[i].replace(/\(6\.38",/g, '(6.38\\",');
     lines[i] = lines[i].replace(/\(2\.75",/g, '(2.75\\",');
@@ -31,7 +35,7 @@ for (let i = 0; i < lines.length; i++) {
     lines[i] = lines[i].replace(/\(8\.43",/g, '(8.43\\",');
     lines[i] = lines[i].replace(/\(1\.70",/g, '(1.70\\",');
     lines[i] = lines[i].replace(/\(1\.7",/g, '(1.7\\",');
-    
+
     // Better yet, just use a regex to fix ANY unescaped quote at the end of the line before a comma:
     // If the line starts with spaces, followed by a double quote, and ends with a double quote and comma,
     // but contains OTHER double quotes in the middle, they need escaping.
@@ -50,5 +54,5 @@ for (let i = 0; i < lines.length; i++) {
 // Let's run a regex:
 pdTs = pdTs.replace(/(\(\d+\.\d+)",/g, '$1\\"",');
 pdTs = pdTs.replace(/DIMENSIONS19",/g, 'DIMENSIONS19\\"",');
-fs.writeFileSync('src/data/product-details.ts', pdTs);
+fs.writeFileSync("src/data/product-details.ts", pdTs);
 console.log("Fixed quotes");

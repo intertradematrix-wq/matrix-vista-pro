@@ -17,6 +17,7 @@ import industryHotel from "@/assets/about/industries/hotel-events.jpg";
 import industryOffice from "@/assets/about/industries/office-business.jpg";
 import industryVC from "@/assets/about/industries/video-conference.jpg";
 import { Button } from "@/components/ui/button";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import {
   Target,
   Eye,
@@ -55,66 +56,75 @@ export const Route = createFileRoute("/aboutus")({
 });
 
 const stats = [
-  { v: "20+", l: "ปีประสบการณ์" },
-  { v: "500+", l: "โปรเจ็คที่สำเร็จ" },
-  { v: "8+", l: "แบรนด์ระดับโลก" },
-  { v: "100%", l: "บริการในประเทศ" },
+  { v: "20+", l: "ปีประสบการณ์", lEn: "Years Experience" },
+  { v: "500+", l: "โปรเจ็คที่สำเร็จ", lEn: "Completed Projects" },
+  { v: "8+", l: "แบรนด์ระดับโลก", lEn: "Global Brands" },
+  { v: "100%", l: "บริการในประเทศ", lEn: "Local Service" },
 ];
 
 const partners = [
-  { name: "Kramer", img: partnerKramer, tag: "อุปกรณ์ระบบ AV ที่ของมันต้องมี" },
-  { name: "Grandview", img: partnerGrandview, tag: "จอรับภาพ คุณภาพเหนือราคา" },
-  { name: "Newline", img: partnerNewline, tag: "จอทัชสกรีนอัจฉริยะ คุณภาพสูง" },
-  { name: "Yealink", img: partnerYealink, tag: "ชุดประชุมคุณภาพ ราคาประหยัด" },
-  { name: "Vissonic", img: partnerVissonic, tag: "ระบบประชุมระดับมืออาชีพ" },
-  { name: "Poly", img: partnerPoly, tag: "รวมอุปกรณ์ชุดประชุมคุณภาพ" },
-  { name: "AVLink", img: partnerAvlink, tag: "The Highest Quality AV Solutions" },
-  { name: "Enewave", img: partnerEnewave, tag: "Enewave ครบเครื่องเรื่องเสียง" },
+  { name: "Kramer", img: partnerKramer, tag: "อุปกรณ์ระบบ AV ที่ของมันต้องมี", tagEn: "Essential AV Equipment" },
+  { name: "Grandview", img: partnerGrandview, tag: "จอรับภาพ คุณภาพเหนือราคา", tagEn: "High-quality Projection Screens" },
+  { name: "Newline", img: partnerNewline, tag: "จอทัชสกรีนอัจฉริยะ คุณภาพสูง", tagEn: "High-quality Interactive Displays" },
+  { name: "Yealink", img: partnerYealink, tag: "ชุดประชุมคุณภาพ ราคาประหยัด", tagEn: "Cost-effective Meeting Solutions" },
+  { name: "Vissonic", img: partnerVissonic, tag: "ระบบประชุมระดับมืออาชีพ", tagEn: "Professional Conference Systems" },
+  { name: "Poly", img: partnerPoly, tag: "รวมอุปกรณ์ชุดประชุมคุณภาพ", tagEn: "Quality Conference Equipment" },
+  { name: "AVLink", img: partnerAvlink, tag: "The Highest Quality AV Solutions", tagEn: "The Highest Quality AV Solutions" },
+  { name: "Enewave", img: partnerEnewave, tag: "Enewave ครบเครื่องเรื่องเสียง", tagEn: "Complete Audio Solutions" },
 ];
 
 const industries = [
   {
     Icon: GraduationCap,
     title: "โรงเรียน และสถาบันการศึกษา",
+    titleEn: "Schools & Educational Institutions",
     subtitle: "Education",
     desc: "ผลิตภัณฑ์สำหรับสถาบันการศึกษา มหาวิทยาลัย วิทยาลัย และโรงเรียนทุกระดับชั้น พร้อมโซลูชั่นห้องเรียนอัจฉริยะ จอภาพคุณภาพสูง Grandview Large-stage / SkyShow Series และอุปกรณ์ Kramer ครบวงจร",
+    descEn: "Products for educational institutions, universities, colleges, and schools of all levels. Featuring smart classroom solutions, high-quality Grandview Large-stage/SkyShow Series screens, and comprehensive Kramer equipment.",
     img: industryEducation,
     href: "/industry/education",
   },
   {
     Icon: Hotel,
     title: "โรงแรมและห้องประชุมขนาดใหญ่",
+    titleEn: "Hotels & Large Venues",
     subtitle: "Hotels, Live Events & Museums",
     desc: '"The show must go on" — สถานบันเทิง โรงละคร โรงแรม งานกิจกรรม Live Event และพิพิธภัณฑ์ เราคัดสรร Top Class Reliable Products ที่พิสูจน์จากการใช้งานหนักในสถานที่ที่ต้องการเสถียรภาพสูงสุดจากทุกมุมโลก',
+    descEn: '"The show must go on" — Entertainment venues, theaters, hotels, live events, and museums. We select top-class reliable products proven by heavy use in locations demanding maximum stability worldwide.',
     img: industryHotel,
     href: "/industry/hotel",
   },
   {
     Icon: Building2,
     title: "สำนักงานและองค์กรธุรกิจ",
+    titleEn: "Offices & Corporate",
     subtitle: "Corporate & Government",
     desc: "สำหรับองค์กรธุรกิจ หน่วยงานราชการ และรัฐวิสาหกิจ — Remarkable Screen จอภาพยุคใหม่แบบทูอินวัน เขียน-ฉายภาพได้บนจอเดียว จับคู่กับโปรเจคเตอร์อินเตอร์แอ๊คทีฟ พร้อม newline Flex, Q/Q+/Z Series และ Kramer",
+    descEn: "For corporate organizations, government agencies, and state enterprises — Remarkable Screens, two-in-one modern displays for writing and projecting, paired with interactive projectors, along with newline Flex, Q/Q+/Z Series, and Kramer.",
     img: industryOffice,
     href: "/industry/corporate",
   },
   {
     Icon: Video,
     title: "ระบบวิดีโอคอนเฟอเร้นซ์ เพื่อทุกหน่วยงาน",
+    titleEn: "Video Conference Systems",
     subtitle: "Video Conference",
     desc: "ระบบประชุมทางไกลครบวงจร Newline Q+ / Q / Z Series, Collaboration Devices และอุปกรณ์ Yealink, Poly สำหรับห้องประชุมทุกขนาด ตอบโจทย์การทำงานแบบ Hybrid Workplace ในยุคดิจิตอล",
+    descEn: "Comprehensive teleconference systems: Newline Q+/Q/Z Series, Collaboration Devices, and Yealink, Poly equipment for meeting rooms of all sizes, answering the needs of Hybrid Workplaces in the digital era.",
     img: industryVC,
     href: "/industry/video-conference",
   },
 ];
 
 function AboutPage() {
+  const { lang } = useLanguage();
   return (
     <>
       <PageHeader
         eyebrow="About Us"
-        title="เกี่ยวกับบริษัท Matrix Intertrade"
-        desc="ผู้นำเข้าและจัดจำหน่ายระบบภาพแบรนด์ชั้นนำของโลก ด้วยประสบการณ์ทีมงานมากกว่า 20 ปี คัดสรรเฉพาะผลิตภัณฑ์คุณภาพสูงที่เชื่อถือได้ระดับแนวหน้าของโลก"
-        breadcrumbs={[{ label: "เกี่ยวกับเรา" }]}
+        title={t(lang, "เกี่ยวกับบริษัท Matrix Intertrade", "About Matrix Intertrade")}
+        desc={t(lang, "ผู้นำเข้าและจัดจำหน่ายระบบภาพแบรนด์ชั้นนำของโลก ด้วยประสบการณ์ทีมงานมากกว่า 20 ปี คัดสรรเฉพาะผลิตภัณฑ์คุณภาพสูงที่เชื่อถือได้ระดับแนวหน้าของโลก", "Importer and distributor of world-leading AV brands with over 20 years of experience. We select only the highest quality and most reliable products globally.")}
+        breadcrumbs={[{ label: t(lang, "เกี่ยวกับเรา", "About Us") }]}
         bgImage={heroAbout}
       />
 
@@ -136,27 +146,19 @@ function AboutPage() {
               Our Story
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              เกี่ยวกับบริษัท Matrix Intertrade
+              {t(lang, "เกี่ยวกับบริษัท Matrix Intertrade", "About Matrix Intertrade")}
             </h2>
             <div className="mt-5 space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                <strong className="text-foreground">บริษัท แมทริกซ์ อินเตอร์เทรด จำกัด</strong>{" "}
-                เป็นผู้จัดจำหน่ายผลิตภัณฑ์ที่ใช้ในสำนักงานเพื่อเสริมประสิทธิภาพของการทำงานในหลากหลายรูปแบบ
-                อาทิ จอรับภาพโปรเจคเตอร์ขนาดต่าง ๆ, จอ LED, กระดานอัจฉริยะ, อุปกรณ์ต่อเชื่อมระบบภาพ
-                และการแสดงผลระบบภาพที่ทันสมัย ตอบโจทย์ยุคดิจิตอลทุกความต้องการ
+                <strong className="text-foreground">{t(lang, "บริษัท แมทริกซ์ อินเตอร์เทรด จำกัด", "Matrix Intertrade Co., Ltd.")}</strong>{" "}
+                {t(lang, "เป็นผู้จัดจำหน่ายผลิตภัณฑ์ที่ใช้ในสำนักงานเพื่อเสริมประสิทธิภาพของการทำงานในหลากหลายรูปแบบ อาทิ จอรับภาพโปรเจคเตอร์ขนาดต่าง ๆ, จอ LED, กระดานอัจฉริยะ, อุปกรณ์ต่อเชื่อมระบบภาพ และการแสดงผลระบบภาพที่ทันสมัย ตอบโจทย์ยุคดิจิตอลทุกความต้องการ", "is a distributor of office products designed to enhance operational efficiency in various forms, such as projection screens of all sizes, LED displays, interactive whiteboards, AV connectivity equipment, and modern visual displays, meeting every digital era requirement.")}
               </p>
               <p>
-                ด้วยวิสัยทัศน์ที่เล็งเห็นว่า
-                เครื่องมือและอุปกรณ์สำนักงานที่ดีและมีเสถียรภาพสูงเท่านั้น
-                ที่จะตอบโจทย์การลงทุนที่คุ้มค่า
-                และจะเพิ่มประสิทธิภาพการทำงานขององค์กรในโลกเทคโนโลยียุคปัจจุบันได้อย่างแท้จริง
+                {t(lang, "ด้วยวิสัยทัศน์ที่เล็งเห็นว่า เครื่องมือและอุปกรณ์สำนักงานที่ดีและมีเสถียรภาพสูงเท่านั้น ที่จะตอบโจทย์การลงทุนที่คุ้มค่า และจะเพิ่มประสิทธิภาพการทำงานขององค์กรในโลกเทคโนโลยียุคปัจจุบันได้อย่างแท้จริง", "With the vision that only good and highly stable office tools and equipment will provide a worthwhile investment and truly increase organizational efficiency in today's technological world.")}
               </p>
               <p>
-                ผลิตภัณฑ์คุณภาพต่ำที่ดูเหมือนจะประหยัดในตอนต้น
-                แต่กลับสร้างปัญหาในการใช้งานและบั่นทอนประสิทธิภาพในการทำงาน
-                จากประสบการณ์อันยาวนานมากกว่า <strong className="text-foreground">20 ปี</strong>{" "}
-                ของทีมงานเมทริกซ์ฯ ผลิตภัณฑ์ที่เราคัดสรรมาบริการท่าน ล้วนเป็นผลิตภัณฑ์ที่มีคุณภาพสูง
-                เป็นที่เชื่อถือระดับแนวหน้าของโลกทั้งสิ้น
+                {t(lang, "ผลิตภัณฑ์คุณภาพต่ำที่ดูเหมือนจะประหยัดในตอนต้น แต่กลับสร้างปัญหาในการใช้งานและบั่นทอนประสิทธิภาพในการทำงาน จากประสบการณ์อันยาวนานมากกว่า", "Low-quality products that seem economical initially often create operational problems and undermine work efficiency. With over")} <strong className="text-foreground">{t(lang, "20 ปี", "20 years")}</strong>{" "}
+                {t(lang, "ของทีมงานเมทริกซ์ฯ ผลิตภัณฑ์ที่เราคัดสรรมาบริการท่าน ล้วนเป็นผลิตภัณฑ์ที่มีคุณภาพสูง เป็นที่เชื่อถือระดับแนวหน้าของโลกทั้งสิ้น", "of experience, Matrix’s team ensures that the products we select for you are of high quality and recognized as world-leaders.")}
               </p>
             </div>
             <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -168,7 +170,7 @@ function AboutPage() {
                   <div className="text-2xl md:text-3xl font-black text-gradient-accent bg-gradient-accent bg-clip-text text-transparent">
                     {s.v}
                   </div>
-                  <div className="text-[11px] text-muted-foreground mt-1">{s.l}</div>
+                  <div className="text-[11px] text-muted-foreground mt-1">{t(lang, s.l, s.lEn)}</div>
                 </div>
               ))}
             </div>
@@ -184,24 +186,24 @@ function AboutPage() {
               {
                 Icon: Target,
                 t: "Mission",
-                d: "ส่งมอบโซลูชั่นภาพและเสียงที่ตอบโจทย์การใช้งานจริงและคุ้มค่าระยะยาวให้กับทุกองค์กร",
+                d: t(lang, "ส่งมอบโซลูชั่นภาพและเสียงที่ตอบโจทย์การใช้งานจริงและคุ้มค่าระยะยาวให้กับทุกองค์กร", "Deliver practical and cost-effective long-term audiovisual solutions for all organizations."),
               },
               {
                 Icon: Eye,
                 t: "Vision",
-                d: "เป็นพาร์ทเนอร์อันดับหนึ่งด้านระบบภาพของไทย ที่องค์กรชั้นนำไว้วางใจเลือกใช้",
+                d: t(lang, "เป็นพาร์ทเนอร์อันดับหนึ่งด้านระบบภาพของไทย ที่องค์กรชั้นนำไว้วางใจเลือกใช้", "To be Thailand's number one visual systems partner, trusted by leading organizations."),
               },
               {
                 Icon: Heart,
                 t: "Values",
-                d: "ความซื่อสัตย์ ความเชี่ยวชาญ และการดูแลลูกค้าตลอดอายุการใช้งานของผลิตภัณฑ์",
+                d: t(lang, "ความซื่อสัตย์ ความเชี่ยวชาญ และการดูแลลูกค้าตลอดอายุการใช้งานของผลิตภัณฑ์", "Integrity, expertise, and customer care throughout the product lifecycle."),
               },
-            ].map(({ Icon, t, d }) => (
-              <div key={t} className="rounded-2xl border border-border bg-card p-7 shadow-card">
+            ].map(({ Icon, t: title, d }) => (
+              <div key={title} className="rounded-2xl border border-border bg-card p-7 shadow-card">
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-accent text-white shadow-glow mb-5">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold text-primary mb-2">{t}</h3>
+                <h3 className="text-xl font-bold text-primary mb-2">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{d}</p>
               </div>
             ))}
@@ -217,16 +219,15 @@ function AboutPage() {
               Industries We Serve
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              ผลิตภัณฑ์ตามกลุ่มลูกค้าและการใช้งาน
+              {t(lang, "ผลิตภัณฑ์ตามกลุ่มลูกค้าและการใช้งาน", "Products by Client Group & Usage")}
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-              เราคัดสรรอุปกรณ์ระบบภาพและเสียงให้เหมาะกับการใช้งานเฉพาะของแต่ละกลุ่มองค์กร
-              พร้อมทีมผู้เชี่ยวชาญดูแลตลอดอายุการใช้งาน
+              {t(lang, "เราคัดสรรอุปกรณ์ระบบภาพและเสียงให้เหมาะกับการใช้งานเฉพาะของแต่ละกลุ่มองค์กร พร้อมทีมผู้เชี่ยวชาญดูแลตลอดอายุการใช้งาน", "We select AV equipment tailored to the specific needs of each organization type, with a team of experts providing lifetime support.")}
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {industries.map(({ Icon, title, subtitle, desc, img, href }) => (
+            {industries.map(({ Icon, title, titleEn, subtitle, desc, descEn, img, href }) => (
               <Link
                 key={title}
                 to={href}
@@ -247,11 +248,11 @@ function AboutPage() {
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl md:text-2xl font-bold text-primary group-hover:text-accent transition-colors">
-                    {title}
+                    {t(lang, title, titleEn)}
                   </h3>
-                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{desc}</p>
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{t(lang, desc, descEn)}</p>
                   <div className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
-                    ดูรายละเอียดเพิ่มเติม
+                    {t(lang, "ดูรายละเอียดเพิ่มเติม", "View More Details")}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </div>
                 </div>
@@ -269,11 +270,10 @@ function AboutPage() {
               Our Partners
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              แบรนด์ชั้นนำที่เราเป็นตัวแทนจำหน่าย
+              {t(lang, "แบรนด์ชั้นนำที่เราเป็นตัวแทนจำหน่าย", "Leading Brands We Represent")}
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-              คัดสรรเฉพาะแบรนด์ที่ได้รับการยอมรับระดับโลก
-              พร้อมการรับประกันและบริการหลังการขายในประเทศ
+              {t(lang, "คัดสรรเฉพาะแบรนด์ที่ได้รับการยอมรับระดับโลก พร้อมการรับประกันและบริการหลังการขายในประเทศ", "We select only globally recognized brands with domestic warranties and after-sales support.")}
             </p>
           </div>
 
@@ -296,13 +296,13 @@ function AboutPage() {
                 <div className="aspect-square grid place-items-center bg-white rounded-xl overflow-hidden p-3 mb-3">
                   <img
                     src={p.img}
-                    alt={`${p.name} — ${p.tag} partner brand of Matrix Intertrade`}
+                    alt={`${p.name} partner brand of Matrix Intertrade`}
                     loading="lazy"
                     className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
                 <div className="font-bold text-primary text-sm">{p.name}</div>
-                <div className="text-[11px] text-muted-foreground mt-1 leading-snug">{p.tag}</div>
+                <div className="text-[11px] text-muted-foreground mt-1 leading-snug">{t(lang, p.tag, p.tagEn)}</div>
               </div>
             ))}
           </div>
@@ -317,26 +317,25 @@ function AboutPage() {
               Company Info
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              บริษัท แมทริกซ์ อินเตอร์เทรด จำกัด
+              {t(lang, "บริษัท แมทริกซ์ อินเตอร์เทรด จำกัด", "Matrix Intertrade Co., Ltd.")}
             </h2>
             <p className="mt-4 text-muted-foreground">
-              สำนักงานและคลังสินค้าตั้งอยู่ที่นนทบุรี
-              พร้อมทีมงานเทคนิคและฝ่ายขายที่พร้อมให้บริการลูกค้าทั่วประเทศ
+              {t(lang, "สำนักงานและคลังสินค้าตั้งอยู่ที่นนทบุรี พร้อมทีมงานเทคนิคและฝ่ายขายที่พร้อมให้บริการลูกค้าทั่วประเทศ", "Head office and warehouse located in Nonthaburi, with technical and sales teams ready to serve customers nationwide.")}
             </p>
             <div className="mt-8 space-y-4">
               {[
                 {
                   Icon: MapPin,
-                  t: "ที่อยู่",
-                  d: "111/51 หมู่ที่ 8 ตำบลบางกร่าง อ.เมือง จ.นนทบุรี 11000 ประเทศไทย",
+                  t: t(lang, "ที่อยู่", "Address"),
+                  d: t(lang, "111/51 หมู่ที่ 8 ตำบลบางกร่าง อ.เมือง จ.นนทบุรี 11000 ประเทศไทย", "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000, Thailand"),
                 },
-                { Icon: Phone, t: "โทรศัพท์", d: "02-129-6193 / 092-932-8649" },
-                { Icon: Mail, t: "อีเมล", d: "matrixintertrade2026@gmail.com" },
-                { Icon: Globe, t: "เว็บไซต์", d: "www.matrixintertrade.com" },
+                { Icon: Phone, t: t(lang, "โทรศัพท์", "Phone"), d: "02-129-6193 / 092-932-8649" },
+                { Icon: Mail, t: t(lang, "อีเมล", "Email"), d: "matrixintertrade2026@gmail.com" },
+                { Icon: Globe, t: t(lang, "เว็บไซต์", "Website"), d: "www.matrixintertrade.com" },
                 { Icon: Facebook, t: "Facebook", d: "facebook.com/MatrixIntertrade" },
-              ].map(({ Icon, t, d }) => (
+              ].map(({ Icon, t: title, d }) => (
                 <div
-                  key={t}
+                  key={title}
                   className="flex items-start gap-4 rounded-2xl border border-border bg-card p-4 shadow-card"
                 >
                   <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-accent text-white shadow-glow">
@@ -344,7 +343,7 @@ function AboutPage() {
                   </div>
                   <div>
                     <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                      {t}
+                      {title}
                     </div>
                     <div className="text-sm font-semibold text-primary mt-0.5">{d}</div>
                   </div>
@@ -353,10 +352,10 @@ function AboutPage() {
             </div>
             <div className="mt-6 flex gap-3">
               <Button asChild className="bg-gradient-accent text-white shadow-glow">
-                <Link to="/contactus">ติดต่อเรา</Link>
+                <Link to="/contactus">{t(lang, "ติดต่อเรา", "Contact Us")}</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/brands">ดูแบรนด์ทั้งหมด</Link>
+                <Link to="/brands">{t(lang, "ดูแบรนด์ทั้งหมด", "View All Brands")}</Link>
               </Button>
             </div>
           </div>

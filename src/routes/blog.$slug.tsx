@@ -9,6 +9,7 @@ import { Calendar, Clock, Tag, ExternalLink, Eye } from "lucide-react";
 import heroBlog from "@/assets/hero-blog.jpg";
 import { incrementArticleView, useArticleViews, formatViews } from "@/lib/article-views";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
@@ -59,12 +60,11 @@ export const Route = createFileRoute("/blog/$slug")({
 });
 
 function BlogDetail() {
+  const { lang } = useLanguage();
   const { article, category: cat, relatedArticles: related } = Route.useLoaderData();
   const content = articleContents[article.slug];
   const blocks = article.blocks ?? content?.blocks ?? [];
-  const firstImg = blocks.find((b) => b.t === "img") as
-    | { t: "img"; src: string }
-    | undefined;
+  const firstImg = blocks.find((b) => b.t === "img") as { t: "img"; src: string } | undefined;
   const coverImg = article.coverImageUrl ?? firstImg?.src;
   const contentBlocks = blocks.filter((b) => b !== firstImg);
   const { data: views } = useArticleViews();
@@ -78,9 +78,9 @@ function BlogDetail() {
   return (
     <>
       <PageHeader
-        eyebrow={cat?.label}
+        eyebrow={t(lang, cat?.label ?? "", cat?.labelEn ?? cat?.label ?? "")}
         title={article.title}
-        breadcrumbs={[{ label: "บทความ", href: "/blog" }, { label: cat?.label ?? "" }]}
+        breadcrumbs={[{ label: t(lang, "บทความ", "Articles"), href: "/blog" }, { label: t(lang, cat?.label ?? "", cat?.labelEn ?? cat?.label ?? "") }]}
         bgImage={coverImg ?? heroBlog}
       />
       <article className="py-12 md:py-16">
@@ -92,11 +92,11 @@ function BlogDetail() {
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
-              {article.readMin} นาทีในการอ่าน
+              {article.readMin} {t(lang, "นาทีในการอ่าน", "min read")}
             </span>
-            <span className="inline-flex items-center gap-1.5" title="ยอดเข้าชม">
+            <span className="inline-flex items-center gap-1.5" title={t(lang, "ยอดเข้าชม", "Views")}>
               <Eye className="h-4 w-4" />
-              {formatViews(viewCount)} ครั้ง
+              {formatViews(viewCount)} {t(lang, "ครั้ง", "views")}
             </span>
             {cat && (
               <Link
@@ -105,7 +105,7 @@ function BlogDetail() {
                 className="inline-flex items-center gap-1.5 text-accent font-semibold"
               >
                 <Tag className="h-4 w-4" />
-                {cat.label}
+                {t(lang, cat.label, cat.labelEn ?? cat.label)}
               </Link>
             )}
           </div>
@@ -165,7 +165,7 @@ function BlogDetail() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-accent font-semibold hover:underline"
                 >
-                  อ่านบนเว็บไซต์ matrixintertrade.com
+                  {t(lang, "อ่านบนเว็บไซต์ matrixintertrade.com", "Read on matrixintertrade.com")}
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </p>
@@ -177,7 +177,7 @@ function BlogDetail() {
       {related.length > 0 && (
         <section className="bg-gradient-subtle py-16">
           <div className="mx-auto max-w-7xl px-4 md:px-6">
-            <h2 className="text-2xl font-bold text-primary mb-8">บทความที่เกี่ยวข้อง</h2>
+            <h2 className="text-2xl font-bold text-primary mb-8">{t(lang, "บทความที่เกี่ยวข้อง", "Related Articles")}</h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((a) => (
                 <ArticleCard key={a.id} article={a} />

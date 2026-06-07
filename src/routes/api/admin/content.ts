@@ -72,12 +72,22 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     key: "slug",
     select: "slug,name,category,description,color,image_url,logo_url,accent,payload,updated_at",
     order: "slug",
-    fields: ["name", "category", "description", "color", "image_url", "logo_url", "accent", "payload"],
+    fields: [
+      "name",
+      "category",
+      "description",
+      "color",
+      "image_url",
+      "logo_url",
+      "accent",
+      "payload",
+    ],
   },
   brandIntros: {
     table: "content_brand_category_intros",
     key: "category_id",
-    select: "category_id,brand_slug,tagline,description,highlights,best_for,origin,payload,updated_at",
+    select:
+      "category_id,brand_slug,tagline,description,highlights,best_for,origin,payload,updated_at",
     order: "category_id",
     fields: ["brand_slug", "tagline", "description", "highlights", "best_for", "origin", "payload"],
   },
@@ -100,7 +110,16 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     key: "id",
     select: "id,parent_id,depth,sort_order,label,href,description,image_url,payload,updated_at",
     order: "sort_order",
-    fields: ["parent_id", "depth", "sort_order", "label", "href", "description", "image_url", "payload"],
+    fields: [
+      "parent_id",
+      "depth",
+      "sort_order",
+      "label",
+      "href",
+      "description",
+      "image_url",
+      "payload",
+    ],
   },
 };
 
@@ -179,9 +198,12 @@ async function requireAdmin(request: Request) {
 }
 
 async function loadKind(config: ContentConfig) {
-  const result = await supabaseAdmin.from(config.table as any).select(config.select).order(config.order, {
-    ascending: true,
-  });
+  const result = await supabaseAdmin
+    .from(config.table as any)
+    .select(config.select)
+    .order(config.order, {
+      ascending: true,
+    });
 
   // If the query failed (e.g. missing column like image_url), retry without optional columns
   if (result.error && config.select.includes("image_url")) {
@@ -202,7 +224,6 @@ async function loadKind(config: ContentConfig) {
 
   return result;
 }
-
 
 export const Route = createFileRoute("/api/admin/content")({
   server: {
@@ -238,7 +259,8 @@ export const Route = createFileRoute("/api/admin/content")({
         }
 
         const parsed = UpdateSchema.safeParse(body);
-        if (!parsed.success) return jsonError("Invalid content payload", 400, parsed.error.flatten());
+        if (!parsed.success)
+          return jsonError("Invalid content payload", 400, parsed.error.flatten());
 
         const config = CONTENT_CONFIG[parsed.data.kind];
         const values = Object.fromEntries(

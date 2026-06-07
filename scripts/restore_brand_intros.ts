@@ -2,7 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 import { brandIntrosByCategoryId } from "../src/data/brand-intros";
 
 const supabaseUrl = "https://sefxaafqvjpmjmewsfuw.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZnhhYWZxdmpwbWptZXdzZnV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDI2NTkwNiwiZXhwIjoyMDk1ODQxOTA2fQ.UVRMeatqaYoRXpHtliitwi_QMlahhe46gYNLc6IlyfE";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZnhhYWZxdmpwbWptZXdzZnV3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDI2NTkwNiwiZXhwIjoyMDk1ODQxOTA2fQ.UVRMeatqaYoRXpHtliitwi_QMlahhe46gYNLc6IlyfE";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function run() {
@@ -16,9 +17,9 @@ async function run() {
       bestFor: intro.bestFor,
       origin: intro.origin,
       productCategories: intro.productCategories,
-      brandSlug: intro.brandSlug
+      brandSlug: intro.brandSlug,
     };
-    
+
     rows.push({
       category_id: categoryId,
       brand_slug: intro.brandSlug,
@@ -27,7 +28,7 @@ async function run() {
       highlights: intro.highlights || [],
       best_for: intro.bestFor || [],
       origin: intro.origin || null,
-      payload: payload
+      payload: payload,
     });
   }
 

@@ -59,7 +59,7 @@ export const Route = createFileRoute("/api/admin/upload")({
             // Ignore if bucket already exists
           }
 
-          const ext = file.name.split('.').pop() || "png";
+          const ext = file.name.split(".").pop() || "png";
           const path = `uploads/${Date.now()}-${Math.random().toString(36).substring(2)}.${ext}`;
 
           const { data, error } = await supabaseAdmin.storage

@@ -7,12 +7,12 @@ Total remaining candidates: 0
 
 ## Scope Summary
 
-| Scope | Bucket | Migrated | Failed | Report |
-| --- | --- | ---: | ---: | --- |
-| pilot | admin-media | 12 | 0 | `tmp\image-migration-report.json` |
-| article-content | admin-media | 58 | 0 | `tmp\article-content-migration.json` |
-| product-html | admin-media | 25 | 0 | `tmp\product-html-migration.json` |
-| pilot | admin-media | 4 | 0 | `tmp\final-image-migration-pass.json` |
+| Scope           | Bucket      | Migrated | Failed | Report                                |
+| --------------- | ----------- | -------: | -----: | ------------------------------------- |
+| pilot           | admin-media |       12 |      0 | `tmp\image-migration-report.json`     |
+| article-content | admin-media |       58 |      0 | `tmp\article-content-migration.json`  |
+| product-html    | admin-media |       25 |      0 | `tmp\product-html-migration.json`     |
+| pilot           | admin-media |        4 |      0 | `tmp\final-image-migration-pass.json` |
 
 ## Outputs
 

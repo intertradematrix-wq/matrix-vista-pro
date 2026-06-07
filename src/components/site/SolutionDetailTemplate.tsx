@@ -11,6 +11,7 @@ import heroInteractive from "@/assets/hero-interactive.jpg";
 import heroProjector from "@/assets/hero-projector.jpg";
 import heroWireless from "@/assets/hero-wireless.jpg";
 import heroAv from "@/assets/hero-av.jpg";
+import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
 const slugHero: Record<string, string> = {
   "led-display": heroLed,
@@ -25,26 +26,37 @@ export function SolutionDetailTemplate({
   title,
   iconName,
   intro,
+  introEn,
   bullets,
+  bulletsEn,
   applications,
+  applicationsEn,
 }: {
   slug: string;
   title: string;
   iconName: string;
   intro: string;
+  introEn?: string;
   bullets: string[];
+  bulletsEn?: string[];
   applications: string[];
+  applicationsEn?: string[];
 }) {
+  const { lang } = useLanguage();
   const iconMap = Icons as unknown as Record<string, LucideIcon>;
   const Icon = iconMap[iconName] ?? Icons.Monitor;
   const img = solutionImages[slug];
+  const displayIntro = introEn ? t(lang, intro, introEn) : intro;
+  const displayBullets = bulletsEn && lang === "EN" ? bulletsEn : bullets;
+  const displayApps = applicationsEn && lang === "EN" ? applicationsEn : applications;
+
   return (
     <>
       <PageHeader
         eyebrow="Solution"
         title={title}
-        desc={intro}
-        breadcrumbs={[{ label: "โซลูชั่นของเรา", href: "/solutions" }, { label: title }]}
+        desc={displayIntro}
+        breadcrumbs={[{ label: t(lang, "โซลูชั่นของเรา", "Our Solutions"), href: "/solutions" }, { label: title }]}
         bgImage={slugHero[slug]}
       />
       <section className="py-16 md:py-20">
@@ -54,10 +66,10 @@ export function SolutionDetailTemplate({
               <Icon className="h-7 w-7" />
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
-              จุดเด่นของระบบ {title}
+              {t(lang, `จุดเด่นของระบบ ${title}`, `Key features of ${title}`)}
             </h2>
             <ul className="mt-6 space-y-3">
-              {bullets.map((b) => (
+              {displayBullets.map((b) => (
                 <li
                   key={b}
                   className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 shadow-card"
@@ -72,11 +84,11 @@ export function SolutionDetailTemplate({
             <div className="mt-8 flex gap-3 flex-wrap">
               <Button asChild className="bg-gradient-accent text-white shadow-glow">
                 <Link to="/contactus">
-                  ขอใบเสนอราคา <ArrowRight className="ml-1 h-4 w-4" />
+                  {t(lang, "ขอใบเสนอราคา", "Request Quote")} <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/contactus">ปรึกษาผู้เชี่ยวชาญ</Link>
+                <Link to="/contactus">{t(lang, "ปรึกษาผู้เชี่ยวชาญ", "Consult an Expert")}</Link>
               </Button>
             </div>
           </div>
@@ -102,9 +114,9 @@ export function SolutionDetailTemplate({
               </div>
             </div>
             <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-              <h3 className="font-bold text-primary mb-4">การใช้งานที่เหมาะสม</h3>
+              <h3 className="font-bold text-primary mb-4">{t(lang, "การใช้งานที่เหมาะสม", "Best Applications")}</h3>
               <ul className="grid grid-cols-2 gap-2">
-                {applications.map((a) => (
+                {displayApps.map((a) => (
                   <li key={a} className="flex items-center gap-2 text-sm text-foreground/80">
                     <span className="h-1.5 w-1.5 rounded-full bg-accent" />
                     {a}

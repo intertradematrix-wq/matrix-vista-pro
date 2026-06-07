@@ -24,6 +24,7 @@ export const Route = createFileRoute("/interactive-display")({
       title="Interactive Display"
       iconName="Hand"
       intro="จอสัมผัสอัจฉริยะระดับมืออาชีพจาก Persona รองรับการเรียนการสอน Active Learning และห้องประชุม Hybrid Meeting"
+      introEn="Professional smart touch displays from Persona, supporting Active Learning and Hybrid Meetings."
       bullets={[
         "Google EDLA Certified รองรับ Google Play อย่างเป็นทางการ",
         "Multi-touch สูงสุด 40 จุด ตอบสนองทันที",
@@ -32,6 +33,14 @@ export const Route = createFileRoute("/interactive-display")({
         "DMS+ ระบบบริหารจัดการจอจากระยะไกล",
         "ขนาด 65 / 75 / 86 / 98 นิ้ว",
       ]}
+      bulletsEn={[
+        "Google EDLA Certified with official Google Play support",
+        "Up to 40-point Multi-touch with instant response",
+        "Built-in Whiteboard with Cloud Storage",
+        "Supports Wireless Casting from all devices",
+        "DMS+ remote display management system",
+        "Available in 65 / 75 / 86 / 98 inches",
+      ]}
       applications={[
         "Smart Classroom",
         "ห้องประชุมองค์กร",
@@ -39,6 +48,14 @@ export const Route = createFileRoute("/interactive-display")({
         "Training Room",
         "ห้องผู้บริหาร",
         "Innovation Lab",
+      ]}
+      applicationsEn={[
+        "Smart Classrooms",
+        "Corporate Meeting Rooms",
+        "Training Rooms",
+        "Lecture Halls",
+        "Executive Boardrooms",
+        "Innovation Labs",
       ]}
     />
   ),
