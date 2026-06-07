@@ -1,0 +1,441 @@
+{
+  "generatedAt": "2026-06-06T04:45:24.087Z",
+  "mode": "migrate",
+  "scope": "product-html",
+  "bucket": "admin-media",
+  "inventoryOnly": false,
+  "apply": true,
+  "files": [
+    "src/data/product-details.ts"
+  ],
+  "candidates": [
+    {
+      "url": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:950399"
+    },
+    {
+      "url": "https://www.yealink.com/website-service/attachment/product/image/20220527/2022052707202881711236e7e498c9cfa574977b3d032.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:950734"
+    },
+    {
+      "url": "https://www.yealink.com/website-service/attachment/product/image/20220427/202204270350002108a69052146f988722811f6df8d2c.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:951047"
+    },
+    {
+      "url": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:951367"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/manuals.plus/d961d4ef52d9-yealink-vcr20-remote-control-for-uvc-cameras-remote-control.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:953292"
+    },
+    {
+      "url": "https://www.yealink.com/upfiles/files/20201120851745.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:954229"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/2b94ff0a9f5e-yealink-uvc34-00.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:961189"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/aceeb034eb7e-yealink-uvc34-01.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:961840"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/0604affdf99d-yealink-uvc34-02.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:962333"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/f8567ed17434-yealink-uvc34-03.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:963421"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/d72d9a554fd3-1-201119111hlw.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:984925"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/5d68d9799363-3-2203091i629142.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:986918"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/5d68d9799363-3-2203091i629142.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:998589"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4c7d353d2428-vissonic_conference_system_diagram.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "html-embedded",
+      "sourceRef": "src/data/product-details.ts:1006922"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1007151"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/d5947620aeab-vissonic-20vote-20wired-20interpretation-20system.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "html-embedded",
+      "sourceRef": "src/data/product-details.ts:1035555"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1035808"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/c32beb48d002-ip-corp-2.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1983152"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/5effde90940f-rs-corp-6-1_opt.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1983435"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/d45a878a3668-happytouch_ip.jpeg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2010041"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/c286aa7bb193-rs-classroom.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2010311"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/cdn.shopify.com/39f2334fd8b3-blackwire3300-3.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2060748"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/cdn.shopify.com/fab46eafab3d-blackwire3300_5984.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2063209"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/image.makewebeasy.net/57f61ecd7f7e-26.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2076022"
+    },
+    {
+      "url": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/image.makewebeasy.net/3d5d1234321b-s10.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2076579"
+    }
+  ],
+  "migrated": [
+    {
+      "sourceUrl": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "resolvedUrl": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.yealink.com/800a4aad39a3-2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:950399",
+      "objectPath": "legacy-imports/www.yealink.com/800a4aad39a3-2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "contentType": "image/png",
+      "bytes": 183861
+    },
+    {
+      "sourceUrl": "https://www.yealink.com/website-service/attachment/product/image/20220527/2022052707202881711236e7e498c9cfa574977b3d032.png",
+      "resolvedUrl": "https://www.yealink.com/website-service/attachment/product/image/20220527/2022052707202881711236e7e498c9cfa574977b3d032.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.yealink.com/fd2412409882-2022052707202881711236e7e498c9cfa574977b3d032.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:950734",
+      "objectPath": "legacy-imports/www.yealink.com/fd2412409882-2022052707202881711236e7e498c9cfa574977b3d032.png",
+      "contentType": "image/png",
+      "bytes": 43451
+    },
+    {
+      "sourceUrl": "https://www.yealink.com/website-service/attachment/product/image/20220427/202204270350002108a69052146f988722811f6df8d2c.png",
+      "resolvedUrl": "https://www.yealink.com/website-service/attachment/product/image/20220427/202204270350002108a69052146f988722811f6df8d2c.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.yealink.com/0dd40fc306e7-202204270350002108a69052146f988722811f6df8d2c.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:951047",
+      "objectPath": "legacy-imports/www.yealink.com/0dd40fc306e7-202204270350002108a69052146f988722811f6df8d2c.png",
+      "contentType": "image/png",
+      "bytes": 145555
+    },
+    {
+      "sourceUrl": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "resolvedUrl": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.yealink.com/800a4aad39a3-2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:951367",
+      "objectPath": "legacy-imports/www.yealink.com/800a4aad39a3-2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "contentType": "image/png",
+      "bytes": 183861
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/manuals.plus/d961d4ef52d9-yealink-vcr20-remote-control-for-uvc-cameras-remote-control.png",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/manuals.plus/d961d4ef52d9-yealink-vcr20-remote-control-for-uvc-cameras-remote-control.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/2c114b24b018-d961d4ef52d9-yealink-vcr20-remote-control-for-uvc-cameras-remote-control.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:953292",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/2c114b24b018-d961d4ef52d9-yealink-vcr20-remote-control-for-uvc-cameras-remote-control.png",
+      "contentType": "image/png",
+      "bytes": 235309
+    },
+    {
+      "sourceUrl": "https://www.yealink.com/upfiles/files/20201120851745.png",
+      "resolvedUrl": "https://www.yealink.com/upfiles/files/20201120851745.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.yealink.com/0ebe38cdeb84-20201120851745.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:954229",
+      "objectPath": "legacy-imports/www.yealink.com/0ebe38cdeb84-20201120851745.png",
+      "contentType": "image/png",
+      "bytes": 352254
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/2b94ff0a9f5e-yealink-uvc34-00.webp",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/2b94ff0a9f5e-yealink-uvc34-00.webp",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/7127c157ce78-2b94ff0a9f5e-yealink-uvc34-00.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:961189",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/7127c157ce78-2b94ff0a9f5e-yealink-uvc34-00.webp",
+      "contentType": "image/webp",
+      "bytes": 41732
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/aceeb034eb7e-yealink-uvc34-01.webp",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/aceeb034eb7e-yealink-uvc34-01.webp",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/07f1ed76dc6a-aceeb034eb7e-yealink-uvc34-01.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:961840",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/07f1ed76dc6a-aceeb034eb7e-yealink-uvc34-01.webp",
+      "contentType": "image/webp",
+      "bytes": 101950
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/0604affdf99d-yealink-uvc34-02.webp",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/0604affdf99d-yealink-uvc34-02.webp",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/4a13ac8d2b40-0604affdf99d-yealink-uvc34-02.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:962333",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/4a13ac8d2b40-0604affdf99d-yealink-uvc34-02.webp",
+      "contentType": "image/webp",
+      "bytes": 51808
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/f8567ed17434-yealink-uvc34-03.webp",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.sounddd.shop/f8567ed17434-yealink-uvc34-03.webp",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/933bf76f45c2-f8567ed17434-yealink-uvc34-03.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:963421",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/933bf76f45c2-f8567ed17434-yealink-uvc34-03.webp",
+      "contentType": "image/webp",
+      "bytes": 118380
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/d72d9a554fd3-1-201119111hlw.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/d72d9a554fd3-1-201119111hlw.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/c4a17c77041e-d72d9a554fd3-1-201119111hlw.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:984925",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/c4a17c77041e-d72d9a554fd3-1-201119111hlw.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 31664
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/5d68d9799363-3-2203091i629142.png",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/5d68d9799363-3-2203091i629142.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/6c65da65c947-5d68d9799363-3-2203091i629142.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:986918",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/6c65da65c947-5d68d9799363-3-2203091i629142.png",
+      "contentType": "image/png",
+      "bytes": 694087
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/5d68d9799363-3-2203091i629142.png",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/5d68d9799363-3-2203091i629142.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/6c65da65c947-5d68d9799363-3-2203091i629142.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:998589",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/6c65da65c947-5d68d9799363-3-2203091i629142.png",
+      "contentType": "image/png",
+      "bytes": 694087
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4c7d353d2428-vissonic_conference_system_diagram.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4c7d353d2428-vissonic_conference_system_diagram.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/1df3de0e0256-4c7d353d2428-vissonic_conference_system_diagram.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "html-embedded",
+      "sourceRef": "src/data/product-details.ts:1006922",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/1df3de0e0256-4c7d353d2428-vissonic_conference_system_diagram.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 387980
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/0cb2e7853c5a-4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1007151",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/0cb2e7853c5a-4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 151139
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/d5947620aeab-vissonic-20vote-20wired-20interpretation-20system.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/d5947620aeab-vissonic-20vote-20wired-20interpretation-20system.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/51ae56ab93e6-d5947620aeab-vissonic-20vote-20wired-20interpretation-20system.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "html-embedded",
+      "sourceRef": "src/data/product-details.ts:1035555",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/51ae56ab93e6-d5947620aeab-vissonic-20vote-20wired-20interpretation-20system.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 156588
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.vissonic.com/4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/0cb2e7853c5a-4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1035808",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/0cb2e7853c5a-4a9508f37017-vissonic_conference_controller_compare_sheet.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 151139
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/c32beb48d002-ip-corp-2.png",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/c32beb48d002-ip-corp-2.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/c99741c83de5-c32beb48d002-ip-corp-2.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1983152",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/c99741c83de5-c32beb48d002-ip-corp-2.png",
+      "contentType": "image/png",
+      "bytes": 7498646
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/5effde90940f-rs-corp-6-1_opt.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/5effde90940f-rs-corp-6-1_opt.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/5e46f21bdb0e-5effde90940f-rs-corp-6-1_opt.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1983435",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/5e46f21bdb0e-5effde90940f-rs-corp-6-1_opt.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 100448
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/d45a878a3668-happytouch_ip.jpeg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/d45a878a3668-happytouch_ip.jpeg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/f27719e450e5-d45a878a3668-happytouch_ip.jpeg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2010041",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/f27719e450e5-d45a878a3668-happytouch_ip.jpeg",
+      "contentType": "image/jpeg",
+      "bytes": 1059996
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/c286aa7bb193-rs-classroom.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/newline-interactive.com/c286aa7bb193-rs-classroom.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/5b7c39d2f3b1-c286aa7bb193-rs-classroom.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2010311",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/5b7c39d2f3b1-c286aa7bb193-rs-classroom.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 834252
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/cdn.shopify.com/39f2334fd8b3-blackwire3300-3.png",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/cdn.shopify.com/39f2334fd8b3-blackwire3300-3.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/4570e65ce8c5-39f2334fd8b3-blackwire3300-3.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2060748",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/4570e65ce8c5-39f2334fd8b3-blackwire3300-3.png",
+      "contentType": "image/png",
+      "bytes": 286985
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/cdn.shopify.com/fab46eafab3d-blackwire3300_5984.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/cdn.shopify.com/fab46eafab3d-blackwire3300_5984.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/535eb3b2c7a9-fab46eafab3d-blackwire3300_5984.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2063209",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/535eb3b2c7a9-fab46eafab3d-blackwire3300_5984.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 87708
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/image.makewebeasy.net/57f61ecd7f7e-26.png",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/image.makewebeasy.net/57f61ecd7f7e-26.png",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/150f790a4a67-57f61ecd7f7e-26.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2076022",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/150f790a4a67-57f61ecd7f7e-26.png",
+      "contentType": "image/png",
+      "bytes": 314310
+    },
+    {
+      "sourceUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/image.makewebeasy.net/3d5d1234321b-s10.jpg",
+      "resolvedUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/image.makewebeasy.net/3d5d1234321b-s10.jpg",
+      "targetUrl": "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/48425c316455-3d5d1234321b-s10.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2076579",
+      "objectPath": "legacy-imports/sefxaafqvjpmjmewsfuw.supabase.co/48425c316455-3d5d1234321b-s10.jpg",
+      "contentType": "image/jpeg",
+      "bytes": 38670
+    }
+  ],
+  "failed": []
+}

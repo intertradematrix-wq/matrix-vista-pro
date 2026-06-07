@@ -1,0 +1,286 @@
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { Breadcrumb } from "@/components/site/Breadcrumb";
+import { CTASection } from "@/components/site/CTASection";
+import { Button } from "@/components/ui/button";
+import {
+  ArrowRight,
+  CheckCircle2,
+  ExternalLink,
+  Headset,
+  Mail,
+  Phone,
+  Ruler,
+  ShieldCheck,
+  Wrench,
+} from "lucide-react";
+import { productById } from "@/data/products";
+import { productDetailById } from "@/data/product-details";
+import { loadProductDetailContent } from "@/lib/content/products";
+
+export const Route = createFileRoute("/product/$id")({
+  head: (ctx: any) => {
+    const { loaderData, params } = ctx;
+    const p = loaderData?.product ?? productById(params.id);
+    const detail = productDetailById(params.id);
+    const title = p ? `${p.name} - Matrix Intertrade` : "สินค้า - Matrix Intertrade";
+    const desc =
+      p?.descriptionText?.slice(0, 200) ||
+      detail?.descriptionText?.slice(0, 200) ||
+      (p
+        ? `${p.name}${p.brand ? ` โดย ${p.brand}` : ""} - สอบถามและขอใบเสนอราคาจาก Matrix Intertrade`
+        : "รายละเอียดสินค้า");
+    const hasPrice = p?.price && p.price !== "0.00";
+    const productLd = p
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: p.name,
+          ...(p.image ? { image: p.image } : {}),
+          ...(p.brand ? { brand: { "@type": "Brand", name: p.brand } } : {}),
+          description: desc,
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "THB",
+            ...(hasPrice
+              ? { price: p.price }
+              : { price: "0", availability: "https://schema.org/InStock" }),
+            url: `https://matrix-vista-pro.lovable.app/product/${params.id}`,
+          },
+        }
+      : null;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:type", content: "product" },
+        ...(p?.image ? [{ property: "og:image", content: p.image }] : []),
+      ],
+      links: [{ rel: "canonical", href: `/product/${params.id}` }],
+      ...(productLd
+        ? { scripts: [{ type: "application/ld+json", children: JSON.stringify(productLd) }] }
+        : {}),
+    };
+  },
+  loader: async ({ params }) => {
+    const content = await loadProductDetailContent(params.id);
+    const product = content.product;
+    if (!product) throw notFound();
+    return { product, relatedProducts: content.relatedProducts };
+  },
+  notFoundComponent: () => (
+    <div className="mx-auto max-w-3xl px-4 py-24 text-center">
+      <h1 className="text-2xl font-bold text-primary">ไม่พบสินค้า</h1>
+      <p className="mt-2 text-muted-foreground">สินค้านี้อาจถูกย้ายหรือไม่มีในระบบแล้ว</p>
+      <Button asChild className="mt-6">
+        <Link to="/category/$id" params={{ id: "0" }}>
+          ดูสินค้าทั้งหมด
+        </Link>
+      </Button>
+    </div>
+  ),
+  component: ProductPage,
+});
+
+function ProductPage() {
+  const { product: p, relatedProducts: related } = Route.useLoaderData() as any;
+  const hasPrice = p.price && p.price !== "0.00";
+  const detail = productDetailById(p.id);
+  const descriptionHtml = p.descriptionHtml ?? detail?.descriptionHtml;
+  const serviceHighlights = [
+    { icon: Headset, label: "ปรึกษาทีมขาย" },
+    { icon: Ruler, label: "ออกแบบระบบ" },
+    { icon: Wrench, label: "ติดตั้งหน้างาน" },
+    { icon: ShieldCheck, label: "รับประกันสินค้า" },
+  ];
+  const promiseItems = [
+    "ให้คำปรึกษาและออกแบบระบบโดยทีมวิศวกร",
+    "ติดตั้งโดยช่างผู้ชำนาญ พร้อมตรวจเช็กหน้างาน",
+    "ดูแลหลังการขายและบำรุงรักษาระยะยาว",
+  ];
+
+  return (
+    <>
+      <section className="relative overflow-hidden border-b border-border bg-white">
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-secondary/60 to-transparent pointer-events-none" />
+        <div className="relative mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+          <Breadcrumb
+            items={[
+              { label: "สินค้า", href: "/category/0" },
+              ...(p.brand ? [{ label: p.brand, href: `/category/${p.brandCategoryId}` }] : []),
+              { label: p.name },
+            ]}
+          />
+        </div>
+
+        <div className="relative mx-auto grid max-w-7xl gap-8 px-4 pb-12 md:px-6 md:pb-16 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+          <div className="order-2 min-w-0 lg:order-1">
+            <div className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-semibold text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              <span className="min-w-0 truncate">{p.brand || "Product"}</span>
+            </div>
+            <h1 className="max-w-2xl break-words text-[clamp(1.9rem,8vw,4.5rem)] font-bold leading-[1.08] tracking-normal text-primary">
+              {p.name}
+            </h1>
+            <p className="mt-4 max-w-xl break-words text-sm leading-relaxed text-muted-foreground md:text-base">
+              เลือกสินค้า AV พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการออกแบบ ติดตั้ง
+              และดูแลระบบในองค์กร
+            </p>
+
+            <div className="mt-6 min-w-0 rounded-xl border border-border bg-white p-4">
+              <div className="text-xs font-medium text-muted-foreground">ราคา</div>
+              {hasPrice ? (
+                <div className="mt-1 break-words text-3xl font-bold text-primary">
+                  {p.price} บาท
+                </div>
+              ) : (
+                <div className="mt-1 break-words text-xl font-bold text-primary sm:text-2xl">
+                  ติดต่อสอบถามราคา
+                </div>
+              )}
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                ราคาอาจเปลี่ยนตามรุ่น สเปก และเงื่อนไขโครงการ กรุณายืนยันกับฝ่ายขาย
+              </p>
+            </div>
+
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" className="min-h-11 min-w-0 sm:min-w-48">
+                <Link to="/contactus">
+                  ขอใบเสนอราคา <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="min-h-11 min-w-0">
+                <a href="tel:0941887041">
+                  <Phone className="mr-1 h-4 w-4" /> 094-888-7041
+                </a>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="min-h-11 min-w-0">
+                <a href="mailto:matrixintertrade2026@gmail.com">
+                  <Mail className="mr-1 h-4 w-4" /> Email
+                </a>
+              </Button>
+            </div>
+
+            <a
+              href={p.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex max-w-full items-center gap-1 break-words text-xs font-medium text-muted-foreground transition-colors hover:text-accent"
+            >
+              ดูข้อมูลต้นทางบน matrixintertrade.com <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+
+          <div className="order-1 lg:order-2">
+            <div className="relative aspect-[1.12/1] overflow-hidden rounded-xl border border-border bg-secondary/50">
+              <div className="absolute inset-4 rounded-lg bg-white" />
+              <img
+                src={p.image}
+                alt={p.name}
+                className="absolute inset-0 h-full w-full object-contain p-5 sm:p-10 md:p-12"
+                loading="eager"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mx-auto max-w-7xl px-4 pb-10 md:px-6">
+          <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+            {serviceHighlights.map((item) => (
+              <div key={item.label} className="flex items-center gap-3 bg-white px-4 py-4">
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-secondary text-accent">
+                  <item.icon className="h-4 w-4" />
+                </div>
+                <span className="min-w-0 break-words text-sm font-semibold text-primary">
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-secondary/35 py-10 md:py-14">
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <div className="grid gap-4 md:grid-cols-3">
+            {promiseItems.map((item) => (
+              <div
+                key={item}
+                className="flex min-w-0 gap-3 rounded-xl border border-border bg-white p-4"
+              >
+                <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-accent" />
+                <p className="min-w-0 break-words text-sm leading-relaxed text-foreground">
+                  {item}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {descriptionHtml && (
+        <section className="border-t border-border bg-white py-10 md:py-14">
+          <div className="mx-auto max-w-5xl px-4 md:px-6">
+            <h2 className="mb-6 text-xl font-bold text-primary md:text-2xl">รายละเอียดสินค้า</h2>
+            <article
+              className="product-detail-content min-w-0 leading-relaxed text-foreground/90"
+              dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+            />
+          </div>
+        </section>
+      )}
+
+      {related.length > 0 && (
+        <section className="bg-secondary/35 py-12 md:py-16">
+          <div className="mx-auto max-w-7xl px-4 md:px-6">
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h2 className="text-xl font-bold text-primary md:text-2xl">
+                  สินค้าอื่นในกลุ่ม {p.brand}
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  เปรียบเทียบรุ่นใกล้เคียงก่อนขอใบเสนอราคา
+                </p>
+              </div>
+              <Button asChild variant="outline" className="min-h-11">
+                <Link to="/category/$id" params={{ id: p.brandCategoryId }}>
+                  ดูทั้งหมด
+                </Link>
+              </Button>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {related.map((r: any) => (
+                <Link
+                  key={r.id}
+                  to="/product/$id"
+                  params={{ id: r.id }}
+                  className="group overflow-hidden rounded-xl border border-border bg-white transition-colors hover:border-accent/50"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-secondary/45">
+                    <img
+                      src={r.image}
+                      alt={r.name}
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-contain p-5 transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <div className="min-h-[2.5rem] text-sm font-bold leading-snug text-primary line-clamp-2">
+                      {r.name}
+                    </div>
+                    <div className="mt-2 text-xs font-semibold text-accent">
+                      {r.price && r.price !== "0.00" ? `${r.price} บาท` : "ติดต่อสอบถามราคา"}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <CTASection />
+    </>
+  );
+}

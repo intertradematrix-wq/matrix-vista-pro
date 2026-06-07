@@ -1,0 +1,164 @@
+{
+  "generatedAt": "2026-06-06T04:37:42.862Z",
+  "mode": "inventory",
+  "scope": "product-html",
+  "bucket": "admin-media",
+  "inventoryOnly": true,
+  "apply": false,
+  "files": [
+    "src/data/product-details.ts"
+  ],
+  "candidates": [
+    {
+      "url": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:950399"
+    },
+    {
+      "url": "https://www.yealink.com/website-service/attachment/product/image/20220527/2022052707202881711236e7e498c9cfa574977b3d032.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:950734"
+    },
+    {
+      "url": "https://www.yealink.com/website-service/attachment/product/image/20220427/202204270350002108a69052146f988722811f6df8d2c.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:951047"
+    },
+    {
+      "url": "https://www.yealink.com/website-service/attachment/product/image/20220427/2022042703110639776e3b32f41728ace7af184bfb883.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:951367"
+    },
+    {
+      "url": "https://manuals.plus/wp-content/uploads/2022/09/Yealink-VCR20-Remote-Control-for-UVC-Cameras-Remote-Control.png?ezimgfmt=rs:393x679/rscb1/ng:webp/ngcb1",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:953292"
+    },
+    {
+      "url": "https://www.yealink.com/upfiles/files/20201120851745.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:954198"
+    },
+    {
+      "url": "https://www.sounddd.shop/wp-content/uploads/2021/11/YEALINK-UVC34-00.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:961158"
+    },
+    {
+      "url": "https://www.sounddd.shop/wp-content/uploads/2021/11/YEALINK-UVC34-01.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:961738"
+    },
+    {
+      "url": "https://www.sounddd.shop/wp-content/uploads/2021/11/YEALINK-UVC34-02.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:962160"
+    },
+    {
+      "url": "https://www.sounddd.shop/wp-content/uploads/2021/11/YEALINK-UVC34-03.webp",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:963177"
+    },
+    {
+      "url": "https://www.vissonic.com/uploads/allimg/201119/1-201119111HLW.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:984610"
+    },
+    {
+      "url": "https://www.vissonic.com/uploads/allimg/20220309/3-2203091I629142.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:986527"
+    },
+    {
+      "url": "https://www.vissonic.com/uploads/allimg/20220309/3-2203091I629142.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:998124"
+    },
+    {
+      "url": "https://www.vissonic.com/uploads/imgs/VISSONIC_Conference_System_Diagram.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "html-embedded",
+      "sourceRef": "src/data/product-details.ts:1006383"
+    },
+    {
+      "url": "https://www.vissonic.com/uploads/imgs/VISSONIC_Conference_Controller_Compare_Sheet.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1006527"
+    },
+    {
+      "url": "https://www.vissonic.com/uploads/img/systemdiagram/VISSONIC%20Vote%20Wired%20interpretation%20system.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "html-embedded",
+      "sourceRef": "src/data/product-details.ts:1034846"
+    },
+    {
+      "url": "https://www.vissonic.com/uploads/imgs/VISSONIC_Conference_Controller_Compare_Sheet.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1035027"
+    },
+    {
+      "url": "https://newline-interactive.com/wp-content/uploads/2019/10/IP-corp-2.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1982286"
+    },
+    {
+      "url": "https://newline-interactive.com/wp-content/uploads/2022/03/RS-corp-6-1_opt.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:1982498"
+    },
+    {
+      "url": "https://newline-interactive.com/wp-content/uploads/2019/10/happytouch_IP.jpeg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2009033"
+    },
+    {
+      "url": "https://newline-interactive.com/wp-content/uploads/2019/10/RS-classroom.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2009232"
+    },
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0446/9369/files/blackwire3300-3.png?v=1617706965",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2059598"
+    },
+    {
+      "url": "https://cdn.shopify.com/s/files/1/0446/9369/files/Blackwire3300_5984.jpg?v=1619007875",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2062000"
+    },
+    {
+      "url": "https://image.makewebeasy.net/makeweb/0/jxlPpOYv8/DigitalMedia/26.png",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2074754"
+    },
+    {
+      "url": "https://image.makewebeasy.net/makeweb/0/jxlPpOYv8/DigitalMedia/S10.jpg",
+      "filePath": "src/data/product-details.ts",
+      "sourceKind": "plain-string",
+      "sourceRef": "src/data/product-details.ts:2075246"
+    }
+  ],
+  "migrated": []
+}
