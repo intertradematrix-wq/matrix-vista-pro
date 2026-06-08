@@ -176,7 +176,7 @@ function mapNav(rows: NavRow[] | null | undefined): NavItem[] {
 
   const dbNav = topLevel.map((row) => {
     const submenu = (childrenByParent.get(row.id) ?? []).map((child) => ({
-      label: child.label,
+      label: child.label === "Projector" ? "Projection Screen" : child.label,
       href: child.href,
       desc: child.description ?? undefined,
       image: child.image_url ?? undefined,
@@ -184,7 +184,7 @@ function mapNav(rows: NavRow[] | null | undefined): NavItem[] {
     return {
       label: row.label,
       href: row.href,
-      submenu: submenu.length > 0 ? submenu : undefined,
+      submenu: (submenu.length > 0 && row.href !== "/brands") ? submenu : undefined,
     };
   });
 

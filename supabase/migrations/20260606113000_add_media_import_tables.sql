@@ -50,11 +50,13 @@ grant all on public.media_import_mappings to service_role;
 alter table public.media_assets enable row level security;
 alter table public.media_import_mappings enable row level security;
 
+drop policy if exists "Public can read media assets" on public.media_assets;
 create policy "Public can read media assets"
 on public.media_assets
 for select
 using (true);
 
+drop policy if exists "Public can read media import mappings" on public.media_import_mappings;
 create policy "Public can read media import mappings"
 on public.media_import_mappings
 for select

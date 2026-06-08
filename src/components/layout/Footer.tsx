@@ -119,7 +119,9 @@ export function Footer() {
         <FooterCol
           className="lg:col-span-2"
           title={t(lang, "แบรนด์สินค้า", "Brands")}
-          items={brands.map((b) => ({ label: b.name, href: `/brands/${b.slug}` }))}
+          items={brands
+            .filter((b) => !["Enewave", "Newline", "Poly", "Vissonic", "Yealink"].includes(b.name))
+            .map((b) => ({ label: b.name, href: `/brands/${b.slug}` }))}
         />
         <FooterCol
           className="lg:col-span-2"
