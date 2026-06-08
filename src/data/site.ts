@@ -25,7 +25,7 @@ export const nav: NavItem[] = [
         href: "/led-display",
         desc: "จอ LED ระดับมืออาชีพสำหรับองค์กร",
         descEn: "Professional LED Displays for Enterprises",
-        image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/a6492e1dbcf9-led_display1.png",
+        image: "https://bhvzkyuhuoynjacvlwcr.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/a6492e1dbcf9-led_display1.png",
       },
       {
         label: "Interactive Display",
@@ -33,7 +33,7 @@ export const nav: NavItem[] = [
         href: "/interactive-display",
         desc: "จอสัมผัสอัจฉริยะสำหรับการเรียนและประชุม",
         descEn: "Smart Touch Displays for Active Learning & Meetings",
-        image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/f7c323982191-interactive_display12.png",
+        image: "https://bhvzkyuhuoynjacvlwcr.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/f7c323982191-interactive_display12.png",
       },
       {
         label: "Projector",
@@ -41,7 +41,7 @@ export const nav: NavItem[] = [
         href: "/projector",
         desc: "โปรเจกเตอร์ความสว่างสูง",
         descEn: "High Brightness Projectors",
-        image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/3ddadb3d3dff-projector11.png",
+        image: "https://bhvzkyuhuoynjacvlwcr.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/3ddadb3d3dff-projector11.png",
       },
       {
         label: "Wireless Presentation",
@@ -49,7 +49,7 @@ export const nav: NavItem[] = [
         href: "/wireless-presentation",
         desc: "ระบบนำเสนอไร้สาย",
         descEn: "Wireless Presentation Systems",
-        image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/55c7fda91436-wireless_presentation1.png",
+        image: "https://bhvzkyuhuoynjacvlwcr.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/55c7fda91436-wireless_presentation1.png",
       },
       {
         label: "AV Solutions",
@@ -57,7 +57,7 @@ export const nav: NavItem[] = [
         href: "/av-solutions",
         desc: "ออกแบบระบบภาพและเสียงครบวงจร",
         descEn: "Complete Audio & Visual System Integration",
-        image: "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/7b9fc0dd456f-av_solutions1.png",
+        image: "https://bhvzkyuhuoynjacvlwcr.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/7b9fc0dd456f-av_solutions1.png",
       },
     ],
   },
