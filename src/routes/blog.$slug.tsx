@@ -128,7 +128,7 @@ function BlogDetail() {
                   <img
                     key={i}
                     src={b.src}
-                    alt=""
+                    alt={`${article.title} - ภาพประกอบ`}
                     loading="lazy"
                     className="my-6 w-full rounded-xl border border-border shadow-card"
                   />

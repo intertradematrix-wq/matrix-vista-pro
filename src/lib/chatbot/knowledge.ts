@@ -5,6 +5,10 @@ import { products, type Product } from "@/data/products";
 import { brands, solutions } from "@/data/site";
 import { solutionImages } from "@/data/solution-images";
 
+import { loadProductListContent } from "@/lib/content/products";
+import { loadSiteContent } from "@/lib/content/site";
+import { loadArticleListContent } from "@/lib/content/articles";
+
 export type ChatbotResultType = "product" | "solution" | "brand" | "article";
 
 export type ChatbotResult = {
@@ -74,10 +78,24 @@ function productToRecord(product: Product): KnowledgeRecord {
   };
 }
 
-function buildKnowledge(): KnowledgeRecord[] {
-  const productRecords = products.map(productToRecord);
+let cachedKnowledge: KnowledgeRecord[] | null = null;
+let lastCacheTime = 0;
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
-  const solutionRecords: KnowledgeRecord[] = solutions.map((solution) => ({
+async function buildKnowledge(): Promise<KnowledgeRecord[]> {
+  if (cachedKnowledge && Date.now() - lastCacheTime < CACHE_TTL) {
+    return cachedKnowledge;
+  }
+
+  const [productContent, siteContent, articleContent] = await Promise.all([
+    loadProductListContent(),
+    loadSiteContent(),
+    loadArticleListContent()
+  ]);
+
+  const productRecords = productContent.products.map(productToRecord);
+
+  const solutionRecords: KnowledgeRecord[] = siteContent.solutions.map((solution) => ({
     id: solution.slug,
     type: "solution",
     title: solution.title,
@@ -90,7 +108,7 @@ function buildKnowledge(): KnowledgeRecord[] {
     searchText: normalizeText(`${solution.title} ${solution.slug} ${solution.desc}`),
   }));
 
-  const brandRecords: KnowledgeRecord[] = brands.map((brand) => ({
+  const brandRecords: KnowledgeRecord[] = siteContent.brands.map((brand) => ({
     id: brand.slug,
     type: "brand",
     title: brand.name,
@@ -103,7 +121,7 @@ function buildKnowledge(): KnowledgeRecord[] {
     searchText: normalizeText(`${brand.name} ${brand.slug} ${brand.category} ${brand.desc}`),
   }));
 
-  const articleRecords: KnowledgeRecord[] = articles.slice(0, 48).map((article) => ({
+  const articleRecords: KnowledgeRecord[] = articleContent.articles.slice(0, 48).map((article) => ({
     id: String(article.id),
     type: "article",
     title: article.title,
@@ -115,7 +133,23 @@ function buildKnowledge(): KnowledgeRecord[] {
     searchText: normalizeText(`${article.title} ${article.category} ${article.excerpt}`),
   }));
 
-  return [...productRecords, ...solutionRecords, ...brandRecords, ...articleRecords];
+  cachedKnowledge = [...productRecords, ...solutionRecords, ...brandRecords, ...articleRecords];
+  lastCacheTime = Date.now();
+  return cachedKnowledge;
+}
+
+const segmenter = typeof Intl !== "undefined" && Intl.Segmenter 
+  ? new Intl.Segmenter("th", { granularity: "word" }) 
+  : null;
+
+function tokenize(text: string): string[] {
+  if (!text) return [];
+  if (segmenter) {
+    return Array.from(segmenter.segment(text))
+      .filter((s) => s.isWordLike)
+      .map((s) => s.segment);
+  }
+  return text.split(" ").filter(Boolean);
 }
 
 function scoreRecord(record: KnowledgeRecord, query: string, terms: string[]) {
@@ -161,12 +195,13 @@ function scoreRecord(record: KnowledgeRecord, query: string, terms: string[]) {
   return score + record.priority;
 }
 
-export function searchKnowledge(message: string, limit = 5): ChatbotResult[] {
+export async function searchKnowledge(message: string, limit = 5): Promise<ChatbotResult[]> {
   const query = normalizeText(message);
   if (!query) return [];
 
-  const terms = query.split(" ").filter(Boolean);
-  return buildKnowledge()
+  const terms = tokenize(query);
+  const knowledge = await buildKnowledge();
+  return knowledge
     .map((record) => ({ record, score: scoreRecord(record, query, terms) }))
     .filter((item) => item.score > 5)
     .sort((a, b) => b.score - a.score)
@@ -250,7 +285,7 @@ async function askOpenAI(message: string, history: string[], results: ChatbotRes
   if (!apiKey) return null;
 
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -258,19 +293,30 @@ async function askOpenAI(message: string, history: string[], results: ChatbotRes
     },
     body: JSON.stringify({
       model,
-      instructions: [
-        "You are Matrix Intertrade's Thai B2B AV sales assistant.",
-        "Answer in Thai, concise and helpful. Ground every product claim only in the provided website context.",
-        "Do not invent prices, specs, warranty terms, stock status, or promotions.",
-        "If a product has no real price, say customers should request a quotation from the sales team.",
-        "End with a practical next step: ask for room size, use case, budget, or invite the user to request a quotation.",
-      ].join("\n"),
-      input: [
-        `Recent conversation:\n${history.slice(-6).join("\n") || "-"}`,
-        `Website context:\n${buildContext(results) || "No matching website context."}`,
-        `Customer question:\n${message}`,
-      ].join("\n\n"),
-      max_output_tokens: 520,
+      messages: [
+        {
+          role: "system",
+          content: [
+            "You are an expert B2B AV Solutions sales consultant for Matrix Intertrade (matrixintertrade.com).",
+            "Your goal is to assist clients, recommend AV products based ONLY on the provided context, and ultimately qualify leads for the sales team.",
+            "Answer in polite and professional Thai. Use formal but friendly tone.",
+            "Do NOT invent prices, specs, warranty terms, or products not in the context.",
+            "If a product price is missing or 0, inform the user to contact sales for a custom project quotation.",
+            "Contact info: Tel 094-888-7041, Email matrixintertrade2026@gmail.com",
+            "CRITICAL: Always end your response with ONE follow-up question to qualify the lead (e.g., ask about their room size, number of attendees, specific use case, or budget).",
+            "Format nicely with bullet points if listing multiple items or specs.",
+          ].join("\n"),
+        },
+        ...history.map(msg => ({ role: msg.startsWith("You:") ? "user" : "assistant", content: msg })),
+        {
+          role: "user",
+          content: [
+            `Website context:\n${buildContext(results) || "No matching website context."}`,
+            `Customer question:\n${message}`,
+          ].join("\n\n")
+        }
+      ],
+      max_tokens: 520,
     }),
   });
 
@@ -278,15 +324,16 @@ async function askOpenAI(message: string, history: string[], results: ChatbotRes
     console.error("OpenAI chatbot error:", response.status, await response.text());
     return null;
   }
-
-  return extractOpenAIText(await response.json());
+  
+  const payload = await response.json();
+  return payload.choices?.[0]?.message?.content?.trim() || extractOpenAIText(payload);
 }
 
 export async function answerChatbot(
   message: string,
   history: string[] = [],
 ): Promise<ChatbotAnswer> {
-  const results = searchKnowledge(message, 5);
+  const results = await searchKnowledge(message, 5);
   const fallback = buildFallbackAnswer(message, results);
 
   try {

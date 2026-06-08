@@ -185,7 +185,7 @@ export function Header() {
               )}
               aria-label="เปลี่ยนภาษาเป็นไทย"
             >
-              <img src="https://flagcdn.com/w20/th.png" alt="" className="w-[14px] rounded-[2px] shadow-sm" />
+              <img src="https://flagcdn.com/w20/th.png" alt="ภาษาไทย (Thai)" className="w-[14px] rounded-[2px] shadow-sm" />
               TH
             </button>
             <button
@@ -196,7 +196,7 @@ export function Header() {
               )}
               aria-label="Change language to English"
             >
-              <img src="https://flagcdn.com/w20/gb.png" alt="" className="w-[14px] rounded-[2px] shadow-sm" />
+              <img src="https://flagcdn.com/w20/gb.png" alt="English (UK)" className="w-[14px] rounded-[2px] shadow-sm" />
               EN
             </button>
           </div>
@@ -530,7 +530,7 @@ function MobileDrawer({
                 lang === "TH" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <img src="https://flagcdn.com/w20/th.png" alt="" className="w-4 rounded-[2px] shadow-sm" />
+              <img src="https://flagcdn.com/w20/th.png" alt="ภาษาไทย (Thai)" className="w-4 rounded-[2px] shadow-sm" />
               ภาษาไทย
             </button>
             <button
@@ -540,7 +540,7 @@ function MobileDrawer({
                 lang === "EN" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <img src="https://flagcdn.com/w20/gb.png" alt="" className="w-4 rounded-[2px] shadow-sm" />
+              <img src="https://flagcdn.com/w20/gb.png" alt="English (UK)" className="w-4 rounded-[2px] shadow-sm" />
               English
             </button>
           </div>
