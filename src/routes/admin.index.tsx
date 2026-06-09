@@ -939,8 +939,40 @@ function ImageField({
       const token = session.data.session?.access_token;
       if (!token) throw new Error("Not logged in. Please refresh.");
 
+      // Convert image to WebP format to save Egress bandwidth
+      let uploadFile = file;
+      if (file.type.startsWith("image/") && file.type !== "image/webp" && file.type !== "image/gif" && file.type !== "image/svg+xml") {
+        uploadFile = await new Promise<File>((resolve) => {
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return resolve(file);
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob(
+              (blob) => {
+                if (!blob) return resolve(file);
+                const baseName = file.name.substring(0, file.name.lastIndexOf(".")) || file.name;
+                resolve(new File([blob], `${baseName}.webp`, { type: "image/webp" }));
+              },
+              "image/webp",
+              0.85
+            );
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(file);
+          };
+          img.src = url;
+        });
+      }
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", uploadFile);
 
       const res = await fetch("/api/admin/upload", {
         method: "POST",

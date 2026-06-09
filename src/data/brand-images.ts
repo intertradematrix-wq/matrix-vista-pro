@@ -1,15 +1,15 @@
 // Real brand visuals sourced from matrixintertrade.com (owned by site owner)
 export const brandImages: Record<string, string> = {
   unilumin:
-    "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/6b2785b3dc72-crop-1751441846240.jpg",
+    "/legacy-imports/6b2785b3dc72-crop-1751441846240.jpg",
   kramerav:
-    "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/53aa84128a4c-crop-1664270486366.jpg",
+    "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg",
   grandview:
-    "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/84c6dde0fa04-crop-1664192588573.jpg",
+    "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg",
   persona:
-    "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/8a1957ba9a56-crop-1773024256470.jpg",
+    "/legacy-imports/8a1957ba9a56-crop-1773024256470.jpg",
   transcreen:
-    "https://sefxaafqvjpmjmewsfuw.supabase.co/storage/v1/object/public/admin-media/legacy-imports/www.matrixintertrade.com/7611e6f76df0-crop-1751514312395.jpg",
+    "/legacy-imports/7611e6f76df0-crop-1751514312395.jpg",
   poly: "https://shop-image.readyplanet.com/1JP8W7LJ-JOXokXJ4P1KHNjdWwg=/500x500/2a7128f73a3245c2a32cae55aac5b120",
   newline:
     "https://shop-image.readyplanet.com/g8DaehX9M6W4eQr4L8Wh4wEFoq0=/500x500/7e2245c75c104f639c1f221ea82c395f",
