@@ -9,6 +9,9 @@ if (typeof globalThis.addEventListener === "function") {
     "unhandledrejection",
     (event) => record(event.reason)
   );
+} else if (typeof process !== "undefined") {
+  process.on("uncaughtException", (error) => record(error));
+  process.on("unhandledRejection", (reason) => record(reason));
 }
 function consumeLastCapturedError() {
   if (!lastCapturedError) return void 0;
@@ -53,7 +56,7 @@ function renderErrorPage() {
 let serverEntryPromise;
 async function getServerEntry() {
   if (!serverEntryPromise) {
-    serverEntryPromise = import("./server-Dv-uh41L.mjs").then((n) => n.s).then(
+    serverEntryPromise = import("./server-DNgB-npp.mjs").then((n) => n.s).then(
       (m) => m.default ?? m
     );
   }
