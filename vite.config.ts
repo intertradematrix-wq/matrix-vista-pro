@@ -12,6 +12,7 @@ export default defineConfig({
   plugins: [
     nitro({
       preset: "vercel",
+      errorHandler: "./src/nitro-error.ts",
     })
   ],
   tanstackStart: {
