@@ -4,7 +4,7 @@ import { brands, industries } from "@/data/site";
 import { articles } from "@/data/articles";
 import { products } from "@/data/products";
 
-const BASE_URL = "https://matrix-vista-pro.lovable.app";
+const BASE_URL = "https://www.matrixintertrade.com";
 
 interface SitemapEntry {
   path: string;
