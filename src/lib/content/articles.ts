@@ -74,6 +74,7 @@ export async function loadArticleListContent(): Promise<ArticleListContent> {
       categoriesResult.data?.map((row: any) => ({
         slug: row.slug,
         label: row.label,
+        labelEn: row.label,
       })) ?? [];
 
     const articles =

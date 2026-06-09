@@ -346,7 +346,7 @@ function mapArticleCategories(
     ...mapped,
     ...rows
       .filter((row) => !fallbackSlugs.has(row.slug))
-      .map((row) => ({ slug: row.slug, label: row.label, imageUrl: row.image_url || undefined })),
+      .map((row) => ({ slug: row.slug, label: row.label, labelEn: row.label, imageUrl: row.image_url || undefined })),
   ];
 }
 
