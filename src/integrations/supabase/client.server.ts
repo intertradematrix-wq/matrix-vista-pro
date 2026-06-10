@@ -16,7 +16,13 @@ function createSupabaseAdminClient() {
     ];
     const message = `Missing Supabase environment variable(s): ${missing.join(", ")}. Connect Supabase in Lovable Cloud.`;
     console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+    // Instead of throwing an error that crashes the SSR process, return a dummy client
+    // that throws only when its methods are called. This allows fallback content mechanisms to work.
+    return new Proxy({} as any, {
+      get(_, prop) {
+        throw new Error(message);
+      }
+    });
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
