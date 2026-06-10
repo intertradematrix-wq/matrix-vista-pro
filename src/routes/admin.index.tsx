@@ -237,6 +237,7 @@ export const Route = createFileRoute("/admin/")({
 
 function AdminPage() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [content, setContent] = useState<Partial<Record<ContentKind, ContentItem[]>>>({});
@@ -319,18 +320,18 @@ function AdminPage() {
     }
   }
 
-  async function sendMagicLink() {
+  async function signIn() {
     setStatus("");
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      options: { emailRedirectTo: window.location.origin + "/admin" },
+      password,
     });
     setLoading(false);
     setStatus(
       error
         ? error.message
-        : "Magic link sent. Open the email link in this same browser to access the admin panel.",
+        : "Signed in successfully.",
     );
   }
 
@@ -395,7 +396,7 @@ function AdminPage() {
               <Lock className="h-5 w-5" />
             </div>
             <CardTitle>Admin sign in</CardTitle>
-            <CardDescription>Use a Supabase Auth user listed in ADMIN_EMAILS.</CardDescription>
+            <CardDescription>Sign in using your Supabase admin credentials.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Input
@@ -404,9 +405,15 @@ function AdminPage() {
               onChange={(event) => setEmail(event.target.value)}
               placeholder="admin@example.com"
             />
-            <Button className="w-full" disabled={!email || loading} onClick={sendMagicLink}>
+            <Input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Password"
+            />
+            <Button className="w-full" disabled={!email || !password || loading} onClick={signIn}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Send Magic Link
+              Sign In
             </Button>
           </CardContent>
         </Card>
