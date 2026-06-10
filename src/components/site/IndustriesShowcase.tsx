@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import * as Icons from "lucide-react";
 import { ArrowUpRight, ChevronRight, Sparkles } from "lucide-react";
+import { resolveIcon } from "@/lib/icon-map";
 import { industries } from "@/data/site";
 import { Reveal } from "@/components/site/Reveal";
-import { useState, type ElementType } from "react";
+import { useState } from "react";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import imgEducation from "@/assets/article-smart-classroom.jpg";
 import imgHotel from "@/assets/hero-av.jpg";
@@ -82,7 +82,7 @@ export function IndustriesShowcase({
 
         <div className="group/row mt-12 hidden lg:flex lg:gap-6">
           {cards.map((ind, i) => {
-            const Icon = (Icons[ind.icon as keyof typeof Icons] ?? Icons.Building2) as ElementType;
+            const Icon = resolveIcon(ind.icon);
             const img = industryImages[ind.slug];
             const m = meta[ind.slug] ?? { tag: "Solution", metric: "—", metricLabel: "" };
             const isActive = activeIdx === i;
@@ -209,7 +209,7 @@ export function IndustriesShowcase({
 
         <div className="mt-10 flex flex-col gap-3 lg:hidden">
           {industryItems.map((ind, i) => {
-            const Icon = (Icons[ind.icon as keyof typeof Icons] ?? Icons.Building2) as ElementType;
+            const Icon = resolveIcon(ind.icon);
             const img = industryImages[ind.slug];
             const m = meta[ind.slug] ?? { tag: "", metric: "—", metricLabel: "" };
             const isOpen = openMobile === i;

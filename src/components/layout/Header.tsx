@@ -4,7 +4,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { X, ChevronDown, Phone, Globe, ArrowUpRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import * as Icons from "lucide-react";
 import matrixLogo from "@/assets/matrix-logo.png";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { useSiteContent } from "@/lib/content/use-site-content";

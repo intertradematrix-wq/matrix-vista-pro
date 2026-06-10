@@ -3,9 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { CTASection } from "@/components/site/CTASection";
 import { loadIndustryDetailContent } from "@/lib/content/site";
-import * as Icons from "lucide-react";
+import { resolveIcon } from "@/lib/icon-map";
 import { Check, ArrowRight } from "lucide-react";
-import type { ElementType } from "react";
 import { Button } from "@/components/ui/button";
 import { LazyImage } from "@/components/site/LazyImage";
 import heroSolutions from "@/assets/hero-solutions.jpg";
@@ -33,7 +32,7 @@ export const Route = createFileRoute("/industry/$slug")({
 function IndustryPage() {
   const { ind } = Route.useLoaderData();
   const { lang } = useLanguage();
-  const Icon = (Icons[ind.icon as keyof typeof Icons] ?? Icons.Building2) as ElementType;
+  const Icon = resolveIcon(ind.icon);
   const isHotel = ind.slug === "hotel";
   const featuresTH = [
     "ออกแบบระบบให้เหมาะกับขนาดและการใช้งานจริง",

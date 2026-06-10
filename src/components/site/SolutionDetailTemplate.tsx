@@ -3,8 +3,7 @@ import { PageHeader } from "./PageHeader";
 import { CTASection } from "./CTASection";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import * as Icons from "lucide-react";
+import { resolveIcon } from "@/lib/icon-map";
 import { solutionImages } from "@/data/solution-images";
 import heroLed from "@/assets/hero-led.jpg";
 import heroInteractive from "@/assets/hero-interactive.jpg";
@@ -43,8 +42,7 @@ export function SolutionDetailTemplate({
   applicationsEn?: string[];
 }) {
   const { lang } = useLanguage();
-  const iconMap = Icons as unknown as Record<string, LucideIcon>;
-  const Icon = iconMap[iconName] ?? Icons.Monitor;
+  const Icon = resolveIcon(iconName);
   const img = solutionImages[slug];
   const displayIntro = introEn ? t(lang, intro, introEn) : intro;
   const displayBullets = bulletsEn && lang === "EN" ? bulletsEn : bullets;

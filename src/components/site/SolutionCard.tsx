@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import * as Icons from "lucide-react";
-import type { ElementType } from "react";
+import { resolveIcon } from "@/lib/icon-map";
 import { solutionImages } from "@/data/solution-images";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
@@ -32,7 +31,7 @@ export function SolutionCard({
   imageUrl?: string | null;
 }) {
   const { lang } = useLanguage();
-  const Icon = (Icons[icon as keyof typeof Icons] ?? Icons.Monitor) as ElementType;
+  const Icon = resolveIcon(icon);
   const img = imageUrl || solutionImages[slug];
   const index = ORDER[slug] ?? "•";
 
