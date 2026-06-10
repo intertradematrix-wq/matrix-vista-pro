@@ -174,29 +174,37 @@ export function Header() {
             <div
               className={cn(
                 "absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full bg-[#ffd24a] shadow-[0_2px_10px_rgba(255,204,25,0.4)] transition-transform duration-300 ease-out",
-                lang === "EN" ? "translate-x-full" : "translate-x-0"
+                lang === "EN" ? "translate-x-full" : "translate-x-0",
               )}
             />
             <button
               onClick={() => setLang("TH")}
               className={cn(
                 "relative z-10 flex w-16 items-center justify-center gap-1.5 rounded-full py-1 text-[11px] font-bold transition-colors duration-300",
-                lang === "TH" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
+                lang === "TH" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground",
               )}
               aria-label="เปลี่ยนภาษาเป็นไทย"
             >
-              <img src="https://flagcdn.com/w20/th.png" alt="ภาษาไทย (Thai)" className="w-[14px] rounded-[2px] shadow-sm" />
+              <img
+                src="https://flagcdn.com/w20/th.png"
+                alt="ภาษาไทย (Thai)"
+                className="w-[14px] rounded-[2px] shadow-sm"
+              />
               TH
             </button>
             <button
               onClick={() => setLang("EN")}
               className={cn(
                 "relative z-10 flex w-16 items-center justify-center gap-1.5 rounded-full py-1 text-[11px] font-bold transition-colors duration-300",
-                lang === "EN" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
+                lang === "EN" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground",
               )}
               aria-label="Change language to English"
             >
-              <img src="https://flagcdn.com/w20/gb.png" alt="English (UK)" className="w-[14px] rounded-[2px] shadow-sm" />
+              <img
+                src="https://flagcdn.com/w20/gb.png"
+                alt="English (UK)"
+                className="w-[14px] rounded-[2px] shadow-sm"
+              />
               EN
             </button>
           </div>
@@ -370,16 +378,25 @@ function BlogMegaMenu() {
                 Knowledge Hub
               </div>
               <div className="mt-2 font-bold leading-snug">
-                {t(lang, "บทความและคู่มือ AV Solutions สำหรับองค์กร", "AV Solutions Articles & Guides for Enterprises")}
+                {t(
+                  lang,
+                  "บทความและคู่มือ AV Solutions สำหรับองค์กร",
+                  "AV Solutions Articles & Guides for Enterprises",
+                )}
               </div>
               <p className="mt-2 text-xs text-white/70 leading-relaxed">
-                {t(lang, "รวมความรู้และ Case Study จากทีมผู้เชี่ยวชาญ", "Knowledge and Case Studies from our Experts")}
+                {t(
+                  lang,
+                  "รวมความรู้และ Case Study จากทีมผู้เชี่ยวชาญ",
+                  "Knowledge and Case Studies from our Experts",
+                )}
               </p>
               <Link
                 to="/blog"
                 className="mt-4 inline-flex items-center gap-1 rounded-lg bg-white text-navy px-3 py-2 text-xs font-bold hover:bg-cyan transition-colors"
               >
-                {t(lang, "ดูบทความทั้งหมด", "View All Articles")} <ArrowUpRight className="h-3.5 w-3.5" />
+                {t(lang, "ดูบทความทั้งหมด", "View All Articles")}{" "}
+                <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>
@@ -520,27 +537,41 @@ function MobileDrawer({
             <div
               className={cn(
                 "absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[#ffd24a] shadow-[0_2px_10px_rgba(255,204,25,0.4)] transition-transform duration-300 ease-out",
-                lang === "EN" ? "translate-x-full" : "translate-x-0"
+                lang === "EN" ? "translate-x-full" : "translate-x-0",
               )}
             />
             <button
-              onClick={() => { setLang("TH"); onClose(); }}
+              onClick={() => {
+                setLang("TH");
+                onClose();
+              }}
               className={cn(
                 "relative z-10 flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors duration-300",
-                lang === "TH" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
+                lang === "TH" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <img src="https://flagcdn.com/w20/th.png" alt="ภาษาไทย (Thai)" className="w-4 rounded-[2px] shadow-sm" />
+              <img
+                src="https://flagcdn.com/w20/th.png"
+                alt="ภาษาไทย (Thai)"
+                className="w-4 rounded-[2px] shadow-sm"
+              />
               ภาษาไทย
             </button>
             <button
-              onClick={() => { setLang("EN"); onClose(); }}
+              onClick={() => {
+                setLang("EN");
+                onClose();
+              }}
               className={cn(
                 "relative z-10 flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-bold transition-colors duration-300",
-                lang === "EN" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground"
+                lang === "EN" ? "text-[#0a1b3d]" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <img src="https://flagcdn.com/w20/gb.png" alt="English (UK)" className="w-4 rounded-[2px] shadow-sm" />
+              <img
+                src="https://flagcdn.com/w20/gb.png"
+                alt="English (UK)"
+                className="w-4 rounded-[2px] shadow-sm"
+              />
               English
             </button>
           </div>

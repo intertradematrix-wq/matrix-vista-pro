@@ -15,6 +15,7 @@ import { AiSalesChatbot } from "@/components/site/AiSalesChatbot";
 import { FloatingSocial } from "@/components/site/FloatingSocial";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
+import { Toaster } from "sonner";
 
 import appCss from "../styles.css?url";
 
@@ -140,6 +141,7 @@ function RootComponent() {
             <BackToTop />
             <AiSalesChatbot />
             <FloatingSocial />
+            <Toaster position="top-center" richColors />
           </div>
         </LanguageProvider>
       </ThemeProvider>

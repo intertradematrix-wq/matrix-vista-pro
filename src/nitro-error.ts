@@ -15,7 +15,7 @@ export default function (error: any, event: any) {
         unhandled: true,
         message: "HTTPError",
         details: error?.message || String(error),
-      })
+      }),
     );
   }
 }

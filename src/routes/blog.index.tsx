@@ -59,7 +59,11 @@ function BlogPage() {
       <PageHeader
         eyebrow="Knowledge Hub"
         title={t(lang, "บทความและคู่มือ AV Solutions", "Articles and AV Solutions Guide")}
-        desc={t(lang, "ความรู้ คู่มือเลือกซื้อ และ Case Study สำหรับองค์กรที่กำลังวางระบบ AV", "Knowledge, buying guides, and case studies for organizations planning AV systems.")}
+        desc={t(
+          lang,
+          "ความรู้ คู่มือเลือกซื้อ และ Case Study สำหรับองค์กรที่กำลังวางระบบ AV",
+          "Knowledge, buying guides, and case studies for organizations planning AV systems.",
+        )}
         breadcrumbs={[{ label: t(lang, "บทความ", "Articles") }]}
         bgImage={heroBlog}
       />
@@ -96,7 +100,9 @@ function BlogPage() {
 
           {!cat && !q && (
             <div className="mb-12">
-              <h2 className="mb-5 text-lg font-bold text-primary">{t(lang, "บทความแนะนำ", "Featured Articles")}</h2>
+              <h2 className="mb-5 text-lg font-bold text-primary">
+                {t(lang, "บทความแนะนำ", "Featured Articles")}
+              </h2>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {featured.map((a) => (
                   <ArticleCard key={a.id} article={a} />
@@ -106,7 +112,9 @@ function BlogPage() {
           )}
 
           <h2 className="mb-5 text-lg font-bold text-primary">
-            {cat && currentCat ? t(lang, currentCat.label, currentCat.labelEn) : t(lang, "บทความล่าสุด", "Latest Articles")}{" "}
+            {cat && currentCat
+              ? t(lang, currentCat.label, currentCat.labelEn)
+              : t(lang, "บทความล่าสุด", "Latest Articles")}{" "}
             <span className="text-sm font-normal text-muted-foreground">({filtered.length})</span>
           </h2>
           {filtered.length === 0 ? (

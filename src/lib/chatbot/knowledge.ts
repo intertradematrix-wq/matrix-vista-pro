@@ -90,7 +90,7 @@ async function buildKnowledge(): Promise<KnowledgeRecord[]> {
   const [productContent, siteContent, articleContent] = await Promise.all([
     loadProductListContent(),
     loadSiteContent(),
-    loadArticleListContent()
+    loadArticleListContent(),
   ]);
 
   const productRecords = productContent.products.map(productToRecord);
@@ -138,9 +138,10 @@ async function buildKnowledge(): Promise<KnowledgeRecord[]> {
   return cachedKnowledge;
 }
 
-const segmenter = typeof Intl !== "undefined" && Intl.Segmenter 
-  ? new Intl.Segmenter("th", { granularity: "word" }) 
-  : null;
+const segmenter =
+  typeof Intl !== "undefined" && Intl.Segmenter
+    ? new Intl.Segmenter("th", { granularity: "word" })
+    : null;
 
 function tokenize(text: string): string[] {
   if (!text) return [];
@@ -307,14 +308,17 @@ async function askOpenAI(message: string, history: string[], results: ChatbotRes
             "Format nicely with bullet points if listing multiple items or specs.",
           ].join("\n"),
         },
-        ...history.map(msg => ({ role: msg.startsWith("You:") ? "user" : "assistant", content: msg })),
+        ...history.map((msg) => ({
+          role: msg.startsWith("You:") ? "user" : "assistant",
+          content: msg,
+        })),
         {
           role: "user",
           content: [
             `Website context:\n${buildContext(results) || "No matching website context."}`,
             `Customer question:\n${message}`,
-          ].join("\n\n")
-        }
+          ].join("\n\n"),
+        },
       ],
       max_tokens: 520,
     }),
@@ -324,7 +328,7 @@ async function askOpenAI(message: string, history: string[], results: ChatbotRes
     console.error("OpenAI chatbot error:", response.status, await response.text());
     return null;
   }
-  
+
   const payload = await response.json();
   return payload.choices?.[0]?.message?.content?.trim() || extractOpenAIText(payload);
 }

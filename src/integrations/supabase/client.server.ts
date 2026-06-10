@@ -21,7 +21,7 @@ function createSupabaseAdminClient() {
     return new Proxy({} as any, {
       get(_, prop) {
         throw new Error(message);
-      }
+      },
     });
   }
 

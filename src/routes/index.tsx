@@ -726,14 +726,16 @@ function SectionHeader({
   desc?: string;
 }) {
   return (
-    <div className="max-w-2xl mb-12">
+    <div className="max-w-2xl mb-6 sm:mb-10">
       {eyebrow && (
-        <div className="inline-block rounded-full bg-accent/10 text-accent px-3 py-1 text-[11px] font-bold uppercase tracking-widest mb-3">
+        <div className="inline-block rounded-full bg-accent/10 text-accent px-3 py-1 text-[11px] font-bold uppercase tracking-widest mb-2 sm:mb-3">
           {eyebrow}
         </div>
       )}
-      <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">{title}</h2>
-      {desc && <p className="mt-3 text-muted-foreground">{desc}</p>}
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary tracking-tight leading-snug">
+        {title}
+      </h2>
+      {desc && <p className="mt-2 sm:mt-3 text-sm sm:text-base text-muted-foreground">{desc}</p>}
     </div>
   );
 }
@@ -750,7 +752,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="py-14 sm:py-20 md:py-28">
+    <section className="py-10 sm:py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <SectionHeader eyebrow={eyebrow} title={title} desc={desc} />
         {children}

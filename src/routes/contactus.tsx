@@ -73,7 +73,11 @@ function ContactPage() {
       <PageHeader
         eyebrow="Contact"
         title={t(lang, "ติดต่อทีมผู้เชี่ยวชาญของเรา", "Contact Our Experts")}
-        desc={t(lang, "ขอใบเสนอราคา หรือนัดหมาย Site Survey ฟรี ทีมงานพร้อมตอบกลับภายใน 1 วันทำการ", "Request a quote or schedule a free site survey. We reply within 1 business day.")}
+        desc={t(
+          lang,
+          "ขอใบเสนอราคา หรือนัดหมาย Site Survey ฟรี ทีมงานพร้อมตอบกลับภายใน 1 วันทำการ",
+          "Request a quote or schedule a free site survey. We reply within 1 business day.",
+        )}
         breadcrumbs={[{ label: t(lang, "ติดต่อเรา", "Contact Us") }]}
         bgImage={heroContact}
       />
@@ -86,7 +90,9 @@ function ContactPage() {
                 <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
                   {t(lang, "ติดต่อเรา พร้อมให้บริการ", "We're Here to Help")}
                 </h2>
-                <p className="text-muted-foreground text-lg">{t(lang, "ช่องทางการติดต่อ Matrix Intertrade", "Contact Channels")}</p>
+                <p className="text-muted-foreground text-lg">
+                  {t(lang, "ช่องทางการติดต่อ Matrix Intertrade", "Contact Channels")}
+                </p>
               </div>
             </Reveal>
 
@@ -95,10 +101,22 @@ function ContactPage() {
                 {
                   Icon: MapPin,
                   label: t(lang, "ที่อยู่", "Address"),
-                  d: t(lang, "บจก.แมทริกซ์ อินเตอร์เทรด 111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000", "Matrix Intertrade 111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000"),
+                  d: t(
+                    lang,
+                    "บจก.แมทริกซ์ อินเตอร์เทรด 111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000",
+                    "Matrix Intertrade 111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000",
+                  ),
                 },
-                { Icon: Phone, label: t(lang, "โทรศัพท์", "Phone"), d: "02-129-6193 / 094-888-7041" },
-                { Icon: Mail, label: t(lang, "อีเมล", "Email"), d: "matrixintertrade2026@gmail.com" },
+                {
+                  Icon: Phone,
+                  label: t(lang, "โทรศัพท์", "Phone"),
+                  d: "02-129-6193 / 094-888-7041",
+                },
+                {
+                  Icon: Mail,
+                  label: t(lang, "อีเมล", "Email"),
+                  d: "matrixintertrade2026@gmail.com",
+                },
                 { Icon: MessageCircle, label: "Line OA", d: "@MatrixIntertrade" },
               ].map(({ Icon, label, d }) => (
                 <div
@@ -109,9 +127,7 @@ function ContactPage() {
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-muted-foreground mb-1">
-                      {label}
-                    </div>
+                    <div className="text-sm font-semibold text-muted-foreground mb-1">{label}</div>
                     <div className="text-base font-semibold text-primary leading-snug">{d}</div>
                   </div>
                   <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground/40 group-hover:text-brand-red group-hover:translate-x-1 transition-all" />
@@ -140,7 +156,11 @@ function ContactPage() {
               {t(lang, "แผนที่บริษัท & เส้นทางเดินทาง", "Office Map & Directions")}
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-              {t(lang, "นัดหมายเข้าชม Showroom และคลังสินค้าของเราที่นนทบุรี ทีมงานพร้อมต้อนรับและสาธิตสินค้าจริง", "Schedule a visit to our Showroom and Warehouse in Nonthaburi. Our team is ready to welcome you and provide live demonstrations.")}
+              {t(
+                lang,
+                "นัดหมายเข้าชม Showroom และคลังสินค้าของเราที่นนทบุรี ทีมงานพร้อมต้อนรับและสาธิตสินค้าจริง",
+                "Schedule a visit to our Showroom and Warehouse in Nonthaburi. Our team is ready to welcome you and provide live demonstrations.",
+              )}
             </p>
           </div>
 
@@ -161,7 +181,11 @@ function ContactPage() {
                   Co., Ltd.
                 </h3>
                 <p className="mt-3 text-sm text-white/85 leading-relaxed">
-                  {t(lang, "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง", "111/51 Moo 8, Bang Krang, Mueang")}
+                  {t(
+                    lang,
+                    "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง",
+                    "111/51 Moo 8, Bang Krang, Mueang",
+                  )}
                   <br />
                   {t(lang, "จ.นนทบุรี 11000 ประเทศไทย", "Nonthaburi 11000, Thailand")}
                 </p>
@@ -169,9 +193,17 @@ function ContactPage() {
 
               <div className="relative mt-6 space-y-3">
                 {[
-                  { Icon: Clock, label: t(lang, "เวลาทำการ", "Business Hours"), d: t(lang, "จันทร์–ศุกร์ 08:30–17:30 น.", "Mon–Fri 08:30–17:30") },
+                  {
+                    Icon: Clock,
+                    label: t(lang, "เวลาทำการ", "Business Hours"),
+                    d: t(lang, "จันทร์–ศุกร์ 08:30–17:30 น.", "Mon–Fri 08:30–17:30"),
+                  },
                   { Icon: Phone, label: t(lang, "โทรนัดหมาย", "Appointments"), d: "02-129-6193" },
-                  { Icon: Car, label: t(lang, "ที่จอดรถ", "Parking"), d: t(lang, "มีที่จอดรถภายในบริษัท", "Parking available on-site") },
+                  {
+                    Icon: Car,
+                    label: t(lang, "ที่จอดรถ", "Parking"),
+                    d: t(lang, "มีที่จอดรถภายในบริษัท", "Parking available on-site"),
+                  },
                 ].map(({ Icon, label, d }) => (
                   <div
                     key={label}

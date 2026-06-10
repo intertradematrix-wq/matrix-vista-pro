@@ -81,7 +81,9 @@ export function SolutionCard({
 
       {/* Body */}
       <div className="flex flex-1 flex-col p-6">
-        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{t(lang, desc, descEn || desc)}</p>
+        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+          {t(lang, desc, descEn || desc)}
+        </p>
         <div className="mt-auto pt-5">
           <span className="inline-flex items-center gap-1.5 text-sm font-bold text-accent">
             {t(lang, "ดูรายละเอียด", "View Details")}

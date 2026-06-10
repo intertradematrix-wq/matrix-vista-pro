@@ -677,12 +677,29 @@
     }
   }
   @keyframes marqueeTicker {
-    0%, 15% { transform: translate3d(0, 0, 0); }
-    20%, 35% { transform: translate3d(-10%, 0, 0); }
-    40%, 55% { transform: translate3d(-20%, 0, 0); }
-    60%, 75% { transform: translate3d(-30%, 0, 0); }
-    80%, 95% { transform: translate3d(-40%, 0, 0); }
-    100% { transform: translate3d(-50%, 0, 0); }
+    0%,
+    15% {
+      transform: translate3d(0, 0, 0);
+    }
+    20%,
+    35% {
+      transform: translate3d(-10%, 0, 0);
+    }
+    40%,
+    55% {
+      transform: translate3d(-20%, 0, 0);
+    }
+    60%,
+    75% {
+      transform: translate3d(-30%, 0, 0);
+    }
+    80%,
+    95% {
+      transform: translate3d(-40%, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
   }
   .marquee-fade {
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);

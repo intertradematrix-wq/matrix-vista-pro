@@ -98,7 +98,11 @@ function ProductPage() {
   ];
   const promiseItems = [
     t(lang, "ให้คำปรึกษาและออกแบบระบบโดยทีมวิศวกร", "Consultation and system design by engineers"),
-    t(lang, "ติดตั้งโดยช่างผู้ชำนาญ พร้อมตรวจเช็กหน้างาน", "Installation by specialists with on-site inspection"),
+    t(
+      lang,
+      "ติดตั้งโดยช่างผู้ชำนาญ พร้อมตรวจเช็กหน้างาน",
+      "Installation by specialists with on-site inspection",
+    ),
     t(lang, "ดูแลหลังการขายและบำรุงรักษาระยะยาว", "After-sales care and long-term maintenance"),
   ];
 
@@ -126,11 +130,17 @@ function ProductPage() {
               {p.name}
             </h1>
             <p className="mt-4 max-w-xl break-words text-sm leading-relaxed text-muted-foreground md:text-base">
-              {t(lang, "เลือกสินค้า AV พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการออกแบบ ติดตั้ง และดูแลระบบในองค์กร", "Select AV products with advice from the Matrix Intertrade team for corporate system design, installation, and maintenance.")}
+              {t(
+                lang,
+                "เลือกสินค้า AV พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการออกแบบ ติดตั้ง และดูแลระบบในองค์กร",
+                "Select AV products with advice from the Matrix Intertrade team for corporate system design, installation, and maintenance.",
+              )}
             </p>
 
             <div className="mt-6 min-w-0 rounded-xl border border-border bg-white p-4">
-              <div className="text-xs font-medium text-muted-foreground">{t(lang, "ราคา", "Price")}</div>
+              <div className="text-xs font-medium text-muted-foreground">
+                {t(lang, "ราคา", "Price")}
+              </div>
               {hasPrice ? (
                 <div className="mt-1 break-words text-3xl font-bold text-primary">
                   {p.price} {t(lang, "บาท", "THB")}
@@ -141,7 +151,11 @@ function ProductPage() {
                 </div>
               )}
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                {t(lang, "ราคาอาจเปลี่ยนตามรุ่น สเปก และเงื่อนไขโครงการ กรุณายืนยันกับฝ่ายขาย", "Prices may vary based on model, specs, and project conditions. Please confirm with sales.")}
+                {t(
+                  lang,
+                  "ราคาอาจเปลี่ยนตามรุ่น สเปก และเงื่อนไขโครงการ กรุณายืนยันกับฝ่ายขาย",
+                  "Prices may vary based on model, specs, and project conditions. Please confirm with sales.",
+                )}
               </p>
             </div>
 
@@ -169,7 +183,12 @@ function ProductPage() {
               rel="noopener noreferrer"
               className="mt-4 inline-flex max-w-full items-center gap-1 break-words text-xs font-medium text-muted-foreground transition-colors hover:text-accent"
             >
-              {t(lang, "ดูข้อมูลต้นทางบน matrixintertrade.com", "View original source on matrixintertrade.com")} <ExternalLink className="h-3 w-3" />
+              {t(
+                lang,
+                "ดูข้อมูลต้นทางบน matrixintertrade.com",
+                "View original source on matrixintertrade.com",
+              )}{" "}
+              <ExternalLink className="h-3 w-3" />
             </a>
           </div>
 
@@ -223,7 +242,9 @@ function ProductPage() {
       {descriptionHtml && (
         <section className="border-t border-border bg-white py-10 md:py-14">
           <div className="mx-auto max-w-5xl px-4 md:px-6">
-            <h2 className="mb-6 text-xl font-bold text-primary md:text-2xl">{t(lang, "รายละเอียดสินค้า", "Product Details")}</h2>
+            <h2 className="mb-6 text-xl font-bold text-primary md:text-2xl">
+              {t(lang, "รายละเอียดสินค้า", "Product Details")}
+            </h2>
             <article
               className="product-detail-content min-w-0 leading-relaxed text-foreground/90"
               dangerouslySetInnerHTML={{ __html: descriptionHtml }}
@@ -241,7 +262,11 @@ function ProductPage() {
                   {t(lang, `สินค้าอื่นในกลุ่ม ${p.brand}`, `Other products by ${p.brand}`)}
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {t(lang, "เปรียบเทียบรุ่นใกล้เคียงก่อนขอใบเสนอราคา", "Compare similar models before requesting a quote")}
+                  {t(
+                    lang,
+                    "เปรียบเทียบรุ่นใกล้เคียงก่อนขอใบเสนอราคา",
+                    "Compare similar models before requesting a quote",
+                  )}
                 </p>
               </div>
               <Button asChild variant="outline" className="min-h-11">
@@ -271,7 +296,9 @@ function ProductPage() {
                       {r.name}
                     </div>
                     <div className="mt-2 text-xs font-semibold text-accent">
-                      {r.price && r.price !== "0.00" ? `${r.price} ${t(lang, "บาท", "THB")}` : t(lang, "ติดต่อสอบถามราคา", "Contact for Price")}
+                      {r.price && r.price !== "0.00"
+                        ? `${r.price} ${t(lang, "บาท", "THB")}`
+                        : t(lang, "ติดต่อสอบถามราคา", "Contact for Price")}
                     </div>
                   </div>
                 </Link>

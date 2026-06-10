@@ -33,7 +33,11 @@ function SolutionsPage() {
       <PageHeader
         eyebrow="Solutions"
         title={t(lang, "โซลูชั่นของเรา", "Our Solutions")}
-        desc={t(lang, "ทุกโซลูชั่นออกแบบมาเพื่อรองรับการใช้งานจริงในระดับองค์กร พร้อมการดูแลตลอดอายุการใช้งาน", "Every solution is designed for real-world enterprise use, complete with lifetime support.")}
+        desc={t(
+          lang,
+          "ทุกโซลูชั่นออกแบบมาเพื่อรองรับการใช้งานจริงในระดับองค์กร พร้อมการดูแลตลอดอายุการใช้งาน",
+          "Every solution is designed for real-world enterprise use, complete with lifetime support.",
+        )}
         breadcrumbs={[{ label: t(lang, "โซลูชั่นของเรา", "Our Solutions") }]}
         bgImage={heroSolutions}
       />

@@ -56,7 +56,10 @@ export function SolutionDetailTemplate({
         eyebrow="Solution"
         title={title}
         desc={displayIntro}
-        breadcrumbs={[{ label: t(lang, "โซลูชั่นของเรา", "Our Solutions"), href: "/solutions" }, { label: title }]}
+        breadcrumbs={[
+          { label: t(lang, "โซลูชั่นของเรา", "Our Solutions"), href: "/solutions" },
+          { label: title },
+        ]}
         bgImage={slugHero[slug]}
       />
       <section className="py-16 md:py-20">
@@ -114,7 +117,9 @@ export function SolutionDetailTemplate({
               </div>
             </div>
             <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-              <h3 className="font-bold text-primary mb-4">{t(lang, "การใช้งานที่เหมาะสม", "Best Applications")}</h3>
+              <h3 className="font-bold text-primary mb-4">
+                {t(lang, "การใช้งานที่เหมาะสม", "Best Applications")}
+              </h3>
               <ul className="grid grid-cols-2 gap-2">
                 {displayApps.map((a) => (
                   <li key={a} className="flex items-center gap-2 text-sm text-foreground/80">

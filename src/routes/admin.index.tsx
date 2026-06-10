@@ -18,6 +18,17 @@ import {
   List,
   ListOrdered,
   Link as LinkIcon,
+  ChevronDown,
+  ChevronRight,
+  Globe,
+  Share2,
+  SearchCheck,
+  EyeOff,
+  Tags,
+  Code2,
+  AlertTriangle,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -43,9 +54,10 @@ type ContentKind =
   | "brandIntros"
   | "solutions"
   | "industries"
-  | "navItems";
+  | "navItems"
+  | "contactSubmissions";
 
-type FieldType = "text" | "textarea" | "number" | "json" | "image" | "richtext";
+type FieldType = "text" | "textarea" | "number" | "json" | "image" | "richtext" | "toggle";
 type ContentItem = Record<string, unknown>;
 type Draft = Record<string, string>;
 
@@ -55,6 +67,9 @@ type FieldConfig = {
   type?: FieldType;
   rows?: number;
   readOnly?: boolean;
+  group?: string;
+  placeholder?: string;
+  maxLength?: number;
 };
 
 type ContentConfig = {
@@ -95,7 +110,51 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "brand_category_id", label: "Brand Category ID" },
       { key: "description_text", label: "Description Text", type: "textarea", rows: 5 },
       { key: "description_html", label: "Description HTML", type: "richtext" },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 8 },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
+      {
+        key: "seo_title",
+        label: "SEO Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ชื่อสินค้าแทน",
+        maxLength: 60,
+      },
+      {
+        key: "seo_description",
+        label: "Meta Description",
+        type: "textarea",
+        rows: 3,
+        group: "seo",
+        placeholder: "คำอธิบายสำหรับ Google Search (แนะนำ 150-160 ตัวอักษร)",
+        maxLength: 160,
+      },
+      {
+        key: "seo_keywords",
+        label: "Keywords",
+        group: "seo",
+        placeholder: "คั่นด้วยเครื่องหมายจุลภาค เช่น projector, LED, display",
+      },
+      {
+        key: "og_title",
+        label: "OG Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ SEO Title แทน",
+      },
+      {
+        key: "og_description",
+        label: "OG Description",
+        type: "textarea",
+        rows: 3,
+        group: "seo",
+        placeholder: "คำอธิบายสำหรับ Facebook/Twitter share",
+      },
+      { key: "og_image_url", label: "OG Image", type: "image", group: "seo" },
+      {
+        key: "seo_canonical_url",
+        label: "Canonical URL",
+        group: "seo",
+        placeholder: "ถ้าหน้านี้ซ้ำกับหน้าอื่น ใส่ URL หน้าหลัก",
+      },
+      { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
     ],
   },
   articles: {
@@ -116,8 +175,47 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "read_min", label: "Read Minutes", type: "number" },
       { key: "canonical_url", label: "Canonical URL" },
       { key: "cover_image_url", label: "Cover Image URL", type: "image" },
-      { key: "blocks", label: "Blocks JSON", type: "json", rows: 16 },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 8 },
+      { key: "content_html", label: "Article Content", type: "richtext" },
+      { key: "blocks", label: "Legacy Blocks JSON", type: "json", rows: 8, group: "advanced" },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
+      {
+        key: "seo_title",
+        label: "SEO Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ Title แทน",
+        maxLength: 60,
+      },
+      {
+        key: "seo_description",
+        label: "Meta Description",
+        type: "textarea",
+        rows: 3,
+        group: "seo",
+        placeholder: "คำอธิบายสำหรับ Google Search (แนะนำ 150-160 ตัวอักษร)",
+        maxLength: 160,
+      },
+      {
+        key: "seo_keywords",
+        label: "Keywords",
+        group: "seo",
+        placeholder: "คั่นด้วยเครื่องหมายจุลภาค",
+      },
+      {
+        key: "og_title",
+        label: "OG Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ SEO Title แทน",
+      },
+      {
+        key: "og_description",
+        label: "OG Description",
+        type: "textarea",
+        rows: 3,
+        group: "seo",
+        placeholder: "คำอธิบายสำหรับ Facebook/Twitter share",
+      },
+      { key: "og_image_url", label: "OG Image", type: "image", group: "seo" },
+      { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
     ],
   },
   articleCategories: {
@@ -132,7 +230,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "slug", label: "Slug", readOnly: true },
       { key: "label", label: "Label" },
       { key: "image_url", label: "Image URL", type: "image" },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 10 },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 10, group: "advanced" },
     ],
   },
   brands: {
@@ -151,8 +249,52 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "color", label: "Color" },
       { key: "image_url", label: "Image URL", type: "image" },
       { key: "logo_url", label: "Logo URL", type: "image" },
-      { key: "accent", label: "Accent JSON", type: "json", rows: 8 },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 8 },
+      { key: "accent", label: "Accent JSON", type: "json", rows: 8, group: "advanced" },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
+      {
+        key: "seo_title",
+        label: "SEO Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ชื่อแบรนด์แทน",
+        maxLength: 60,
+      },
+      {
+        key: "seo_description",
+        label: "Meta Description",
+        type: "textarea",
+        rows: 3,
+        group: "seo",
+        placeholder: "คำอธิบายสำหรับ Google Search (แนะนำ 150-160 ตัวอักษร)",
+        maxLength: 160,
+      },
+      {
+        key: "seo_keywords",
+        label: "Keywords",
+        group: "seo",
+        placeholder: "คั่นด้วยเครื่องหมายจุลภาค",
+      },
+      {
+        key: "og_title",
+        label: "OG Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ SEO Title แทน",
+      },
+      {
+        key: "og_description",
+        label: "OG Description",
+        type: "textarea",
+        rows: 3,
+        group: "seo",
+        placeholder: "คำอธิบายสำหรับ Facebook/Twitter share",
+      },
+      { key: "og_image_url", label: "OG Image", type: "image", group: "seo" },
+      {
+        key: "seo_canonical_url",
+        label: "Canonical URL",
+        group: "seo",
+        placeholder: "ถ้าหน้านี้ซ้ำกับหน้าอื่น",
+      },
+      { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
     ],
   },
   brandIntros: {
@@ -167,10 +309,10 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "brand_slug", label: "Brand Slug" },
       { key: "tagline", label: "Tagline" },
       { key: "description", label: "Description", type: "textarea", rows: 5 },
-      { key: "highlights", label: "Highlights JSON", type: "json", rows: 8 },
-      { key: "best_for", label: "Best For JSON", type: "json", rows: 8 },
+      { key: "highlights", label: "Highlights JSON", type: "json", rows: 8, group: "advanced" },
+      { key: "best_for", label: "Best For JSON", type: "json", rows: 8, group: "advanced" },
       { key: "origin", label: "Origin" },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 8 },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
     ],
   },
   solutions: {
@@ -187,7 +329,39 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "icon", label: "Icon" },
       { key: "description", label: "Description", type: "textarea", rows: 5 },
       { key: "image_url", label: "Image URL", type: "image" },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 10 },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 10, group: "advanced" },
+      {
+        key: "seo_title",
+        label: "SEO Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ Title แทน",
+        maxLength: 60,
+      },
+      {
+        key: "seo_description",
+        label: "Meta Description",
+        type: "textarea",
+        rows: 3,
+        group: "seo",
+        placeholder: "คำอธิบายสำหรับ Google Search",
+        maxLength: 160,
+      },
+      {
+        key: "seo_keywords",
+        label: "Keywords",
+        group: "seo",
+        placeholder: "คั่นด้วยเครื่องหมายจุลภาค",
+      },
+      {
+        key: "og_title",
+        label: "OG Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ SEO Title แทน",
+      },
+      { key: "og_description", label: "OG Description", type: "textarea", rows: 3, group: "seo" },
+      { key: "og_image_url", label: "OG Image", type: "image", group: "seo" },
+      { key: "seo_canonical_url", label: "Canonical URL", group: "seo" },
+      { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
     ],
   },
   industries: {
@@ -204,7 +378,39 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "icon", label: "Icon" },
       { key: "description", label: "Description", type: "textarea", rows: 5 },
       { key: "image_url", label: "Image URL", type: "image" },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 12 },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 12, group: "advanced" },
+      {
+        key: "seo_title",
+        label: "SEO Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ Title แทน",
+        maxLength: 60,
+      },
+      {
+        key: "seo_description",
+        label: "Meta Description",
+        type: "textarea",
+        rows: 3,
+        group: "seo",
+        placeholder: "คำอธิบายสำหรับ Google Search",
+        maxLength: 160,
+      },
+      {
+        key: "seo_keywords",
+        label: "Keywords",
+        group: "seo",
+        placeholder: "คั่นด้วยเครื่องหมายจุลภาค",
+      },
+      {
+        key: "og_title",
+        label: "OG Title",
+        group: "seo",
+        placeholder: "ถ้าไม่กรอก จะใช้ SEO Title แทน",
+      },
+      { key: "og_description", label: "OG Description", type: "textarea", rows: 3, group: "seo" },
+      { key: "og_image_url", label: "OG Image", type: "image", group: "seo" },
+      { key: "seo_canonical_url", label: "Canonical URL", group: "seo" },
+      { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
     ],
   },
   navItems: {
@@ -224,12 +430,50 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "href", label: "Href" },
       { key: "description", label: "Description", type: "textarea", rows: 4 },
       { key: "image_url", label: "Image URL", type: "image" },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 8 },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
+    ],
+  },
+  contactSubmissions: {
+    label: "Contact Submissions",
+    description: "Inquiries from the Contact Us page",
+    key: "id",
+    title: "name",
+    subtitle: (item) => {
+      const dateStr = item.created_at
+        ? new Date(item.created_at as string).toLocaleString("th-TH", { timeZone: "Asia/Bangkok" })
+        : "";
+      return `${dateStr ? `[${dateStr}] ` : ""}${item.topic || "No Topic"} · ${item.email}`;
+    },
+    fields: [
+      { key: "id", label: "Submission ID", readOnly: true },
+      { key: "created_at", label: "Submitted At", readOnly: true },
+      { key: "name", label: "Name", readOnly: true },
+      { key: "company", label: "Company", readOnly: true },
+      { key: "email", label: "Email", readOnly: true },
+      { key: "phone", label: "Phone", readOnly: true },
+      { key: "topic", label: "Topic", readOnly: true },
+      { key: "message", label: "Message", type: "textarea", rows: 6, readOnly: true },
+      { key: "is_read", label: "Mark as Read", type: "toggle" },
     ],
   },
 };
 
 const CONTENT_KINDS = Object.keys(CONTENT_CONFIG) as ContentKind[];
+
+function blocksToHtml(blocks: unknown): string {
+  if (!Array.isArray(blocks)) return "";
+  return blocks
+    .map((b) => {
+      if (!b || typeof b !== "object") return "";
+      if (b.t === "img" && b.src) return `<img src="${b.src}" />`;
+      if (b.t === "h2" && b.text) return `<h2>${b.text}</h2>`;
+      if (b.t === "h3" && b.text) return `<h3>${b.text}</h3>`;
+      if (b.t === "li" && b.text) return `<ul><li>${b.text}</li></ul>`;
+      if (b.text) return `<p>${b.text}</p>`;
+      return "";
+    })
+    .join("");
+}
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
@@ -248,19 +492,23 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [isCreating, setIsCreating] = useState(false);
 
   const config = CONTENT_CONFIG[activeKind];
   const items = content[activeKind] ?? [];
   const selectedId = selectedIds[activeKind] ?? "";
-  const selectedItem = items.find((item) => text(item[config.key]) === selectedId) ?? items[0];
+  const foundItem = items.find((item) => text(item[config.key]) === selectedId);
+  const selectedItem = isCreating
+    ? ({ [config.key]: selectedId } as unknown as ContentItem)
+    : (foundItem ?? items[0]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data }: any) => {
       setSessionToken(data.session?.access_token ?? null);
       setLoading(false);
     });
 
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setSessionToken(session?.access_token ?? null);
     });
 
@@ -282,11 +530,59 @@ function AdminPage() {
       return;
     }
 
+    if (isCreating) {
+      // Draft is already initialized by onAddNew, don't overwrite it here
+      return;
+    }
+
     const nextId = text(selectedItem[config.key]);
     if (!selectedId) setSelectedIds((current) => ({ ...current, [activeKind]: nextId }));
-    setDraft(toDraft(selectedItem, config.fields));
+
+    const initialDraft = toDraft(selectedItem, config.fields);
+
+    // Auto-migrate legacy blocks to content_html for articles
+    if (activeKind === "articles" && !initialDraft.content_html && selectedItem.blocks) {
+      try {
+        const blocks =
+          typeof selectedItem.blocks === "string"
+            ? JSON.parse(selectedItem.blocks)
+            : selectedItem.blocks;
+        initialDraft.content_html = blocksToHtml(blocks);
+      } catch (e) {
+        // ignore parse errors
+      }
+    }
+
+    // Auto-populate SEO fields if they are empty
+    const hasSeo = config.fields.some((f) => f.group === "seo");
+    if (hasSeo) {
+      const mainTitle = text(
+        selectedItem[config.title] ||
+          selectedItem["name"] ||
+          selectedItem["title"] ||
+          selectedItem["label"] ||
+          "",
+      );
+      const mainDesc = text(
+        selectedItem["excerpt"] ||
+          selectedItem["description"] ||
+          selectedItem["description_text"] ||
+          "",
+      );
+      const mainImage = config.image ? config.image(selectedItem) || "" : "";
+
+      if (!initialDraft.seo_title && mainTitle) initialDraft.seo_title = mainTitle;
+      if (!initialDraft.seo_description && mainDesc) initialDraft.seo_description = mainDesc;
+      if (!initialDraft.og_title && initialDraft.seo_title)
+        initialDraft.og_title = initialDraft.seo_title;
+      if (!initialDraft.og_description && initialDraft.seo_description)
+        initialDraft.og_description = initialDraft.seo_description;
+      if (!initialDraft.og_image_url && mainImage) initialDraft.og_image_url = mainImage;
+    }
+
+    setDraft(initialDraft);
     setSaveState("idle");
-  }, [activeKind, config.fields, config.key, selectedId, selectedItem]);
+  }, [activeKind, config.fields, config.key, selectedId, selectedItem, isCreating]);
 
   const filteredItems = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -328,11 +624,7 @@ function AdminPage() {
       password,
     });
     setLoading(false);
-    setStatus(
-      error
-        ? error.message
-        : "Signed in successfully.",
-    );
+    setStatus(error ? error.message : "Signed in successfully.");
   }
 
   async function signOut() {
@@ -355,7 +647,13 @@ function AdminPage() {
       return;
     }
 
-    const id = text(selectedItem[config.key]);
+    const id = isCreating ? String(draft[config.key] ?? "").trim() : text(selectedItem[config.key]);
+    if (!id) {
+      setStatus("Primary key (ID/Slug) is required");
+      setSaveState("error");
+      return;
+    }
+
     try {
       const response = await fetch("/api/admin/content", {
         method: "POST",
@@ -363,23 +661,102 @@ function AdminPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${sessionToken}`,
         },
-        body: JSON.stringify({ kind: activeKind, id, values }),
+        body: JSON.stringify({
+          kind: activeKind,
+          id,
+          values,
+          action: isCreating ? "create" : "update",
+        }),
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? `Cannot save ${config.label}`);
 
       const saved = payload.item as ContentItem;
-      setContent((current) => ({
-        ...current,
-        [activeKind]: (current[activeKind] ?? []).map((item) =>
-          text(item[config.key]) === id ? saved : item,
-        ),
-      }));
+      setContent((current) => {
+        const list = current[activeKind] ?? [];
+        return {
+          ...current,
+          [activeKind]: isCreating
+            ? [...list, saved]
+            : list.map((item) =>
+                text(item[config.key]) === (isCreating ? id : text(selectedItem[config.key]))
+                  ? saved
+                  : item,
+              ),
+        };
+      });
       setSelectedIds((current) => ({ ...current, [activeKind]: text(saved[config.key]) }));
+      setIsCreating(false);
       setSaveState("saved");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : `Cannot save ${config.label}`);
       setSaveState("error");
+    }
+  }
+
+  async function deleteCurrentItem() {
+    if (!sessionToken || !selectedItem || isCreating) return;
+    if (
+      !window.confirm(
+        `Are you sure you want to delete this ${config.label}? This action cannot be undone.`,
+      )
+    )
+      return;
+
+    setSaveState("saving");
+    setStatus("");
+    const id = text(selectedItem[config.key]);
+
+    try {
+      const response = await fetch("/api/admin/content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({ kind: activeKind, id, values: {}, action: "delete" }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? `Cannot delete ${config.label}`);
+
+      setContent((current) => {
+        const list = current[activeKind] ?? [];
+        return {
+          ...current,
+          [activeKind]: list.filter((item) => text(item[config.key]) !== id),
+        };
+      });
+      setSelectedIds((current) => ({ ...current, [activeKind]: "" }));
+      setSaveState("idle");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : `Cannot delete ${config.label}`);
+      setSaveState("error");
+    }
+  }
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+        e.preventDefault();
+        if (sessionToken && selectedItem) {
+          void saveCurrentItem();
+        }
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [sessionToken, selectedItem, draft, activeKind, config]); // Re-bind when state used in saveCurrentItem changes
+
+  const isDirty = useMemo(() => {
+    if (!selectedItem) return false;
+    const originalDraft = toDraft(selectedItem, config.fields);
+    return JSON.stringify(originalDraft) !== JSON.stringify(draft);
+  }, [selectedItem, draft, config.fields]);
+
+  function discardDraft() {
+    if (selectedItem) {
+      setDraft(toDraft(selectedItem, config.fields));
+      setSaveState("idle");
     }
   }
 
@@ -447,7 +824,13 @@ function AdminPage() {
         </div>
       </div>
 
-      <Tabs value={activeKind} onValueChange={(value) => setActiveKind(value as ContentKind)}>
+      <Tabs
+        value={activeKind}
+        onValueChange={(value) => {
+          setActiveKind(value as ContentKind);
+          setIsCreating(false);
+        }}
+      >
         <div className="flex flex-col gap-3">
           <TabsList className="h-auto flex-wrap justify-start">
             {CONTENT_KINDS.map((kind) => (
@@ -478,17 +861,38 @@ function AdminPage() {
               items={filteredItems}
               allContent={content}
               selectedId={selectedId}
+              isCreating={isCreating}
               onSelect={(item) => {
+                setIsCreating(false);
                 setSelectedIds((current) => ({
                   ...current,
                   [activeKind]: text(item[config.key]),
                 }));
                 setSaveState("idle");
               }}
+              onAddNew={() => {
+                setIsCreating(true);
+                const newId = `new-${Date.now()}`;
+                setSelectedIds((current) => ({
+                  ...current,
+                  [activeKind]: newId,
+                }));
+                const newDraft: Draft = { [config.key]: newId };
+                config.fields.forEach((f) => {
+                  if (f.key !== config.key) newDraft[f.key] = "";
+                });
+                setDraft(newDraft);
+                setSaveState("idle");
+              }}
             />
             {selectedItem && (
               <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
-                <ContentEditor config={config} draft={draft} setDraft={setDraft} />
+                <ContentEditor
+                  config={config}
+                  draft={draft}
+                  setDraft={setDraft}
+                  isCreating={isCreating}
+                />
                 <ContentPreview
                   kind={activeKind}
                   config={config}
@@ -496,6 +900,10 @@ function AdminPage() {
                   allContent={content}
                   saveState={saveState}
                   onSave={saveCurrentItem}
+                  isDirty={isDirty || isCreating}
+                  onDiscard={discardDraft}
+                  isCreating={isCreating}
+                  onDelete={deleteCurrentItem}
                 />
               </div>
             )}
@@ -527,22 +935,40 @@ function ContentList({
   items,
   allContent,
   selectedId,
+  isCreating,
   onSelect,
+  onAddNew,
 }: {
   kind: ContentKind;
   config: ContentConfig;
   items: ContentItem[];
   allContent: Partial<Record<ContentKind, ContentItem[]>>;
   selectedId: string;
+  isCreating?: boolean;
   onSelect: (item: ContentItem) => void;
+  onAddNew?: () => void;
 }) {
   return (
     <Card className="overflow-hidden">
-      <CardHeader>
-        <CardTitle className="text-base">Items</CardTitle>
-        <CardDescription>Select an item to edit and preview.</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="space-y-1">
+          <CardTitle className="text-base">Items</CardTitle>
+          <CardDescription>Select an item to edit and preview.</CardDescription>
+        </div>
+        {onAddNew && (
+          <Button variant="outline" size="sm" onClick={onAddNew} disabled={isCreating}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add New
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="max-h-[72vh] space-y-2 overflow-auto pr-3">
+        {isCreating && (
+          <button className="flex w-full flex-col items-start gap-1 rounded-lg border border-primary bg-primary/10 px-3 py-2 text-left text-sm transition-colors">
+            <div className="font-semibold text-primary">New {config.label}</div>
+            <div className="text-xs text-muted-foreground">{selectedId}</div>
+          </button>
+        )}
         {items.map((item) => {
           const id = text(item[config.key]);
           const image = previewImage(kind, config, item, allContent);
@@ -584,12 +1010,21 @@ function ContentEditor({
   config,
   draft,
   setDraft,
+  isCreating,
 }: {
   config: ContentConfig;
   draft: Draft;
   setDraft: (draft: Draft) => void;
+  isCreating?: boolean;
 }) {
+  const [seoOpen, setSeoOpen] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const update = (key: string, value: string) => setDraft({ ...draft, [key]: value });
+
+  const regularFields = config.fields.filter((f) => f.group !== "seo" && f.group !== "advanced");
+  const seoFields = config.fields.filter((f) => f.group === "seo");
+  const advancedFields = config.fields.filter((f) => f.group === "advanced");
+
   return (
     <Card>
       <CardHeader>
@@ -599,54 +1034,157 @@ function ContentEditor({
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
-        {config.fields.map((field) => {
-          const value = draft[field.key] ?? "";
-          if (field.type === "textarea" || field.type === "json") {
-            return (
-              <TextField
-                key={field.key}
-                label={field.label}
-                value={value}
-                rows={field.rows ?? 5}
-                onChange={(next) => update(field.key, next)}
-                readOnly={field.readOnly}
-              />
-            );
-          }
-          if (field.type === "image") {
-            return (
-              <ImageField
-                key={field.key}
-                label={field.label}
-                value={value}
-                onChange={(next) => update(field.key, next)}
-              />
-            );
-          }
-          if (field.type === "richtext") {
-            return (
-              <RichTextField
-                key={field.key}
-                label={field.label}
-                value={value}
-                onChange={(next) => update(field.key, next)}
-                readOnly={field.readOnly}
-              />
-            );
-          }
-          return (
-            <Field
-              key={field.key}
-              label={field.label}
-              type={field.type === "number" ? "number" : "text"}
-              value={value}
-              disabled={field.readOnly}
-              onChange={(next) => update(field.key, next)}
-            />
-          );
-        })}
+        {regularFields.map((field) => renderField(field, draft, update, isCreating))}
+
+        {seoFields.length > 0 && (
+          <div className="rounded-xl border border-accent/20 bg-gradient-to-br from-accent/[0.03] to-transparent overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setSeoOpen(!seoOpen)}
+              className="flex w-full items-center gap-2.5 px-4 py-3.5 text-left transition-colors hover:bg-accent/5"
+            >
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+                <SearchCheck className="h-4 w-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-semibold text-primary">SEO Settings</span>
+                <span className="ml-2 text-xs text-muted-foreground">
+                  Title, Meta, OG Tags, Canonical
+                </span>
+              </div>
+              {seoOpen ? (
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform" />
+              )}
+            </button>
+            {seoOpen && (
+              <div className="grid gap-4 border-t border-accent/10 px-4 py-4">
+                {seoFields.map((field) => renderField(field, draft, update, isCreating))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {advancedFields.length > 0 && (
+          <div className="rounded-xl border border-border overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setAdvancedOpen(!advancedOpen)}
+              className="flex w-full items-center gap-2.5 px-4 py-3.5 text-left transition-colors hover:bg-muted/50"
+            >
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-secondary text-muted-foreground">
+                <Code2 className="h-4 w-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="flex items-center gap-2 text-sm font-semibold text-primary">
+                  Developer & Advanced
+                  <AlertTriangle className="h-3.5 w-3.5 text-orange-500" />
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Raw JSON structures (Payload, Blocks)
+                </span>
+              </div>
+              {advancedOpen ? (
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform" />
+              )}
+            </button>
+            {advancedOpen && (
+              <div className="grid gap-4 border-t border-border px-4 py-4 bg-muted/20">
+                <div className="text-xs text-orange-600 bg-orange-50 px-3 py-2 rounded-lg font-medium">
+                  Warning: Modifying JSON directly can break page rendering. Do not edit unless you
+                  know what you are doing.
+                </div>
+                {advancedFields.map((field) => renderField(field, draft, update, isCreating))}
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
+  );
+}
+
+function renderField(
+  field: FieldConfig,
+  draft: Draft,
+  update: (key: string, value: string) => void,
+  isCreating: boolean = false,
+) {
+  let value = draft[field.key] ?? "";
+
+  if (field.key === "created_at" && value) {
+    try {
+      value = new Date(value).toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  if (field.type === "toggle") {
+    return (
+      <ToggleField
+        key={field.key}
+        label={field.label}
+        checked={value === "true"}
+        onChange={(checked) => update(field.key, String(checked))}
+      />
+    );
+  }
+
+  if (field.type === "textarea" || field.type === "json") {
+    return (
+      <div key={field.key} className="grid gap-1.5">
+        <TextField
+          label={field.label}
+          value={value}
+          rows={field.rows ?? 5}
+          onChange={(next) => update(field.key, next)}
+          readOnly={field.readOnly}
+          placeholder={field.placeholder}
+        />
+        {field.maxLength && <CharCount value={value} max={field.maxLength} />}
+      </div>
+    );
+  }
+
+  if (field.type === "image") {
+    return (
+      <ImageField
+        key={field.key}
+        label={field.label}
+        value={value}
+        onChange={(next) => update(field.key, next)}
+      />
+    );
+  }
+
+  if (field.type === "richtext") {
+    return (
+      <RichTextField
+        key={field.key}
+        label={field.label}
+        value={value}
+        onChange={(next) => update(field.key, next)}
+        readOnly={field.readOnly}
+      />
+    );
+  }
+
+  return (
+    <div key={field.key} className="grid gap-1.5">
+      <Field
+        label={field.label}
+        type={field.type === "number" ? "number" : "text"}
+        value={value}
+        disabled={field.readOnly}
+        onChange={(next) => update(field.key, next)}
+        placeholder={field.placeholder}
+      />
+      {field.maxLength && <CharCount value={value} max={field.maxLength} />}
+    </div>
   );
 }
 
@@ -657,6 +1195,10 @@ function ContentPreview({
   allContent,
   saveState,
   onSave,
+  isDirty,
+  onDiscard,
+  isCreating,
+  onDelete,
 }: {
   kind: ContentKind;
   config: ContentConfig;
@@ -664,14 +1206,26 @@ function ContentPreview({
   allContent: Partial<Record<ContentKind, ContentItem[]>>;
   saveState: SaveState;
   onSave: () => void;
+  isDirty?: boolean;
+  onDiscard?: () => void;
+  isCreating?: boolean;
+  onDelete?: () => void;
 }) {
   const image = previewImage(kind, config, item, allContent);
   const href = config.href?.(item);
   const title = text(item[config.title]) || text(item[config.key]);
   const description = previewDescription(kind, item);
 
+  const hasSeoFields = config.fields.some((f) => f.group === "seo");
+  const seoTitle = text(item.seo_title) || title;
+  const seoDesc = text(item.seo_description) || description || "";
+  const ogTitle = text(item.og_title) || seoTitle;
+  const ogDesc = text(item.og_description) || seoDesc;
+  const ogImage = text(item.og_image_url) || image || "";
+  const isNoIndex = item.seo_no_index === true || text(item.seo_no_index) === "true";
+
   return (
-    <div className="sticky top-5 self-start">
+    <div className="sticky top-5 self-start space-y-5">
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
@@ -716,24 +1270,159 @@ function ContentPreview({
             </div>
           </div>
 
-          <Button className="w-full" onClick={onSave} disabled={saveState === "saving"}>
-            {saveState === "saving" ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="mr-2 h-4 w-4" />
+          <div className="flex flex-col gap-2">
+            <Button
+              className="w-full"
+              onClick={onSave}
+              disabled={saveState === "saving" || (saveState !== "error" && !isDirty)}
+            >
+              {saveState === "saving" ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              {saveState === "saved" && !isDirty
+                ? "Saved"
+                : isCreating
+                  ? "Create Item"
+                  : "Save to Supabase"}
+              <kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center gap-1 rounded border border-primary-foreground/20 bg-primary-foreground/10 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                <span className="text-xs">⌘</span>S
+              </kbd>
+            </Button>
+            {isDirty && onDiscard && (
+              <Button
+                variant="outline"
+                className="w-full text-muted-foreground"
+                onClick={onDiscard}
+                disabled={saveState === "saving"}
+              >
+                Discard Changes
+              </Button>
             )}
-            {saveState === "saved" ? "Saved" : "Save to Supabase"}
-          </Button>
-          {saveState === "error" && <p className="text-sm text-destructive">Save failed.</p>}
+            {!isCreating && onDelete && (
+              <Button
+                variant="outline"
+                className="w-full text-destructive border-destructive/20 hover:bg-destructive/10"
+                onClick={onDelete}
+                disabled={saveState === "saving"}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete {config.label}
+              </Button>
+            )}
+            {saveState === "error" && (
+              <p className="text-sm text-destructive font-medium px-1">
+                Save failed. Check console or try again.
+              </p>
+            )}
+          </div>
         </CardContent>
       </Card>
+
+      {hasSeoFields && (
+        <Card className="border-accent/15">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-accent" />
+              <CardTitle className="text-base">Google Search Preview</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-xl border border-border bg-white p-4 space-y-1.5">
+              {isNoIndex && (
+                <div className="flex items-center gap-1.5 mb-2">
+                  <EyeOff className="h-3.5 w-3.5 text-orange-500" />
+                  <span className="text-xs font-medium text-orange-600">
+                    หน้านี้ถูกตั้งค่า No Index — จะไม่ปรากฏบน Google
+                  </span>
+                </div>
+              )}
+              <div
+                className="text-xs text-[#202124] truncate"
+                style={{ fontFamily: "Arial, sans-serif" }}
+              >
+                www.matrixintertrade.com{href || "/"}
+              </div>
+              <div
+                className="text-lg leading-snug"
+                style={{ fontFamily: "Arial, sans-serif", color: "#1a0dab" }}
+              >
+                {seoTitle.slice(0, 60)}
+                {seoTitle.length > 60 && "..."}
+              </div>
+              <div
+                className="text-sm leading-relaxed line-clamp-2"
+                style={{ fontFamily: "Arial, sans-serif", color: "#4d5156" }}
+              >
+                {seoDesc.slice(0, 160)}
+                {seoDesc.length > 160 && "..."}
+              </div>
+              {text(item.seo_keywords) && (
+                <div className="flex flex-wrap gap-1.5 pt-2">
+                  <Tags className="h-3.5 w-3.5 text-muted-foreground mt-0.5" />
+                  {text(item.seo_keywords)
+                    .split(",")
+                    .filter(Boolean)
+                    .slice(0, 6)
+                    .map((kw, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                      >
+                        {kw.trim()}
+                      </span>
+                    ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {hasSeoFields && (
+        <Card className="border-accent/15">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Share2 className="h-4 w-4 text-accent" />
+              <CardTitle className="text-base">Social Media Preview</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-hidden rounded-xl border border-border bg-[#f0f2f5]">
+              <div className="relative aspect-[1.91/1] bg-secondary/60">
+                {ogImage ? (
+                  <img
+                    src={ogImage}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="grid h-full place-items-center text-sm text-muted-foreground">
+                    No OG image
+                  </div>
+                )}
+              </div>
+              <div className="bg-[#f0f2f5] px-3 py-2.5 space-y-0.5">
+                <div className="text-[10px] uppercase tracking-wider text-[#65676b]">
+                  matrixintertrade.com
+                </div>
+                <div className="text-sm font-semibold leading-snug text-[#1c1e21] line-clamp-2">
+                  {ogTitle}
+                </div>
+                <div className="text-xs leading-snug text-[#65676b] line-clamp-1">{ogDesc}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
 
 function PreviewFacts({ config, item }: { config: ContentConfig; item: ContentItem }) {
   const fields = config.fields
-    .filter((field) => field.type !== "json" && !field.readOnly)
+    .filter((field) => field.type !== "json" && !field.readOnly && field.group !== "seo")
     .slice(0, 5);
 
   return (
@@ -754,12 +1443,14 @@ function Field({
   onChange,
   disabled,
   type = "text",
+  placeholder,
 }: {
   label: string;
   value: string;
   onChange?: (value: string) => void;
   disabled?: boolean;
   type?: string;
+  placeholder?: string;
 }) {
   return (
     <label className="grid gap-1.5 text-sm font-medium text-primary">
@@ -768,9 +1459,74 @@ function Field({
         type={type}
         value={value}
         disabled={disabled}
+        placeholder={placeholder}
         onChange={(event) => onChange?.(event.target.value)}
       />
     </label>
+  );
+}
+
+function ToggleField({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex items-center gap-3 cursor-pointer select-none group">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        onClick={() => onChange(!checked)}
+        className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 ${
+          checked ? "bg-accent" : "bg-muted"
+        }`}
+      >
+        <span
+          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+            checked ? "translate-x-5" : "translate-x-0.5"
+          }`}
+        />
+      </button>
+      <span className="text-sm font-medium text-primary group-hover:text-accent transition-colors">
+        {label}
+      </span>
+      {checked && (
+        <span className="rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-semibold text-orange-600">
+          Active
+        </span>
+      )}
+    </label>
+  );
+}
+
+function CharCount({ value, max }: { value: string; max: number }) {
+  const len = value.length;
+  const pct = Math.min((len / max) * 100, 100);
+  const isOver = len > max;
+  const isGood = len > 0 && len <= max;
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all ${
+            isOver ? "bg-destructive" : isGood ? "bg-green-500" : "bg-muted-foreground/30"
+          }`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <span
+        className={`text-[10px] font-medium tabular-nums ${
+          isOver ? "text-destructive" : "text-muted-foreground"
+        }`}
+      >
+        {len}/{max}
+      </span>
+    </div>
   );
 }
 
@@ -948,7 +1704,12 @@ function ImageField({
 
       // Convert image to WebP format to save Egress bandwidth
       let uploadFile = file;
-      if (file.type.startsWith("image/") && file.type !== "image/webp" && file.type !== "image/gif" && file.type !== "image/svg+xml") {
+      if (
+        file.type.startsWith("image/") &&
+        file.type !== "image/webp" &&
+        file.type !== "image/gif" &&
+        file.type !== "image/svg+xml"
+      ) {
         uploadFile = await new Promise<File>((resolve) => {
           const img = new Image();
           const url = URL.createObjectURL(file);
@@ -967,7 +1728,7 @@ function ImageField({
                 resolve(new File([blob], `${baseName}.webp`, { type: "image/webp" }));
               },
               "image/webp",
-              0.85
+              0.85,
             );
           };
           img.onerror = () => {
@@ -1060,12 +1821,14 @@ function TextField({
   onChange,
   rows,
   readOnly,
+  placeholder,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   rows: number;
   readOnly?: boolean;
+  placeholder?: string;
 }) {
   return (
     <label className="grid gap-1.5 text-sm font-medium text-primary">
@@ -1074,6 +1837,7 @@ function TextField({
         value={value}
         rows={rows}
         readOnly={readOnly}
+        placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
         className={readOnly ? "opacity-70" : undefined}
       />
@@ -1087,6 +1851,8 @@ function toDraft(item: ContentItem, fields: FieldConfig[]): Draft {
       const value = item[field.key];
       if (field.type === "json")
         return [field.key, JSON.stringify(value ?? defaultJsonValue(field.key), null, 2)];
+      if (field.type === "toggle")
+        return [field.key, value === true || value === "true" ? "true" : "false"];
       return [field.key, text(value)];
     }),
   );
@@ -1105,6 +1871,8 @@ function fromDraft(draft: Draft, fields: FieldConfig[]) {
       }
     } else if (field.type === "number") {
       values[field.key] = value === "" ? null : Number(value);
+    } else if (field.type === "toggle") {
+      values[field.key] = value === "true";
     } else {
       values[field.key] = value;
     }
@@ -1124,6 +1892,8 @@ function mergePreviewItem(item: ContentItem, draft: Draft, fields: FieldConfig[]
       }
     } else if (field.type === "number") {
       merged[field.key] = value === "" ? null : Number(value);
+    } else if (field.type === "toggle") {
+      merged[field.key] = value === "true";
     } else {
       merged[field.key] = value;
     }

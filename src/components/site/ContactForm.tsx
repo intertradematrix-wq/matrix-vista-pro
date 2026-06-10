@@ -33,11 +33,23 @@ export function ContactForm() {
       });
       if (!res.ok) throw new Error("send failed");
       setDone(true);
-      toast.success(t(lang, "ส่งคำขอเรียบร้อย ทีมงานจะติดต่อกลับโดยเร็ว", "Request sent. Our team will contact you shortly."));
+      toast.success(
+        t(
+          lang,
+          "ส่งคำขอเรียบร้อย ทีมงานจะติดต่อกลับโดยเร็ว",
+          "Request sent. Our team will contact you shortly.",
+        ),
+      );
       (e.target as HTMLFormElement).reset();
     } catch (err) {
       console.error(err);
-      toast.error(t(lang, "ส่งคำขอไม่สำเร็จ กรุณาลองใหม่อีกครั้ง", "Failed to send request. Please try again."));
+      toast.error(
+        t(
+          lang,
+          "ส่งคำขอไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+          "Failed to send request. Please try again.",
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -51,9 +63,15 @@ export function ContactForm() {
       <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-gold to-brand-red" />
 
       <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold text-primary">{t(lang, "ส่งคำขอใบเสนอราคา", "Request a Quote")}</h3>
+        <h3 className="text-2xl font-bold text-primary">
+          {t(lang, "ส่งคำขอใบเสนอราคา", "Request a Quote")}
+        </h3>
         <p className="text-sm text-muted-foreground mt-2">
-          {t(lang, "กรอกข้อมูลของคุณ เพื่อให้เราติดต่อกลับโดยเร็วที่สุด", "Fill out the form below and we will get back to you shortly.")}
+          {t(
+            lang,
+            "กรอกข้อมูลของคุณ เพื่อให้เราติดต่อกลับโดยเร็วที่สุด",
+            "Fill out the form below and we will get back to you shortly.",
+          )}
         </p>
       </div>
 
@@ -114,7 +132,11 @@ export function ContactForm() {
           id="message"
           name="message"
           rows={4}
-          placeholder={t(lang, "กรุณาระบุขนาดพื้นที่ จำนวน และรายละเอียดงาน...", "Please specify room size, quantity, and other details...")}
+          placeholder={t(
+            lang,
+            "กรุณาระบุขนาดพื้นที่ จำนวน และรายละเอียดงาน...",
+            "Please specify room size, quantity, and other details...",
+          )}
           className="rounded-xl bg-card border-border/60 focus:ring-brand-red/20 focus:border-brand-red transition-all resize-none"
         />
       </Field>

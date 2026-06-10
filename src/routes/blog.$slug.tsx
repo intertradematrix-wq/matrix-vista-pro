@@ -80,7 +80,10 @@ function BlogDetail() {
       <PageHeader
         eyebrow={t(lang, cat?.label ?? "", cat?.labelEn ?? cat?.label ?? "")}
         title={article.title}
-        breadcrumbs={[{ label: t(lang, "บทความ", "Articles"), href: "/blog" }, { label: t(lang, cat?.label ?? "", cat?.labelEn ?? cat?.label ?? "") }]}
+        breadcrumbs={[
+          { label: t(lang, "บทความ", "Articles"), href: "/blog" },
+          { label: t(lang, cat?.label ?? "", cat?.labelEn ?? cat?.label ?? "") },
+        ]}
         bgImage={coverImg ?? heroBlog}
       />
       <article className="py-12 md:py-16">
@@ -94,7 +97,10 @@ function BlogDetail() {
               <Clock className="h-4 w-4" />
               {article.readMin} {t(lang, "นาทีในการอ่าน", "min read")}
             </span>
-            <span className="inline-flex items-center gap-1.5" title={t(lang, "ยอดเข้าชม", "Views")}>
+            <span
+              className="inline-flex items-center gap-1.5"
+              title={t(lang, "ยอดเข้าชม", "Views")}
+            >
               <Eye className="h-4 w-4" />
               {formatViews(viewCount)} {t(lang, "ครั้ง", "views")}
             </span>
@@ -122,41 +128,48 @@ function BlogDetail() {
           </div>
           <div className="prose prose-lg max-w-none text-foreground/85 leading-relaxed space-y-5">
             <p className="text-xl text-foreground font-medium">{article.excerpt}</p>
-            {contentBlocks.map((b, i) => {
-              if (b.t === "img")
+            {(article as any).content_html ? (
+              <div
+                dangerouslySetInnerHTML={{ __html: (article as any).content_html }}
+                className="article-rich-text prose prose-lg max-w-none prose-img:rounded-xl prose-img:border prose-img:border-border prose-img:shadow-card prose-headings:text-primary prose-a:text-accent prose-a:no-underline hover:prose-a:underline"
+              />
+            ) : (
+              contentBlocks.map((b, i) => {
+                if (b.t === "img")
+                  return (
+                    <img
+                      key={i}
+                      src={b.src}
+                      alt={`${article.title} - ภาพประกอบ`}
+                      loading="lazy"
+                      className="my-6 w-full rounded-xl border border-border shadow-card"
+                    />
+                  );
+                if (b.t === "h2")
+                  return (
+                    <h2 key={i} className="text-2xl font-bold text-primary mt-10 mb-3">
+                      {b.text}
+                    </h2>
+                  );
+                if (b.t === "h3")
+                  return (
+                    <h3 key={i} className="text-xl font-bold text-primary mt-6 mb-2">
+                      {b.text}
+                    </h3>
+                  );
+                if (b.t === "li")
+                  return (
+                    <li key={i} className="ml-6 list-disc">
+                      {b.text}
+                    </li>
+                  );
                 return (
-                  <img
-                    key={i}
-                    src={b.src}
-                    alt={`${article.title} - ภาพประกอบ`}
-                    loading="lazy"
-                    className="my-6 w-full rounded-xl border border-border shadow-card"
-                  />
-                );
-              if (b.t === "h2")
-                return (
-                  <h2 key={i} className="text-2xl font-bold text-primary mt-10 mb-3">
+                  <p key={i} className="leading-relaxed">
                     {b.text}
-                  </h2>
+                  </p>
                 );
-              if (b.t === "h3")
-                return (
-                  <h3 key={i} className="text-xl font-bold text-primary mt-6 mb-2">
-                    {b.text}
-                  </h3>
-                );
-              if (b.t === "li")
-                return (
-                  <li key={i} className="ml-6 list-disc">
-                    {b.text}
-                  </li>
-                );
-              return (
-                <p key={i} className="leading-relaxed">
-                  {b.text}
-                </p>
-              );
-            })}
+              })
+            )}
             {(article.canonicalUrl || content?.url) && (
               <p className="pt-6 text-sm text-muted-foreground">
                 <a
@@ -177,7 +190,9 @@ function BlogDetail() {
       {related.length > 0 && (
         <section className="bg-gradient-subtle py-16">
           <div className="mx-auto max-w-7xl px-4 md:px-6">
-            <h2 className="text-2xl font-bold text-primary mb-8">{t(lang, "บทความที่เกี่ยวข้อง", "Related Articles")}</h2>
+            <h2 className="text-2xl font-bold text-primary mb-8">
+              {t(lang, "บทความที่เกี่ยวข้อง", "Related Articles")}
+            </h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((a) => (
                 <ArticleCard key={a.id} article={a} />

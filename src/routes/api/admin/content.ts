@@ -12,7 +12,8 @@ type ContentKind =
   | "brandIntros"
   | "solutions"
   | "industries"
-  | "navItems";
+  | "navItems"
+  | "contactSubmissions";
 
 type ContentConfig = {
   table: string;
@@ -27,7 +28,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     table: "content_products",
     key: "product_id",
     select:
-      "product_id,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,payload,updated_at",
+      "product_id,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
     order: "product_id",
     fields: [
       "name",
@@ -40,13 +41,21 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "description_text",
       "description_html",
       "payload",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_canonical_url",
+      "seo_no_index",
     ],
   },
   articles: {
     table: "content_articles",
     key: "slug",
     select:
-      "slug,article_id,title,category,excerpt,published_date,read_min,canonical_url,cover_image_url,blocks,payload,updated_at",
+      "slug,article_id,title,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_no_index,updated_at",
     order: "article_id",
     fields: [
       "title",
@@ -56,8 +65,16 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "read_min",
       "canonical_url",
       "cover_image_url",
+      "content_html",
       "blocks",
       "payload",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_no_index",
     ],
   },
   articleCategories: {
@@ -70,7 +87,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   brands: {
     table: "content_brands",
     key: "slug",
-    select: "slug,name,category,description,color,image_url,logo_url,accent,payload,updated_at",
+    select:
+      "slug,name,category,description,color,image_url,logo_url,accent,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
     order: "slug",
     fields: [
       "name",
@@ -81,6 +99,14 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "logo_url",
       "accent",
       "payload",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_canonical_url",
+      "seo_no_index",
     ],
   },
   brandIntros: {
@@ -94,16 +120,46 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   solutions: {
     table: "content_solutions",
     key: "slug",
-    select: "slug,title,icon,description,image_url,payload,updated_at",
+    select:
+      "slug,title,icon,description,image_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
     order: "slug",
-    fields: ["title", "icon", "description", "image_url", "payload"],
+    fields: [
+      "title",
+      "icon",
+      "description",
+      "image_url",
+      "payload",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_canonical_url",
+      "seo_no_index",
+    ],
   },
   industries: {
     table: "content_industries",
     key: "slug",
-    select: "slug,title,icon,description,image_url,payload,updated_at",
+    select:
+      "slug,title,icon,description,image_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
     order: "slug",
-    fields: ["title", "icon", "description", "image_url", "payload"],
+    fields: [
+      "title",
+      "icon",
+      "description",
+      "image_url",
+      "payload",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_canonical_url",
+      "seo_no_index",
+    ],
   },
   navItems: {
     table: "content_nav_items",
@@ -121,6 +177,23 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "payload",
     ],
   },
+  contactSubmissions: {
+    table: "contact_submissions",
+    key: "id",
+    select: "id,name,company,email,phone,topic,message,created_at,is_read",
+    order: "created_at",
+    fields: [
+      "id",
+      "name",
+      "company",
+      "email",
+      "phone",
+      "topic",
+      "message",
+      "created_at",
+      "is_read",
+    ],
+  },
 };
 
 const UpdateSchema = z.object({
@@ -133,7 +206,9 @@ const UpdateSchema = z.object({
     "solutions",
     "industries",
     "navItems",
+    "contactSubmissions",
   ]),
+  action: z.enum(["update", "create", "delete"]).optional().default("update"),
   id: z.string().min(1),
   values: z.record(z.unknown()),
 });
@@ -263,6 +338,17 @@ export const Route = createFileRoute("/api/admin/content")({
           return jsonError("Invalid content payload", 400, parsed.error.flatten());
 
         const config = CONTENT_CONFIG[parsed.data.kind];
+
+        if (parsed.data.action === "delete") {
+          const { error } = await supabaseAdmin
+            .from(config.table as any)
+            .delete()
+            .eq(config.key, parsed.data.id);
+
+          if (error) return jsonError(`Failed to delete ${parsed.data.kind}`, 500, error);
+          return Response.json({ ok: true, kind: parsed.data.kind, deletedId: parsed.data.id });
+        }
+
         const values = Object.fromEntries(
           Object.entries(parsed.data.values)
             .filter(([field]) => config.fields.includes(field))
@@ -273,14 +359,23 @@ export const Route = createFileRoute("/api/admin/content")({
           return jsonError("No supported fields to update", 400);
         }
 
-        const { data, error } = await supabaseAdmin
-          .from(config.table as any)
-          .update(values as any)
-          .eq(config.key, parsed.data.id)
-          .select(config.select)
-          .single();
+        let query = supabaseAdmin.from(config.table as any);
+        let result;
 
-        if (error) {
+        if (parsed.data.action === "create") {
+          result = await query
+            .insert({ [config.key]: parsed.data.id, ...values } as any)
+            .select(config.select)
+            .single();
+        } else {
+          result = await query
+            .update(values as any)
+            .eq(config.key, parsed.data.id)
+            .select(config.select)
+            .single();
+        }
+
+        if (result.error) {
           // Retry without image_url if the column doesn't exist yet
           if (config.select.includes("image_url")) {
             const fallbackValues = Object.fromEntries(
@@ -291,22 +386,35 @@ export const Route = createFileRoute("/api/admin/content")({
               .filter((col) => col.trim() !== "image_url")
               .join(",");
 
-            if (Object.keys(fallbackValues).length > 0) {
-              const retry = await supabaseAdmin
-                .from(config.table as any)
-                .update(fallbackValues as any)
-                .eq(config.key, parsed.data.id)
-                .select(fallbackSelect)
-                .single();
+            if (Object.keys(fallbackValues).length > 0 || parsed.data.action === "create") {
+              const retryQuery = supabaseAdmin.from(config.table as any);
+              let retryResult;
 
-              if (!retry.error) {
-                return Response.json({ ok: true, kind: parsed.data.kind, item: retry.data });
+              if (parsed.data.action === "create") {
+                retryResult = await retryQuery
+                  .insert({ [config.key]: parsed.data.id, ...fallbackValues } as any)
+                  .select(fallbackSelect)
+                  .single();
+              } else {
+                retryResult = await retryQuery
+                  .update(fallbackValues as any)
+                  .eq(config.key, parsed.data.id)
+                  .select(fallbackSelect)
+                  .single();
+              }
+
+              if (!retryResult.error) {
+                return Response.json({ ok: true, kind: parsed.data.kind, item: retryResult.data });
               }
             }
           }
-          return jsonError(`Failed to update ${parsed.data.kind}`, 500, error);
+          return jsonError(
+            `Failed to ${parsed.data.action} ${parsed.data.kind}`,
+            500,
+            result.error,
+          );
         }
-        return Response.json({ ok: true, kind: parsed.data.kind, item: data });
+        return Response.json({ ok: true, kind: parsed.data.kind, item: result.data });
       },
     },
   },

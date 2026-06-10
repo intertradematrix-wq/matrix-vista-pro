@@ -192,9 +192,9 @@ export function SolutionSplitPanels({ solutions }: { solutions: Solution[] }) {
               onClick={(e) => {
                 if (dragRef.current.moved) e.preventDefault();
               }}
-              className="group relative w-[76vw] max-w-[420px] shrink-0 sm:w-[44vw] md:w-[32vw] lg:w-[26vw] xl:w-[22vw]"
+              className="group relative w-[64vw] max-w-[420px] shrink-0 sm:w-[44vw] md:w-[32vw] lg:w-[26vw] xl:w-[22vw]"
             >
-              <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
+              <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-2xl sm:rounded-sm bg-muted">
                 {img && (
                   <img
                     src={img}

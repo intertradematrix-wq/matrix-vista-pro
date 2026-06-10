@@ -93,7 +93,9 @@ export function BrandCard({
             </h3>
           </div>
         </div>
-        <p className="text-[15px] leading-relaxed text-muted-foreground line-clamp-2">{t(lang, desc, descEn || desc)}</p>
+        <p className="text-[15px] leading-relaxed text-muted-foreground line-clamp-2">
+          {t(lang, desc, descEn || desc)}
+        </p>
 
         <div className="mt-auto pt-5">
           <div className="mb-4 flex items-center gap-2 rounded-lg bg-accent/5 px-3 py-2 text-[13px] font-semibold text-navy border border-accent/10">

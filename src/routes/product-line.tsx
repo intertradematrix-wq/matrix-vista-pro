@@ -25,8 +25,15 @@ function ProductLinePage() {
       <PageHeader
         eyebrow="Product Line"
         title={t(lang, "Product Line ทั้งหมด", "All Product Lines")}
-        desc={t(lang, "ภาพรวมแบรนด์และไลน์สินค้าที่เราจำหน่าย", "Overview of brands and product lines we distribute")}
-        breadcrumbs={[{ label: t(lang, "สินค้า", "Products"), href: "/category/0" }, { label: "Product Line" }]}
+        desc={t(
+          lang,
+          "ภาพรวมแบรนด์และไลน์สินค้าที่เราจำหน่าย",
+          "Overview of brands and product lines we distribute",
+        )}
+        breadcrumbs={[
+          { label: t(lang, "สินค้า", "Products"), href: "/category/0" },
+          { label: "Product Line" },
+        ]}
         bgImage={heroProductLine}
       />
       <section className="py-16 md:py-20">

@@ -23,7 +23,11 @@ export function Footer() {
               {t(lang, "พร้อมเริ่มโปรเจ็คของคุณแล้วหรือยัง?", "Ready to start your project?")}
             </h3>
             <p className="mt-1.5 break-words text-sm text-white/80">
-              {t(lang, "ขอใบเสนอราคา หรือนัด Site Survey ฟรีจากทีมผู้เชี่ยวชาญ", "Request a quote or schedule a free site survey with our experts")}
+              {t(
+                lang,
+                "ขอใบเสนอราคา หรือนัด Site Survey ฟรีจากทีมผู้เชี่ยวชาญ",
+                "Request a quote or schedule a free site survey with our experts",
+              )}
             </p>
           </div>
           <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap">
@@ -53,7 +57,11 @@ export function Footer() {
         <div className="lg:col-span-4 space-y-5">
           <img src={matrixLogo} alt="Matrix Intertrade Co., Ltd." className="h-14 w-auto" />
           <p className="max-w-md break-words text-sm leading-relaxed text-white/80">
-            {t(lang, "บจก.แมทริกซ์ อินเตอร์เทรด — ผู้เชี่ยวชาญด้าน AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation และ Smart Classroom สำหรับองค์กรในประเทศไทย", "Matrix Intertrade Co., Ltd. — Experts in AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation, and Smart Classroom for enterprises in Thailand.")}
+            {t(
+              lang,
+              "บจก.แมทริกซ์ อินเตอร์เทรด — ผู้เชี่ยวชาญด้าน AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation และ Smart Classroom สำหรับองค์กรในประเทศไทย",
+              "Matrix Intertrade Co., Ltd. — Experts in AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation, and Smart Classroom for enterprises in Thailand.",
+            )}
           </p>
           <div className="space-y-2.5 text-sm text-white/85">
             <div className="flex items-start gap-3">
@@ -61,7 +69,11 @@ export function Footer() {
                 <MapPin className="h-4 w-4 text-cyan" />
               </div>
               <span className="min-w-0 break-words pt-1">
-                {t(lang, "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000", "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000")}
+                {t(
+                  lang,
+                  "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000",
+                  "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000",
+                )}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -114,7 +126,10 @@ export function Footer() {
         <FooterCol
           className="lg:col-span-2"
           title={t(lang, "โซลูชั่น", "Solutions")}
-          items={solutions.map((s) => ({ label: t(lang, s.title, (s as any).titleEn || s.title), href: `/${s.slug}` }))}
+          items={solutions.map((s) => ({
+            label: t(lang, s.title, (s as any).titleEn || s.title),
+            href: `/${s.slug}`,
+          }))}
         />
         <FooterCol
           className="lg:col-span-2"
@@ -126,13 +141,22 @@ export function Footer() {
         <FooterCol
           className="lg:col-span-2"
           title={t(lang, "บทความ", "Articles")}
-          items={articleCategories.slice(0, 6).map((c) => ({ label: t(lang, c.label, (c as any).labelEn || c.label), href: "/blog" }))}
+          items={articleCategories
+            .slice(0, 6)
+            .map((c) => ({
+              label: t(lang, c.label, (c as any).labelEn || c.label),
+              href: "/blog",
+            }))}
         />
 
         <div className="lg:col-span-2 space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-white">Newsletter</h4>
           <p className="text-xs text-white/80 leading-relaxed">
-            {t(lang, "รับบทความและคู่มือเลือก AV ใหม่ก่อนใคร", "Get the latest AV articles and guides before anyone else")}
+            {t(
+              lang,
+              "รับบทความและคู่มือเลือก AV ใหม่ก่อนใคร",
+              "Get the latest AV articles and guides before anyone else",
+            )}
           </p>
           <form
             className="flex min-w-0 overflow-hidden rounded-xl border border-white/15 bg-white/5 transition-colors focus-within:border-cyan"

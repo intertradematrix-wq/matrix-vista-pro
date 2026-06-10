@@ -11,7 +11,9 @@ export function ArticleCard({ article }: { article: Article }) {
   const { data: views } = useArticleViews();
   const viewCount = views?.[article.slug] ?? 0;
   const catObj = articleCategories.find((c) => c.slug === article.category);
-  const cat = catObj ? t(lang, catObj.label, (catObj as any).labelEn || catObj.label) : t(lang, "บทความ", "Article");
+  const cat = catObj
+    ? t(lang, catObj.label, (catObj as any).labelEn || catObj.label)
+    : t(lang, "บทความ", "Article");
   const firstImg = articleContents[article.slug]?.blocks.find((b) => b.t === "img") as
     | { t: "img"; src: string }
     | undefined;

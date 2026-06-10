@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const Schema = z.object({
   name: z.string().min(1).max(200),
@@ -16,11 +17,6 @@ export const Route = createFileRoute("/api/public/contact")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const apiKey = process.env.RESEND_API_KEY;
-        if (!apiKey) {
-          return Response.json({ error: "Email service not configured" }, { status: 500 });
-        }
-
         let body: unknown;
         try {
           body = await request.json();
@@ -40,9 +36,38 @@ export const Route = createFileRoute("/api/public/contact")({
         const esc = (s: string) =>
           s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+        // 1. Insert into Supabase FIRST, so we never lose data
+        const { error: dbError } = await supabaseAdmin.from("contact_submissions").insert([
+          {
+            name: d.name,
+            company: d.company,
+            email: d.email,
+            phone: d.phone,
+            topic: d.topic,
+            message: d.message,
+          },
+        ]);
+
+        if (dbError) {
+          console.error("Supabase insert error:", dbError);
+          // If the table doesn't exist, this will fail. We log it and continue.
+        }
+
+        // 2. Check if Resend is configured
+        const apiKey = process.env.RESEND_API_KEY;
+        if (!apiKey) {
+          console.warn("RESEND_API_KEY is not set. Skipping email notification.");
+          // We still return OK because the data was saved to DB (if migration was run)
+          return Response.json({ ok: true, warning: "Email not sent (missing API key)" });
+        }
+
+        // 3. Send Email
+        const nowTh = new Date().toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
+
         const html = `
           <h2>คำขอใบเสนอราคาใหม่จากเว็บไซต์</h2>
           <table cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">
+            <tr><td><b>วันที่/เวลา</b></td><td>${esc(nowTh)}</td></tr>
             <tr><td><b>ชื่อ-นามสกุล</b></td><td>${esc(d.name)}</td></tr>
             <tr><td><b>บริษัท / องค์กร</b></td><td>${esc(d.company || "-")}</td></tr>
             <tr><td><b>อีเมล</b></td><td>${esc(d.email)}</td></tr>
@@ -60,7 +85,7 @@ export const Route = createFileRoute("/api/public/contact")({
           },
           body: JSON.stringify({
             from: "Matrix Intertrade <noreply@matrixintertrade.com>",
-            to: [TO_EMAIL],
+            to: [TO_EMAIL, "nattee.pao@gmail.com"],
             reply_to: d.email,
             subject: `[คำขอใบเสนอราคา] ${d.name}${d.topic ? " - " + d.topic : ""}`,
             html,

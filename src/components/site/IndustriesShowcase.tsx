@@ -257,7 +257,9 @@ export function IndustriesShowcase({
                 >
                   <div className="overflow-hidden">
                     <div className="p-4">
-                      <p className="text-sm leading-relaxed text-muted-foreground">{t(lang, ind.desc, ind.descEn)}</p>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {t(lang, ind.desc, ind.descEn)}
+                      </p>
                       <Link
                         to="/industry/$slug"
                         params={{ slug: ind.slug }}

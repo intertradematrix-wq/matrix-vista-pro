@@ -1,4 +1,11 @@
-export type SubItem = { label: string; labelEn?: string; href: string; desc?: string; descEn?: string; image?: string };
+export type SubItem = {
+  label: string;
+  labelEn?: string;
+  href: string;
+  desc?: string;
+  descEn?: string;
+  image?: string;
+};
 export type NavItem = { label: string; labelEn?: string; href: string; submenu?: SubItem[] };
 
 export const nav: NavItem[] = [
@@ -8,10 +15,26 @@ export const nav: NavItem[] = [
     labelEn: "About Us",
     href: "/aboutus",
     submenu: [
-      { label: "โรงเรียน และสถาบันการศึกษา", labelEn: "Schools & Education", href: "/industry/education" },
-      { label: "โรงแรมและห้องประชุมขนาดใหญ่", labelEn: "Hotels & Convention Centers", href: "/industry/hotel" },
-      { label: "สำนักงานและองค์กรธุรกิจ", labelEn: "Corporate Offices", href: "/industry/corporate" },
-      { label: "ระบบวิดีโอคอนเฟอเร้นซ์ เพื่อทุกหน่วยงาน", labelEn: "Video Conferencing Systems", href: "/industry/video-conference" },
+      {
+        label: "โรงเรียน และสถาบันการศึกษา",
+        labelEn: "Schools & Education",
+        href: "/industry/education",
+      },
+      {
+        label: "โรงแรมและห้องประชุมขนาดใหญ่",
+        labelEn: "Hotels & Convention Centers",
+        href: "/industry/hotel",
+      },
+      {
+        label: "สำนักงานและองค์กรธุรกิจ",
+        labelEn: "Corporate Offices",
+        href: "/industry/corporate",
+      },
+      {
+        label: "ระบบวิดีโอคอนเฟอเร้นซ์ เพื่อทุกหน่วยงาน",
+        labelEn: "Video Conferencing Systems",
+        href: "/industry/video-conference",
+      },
     ],
   },
   {
