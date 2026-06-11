@@ -45,7 +45,18 @@ export function BrandCard({
 
   const categoryId = nameToCatId[name] || nameToCatId[slug];
   // Route to the specific product category page if mapped, else fallback to brand landing page
-  const targetUrl = categoryId ? `/category/${categoryId}` : `/brands/${slug}`;
+  const categorySlugs: Record<string, string> = {
+    "288194": "unilumin",
+    "235610": "kramer",
+    "288209": "persona",
+    "288210": "transcreen",
+    "237068": "grandview",
+    "237477": "hdmi-cable",
+    "237677": "newline",
+  };
+  const targetUrl = categoryId
+    ? `/category/${categorySlugs[categoryId] ?? categoryId}`
+    : `/brands/${slug}`;
 
   return (
     <Link

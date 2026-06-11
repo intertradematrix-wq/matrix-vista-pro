@@ -45,7 +45,7 @@ export function CTASection() {
             variant="outline"
             className="border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
           >
-            <Link to="/category/$id" params={{ id: "0" }}>
+            <Link to="/category/$slug" params={{ slug: "all-products" }}>
               <Package className="mr-2 h-4 w-4" /> {t(lang, "ดูสินค้า", "View Products")}{" "}
               <ArrowRight className="ml-1 h-4 w-4" />
             </Link>

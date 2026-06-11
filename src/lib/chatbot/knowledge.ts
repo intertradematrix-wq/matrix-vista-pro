@@ -69,7 +69,7 @@ function productToRecord(product: Product): KnowledgeRecord {
     description: excerpt(detail || `${product.brand} product for AV solution projects.`),
     image: product.image,
     price,
-    href: `/product/${product.id}`,
+    href: `/product/${product.slug ?? product.id}`,
     cta: "ดูสินค้า",
     priority: 4,
     searchText: normalizeText(

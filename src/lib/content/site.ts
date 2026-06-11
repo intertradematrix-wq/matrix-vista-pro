@@ -12,6 +12,7 @@ import {
   brandIntrosByCategoryId as fallbackBrandIntrosByCategoryId,
   type BrandIntro,
 } from "@/data/brand-intros";
+import { CATEGORY_SLUGS } from "@/lib/seo-slugs";
 
 export type SiteBrand = (typeof fallbackBrands)[number] & {
   imageUrl?: string | null;
@@ -115,6 +116,12 @@ type ContentDatabase = {
   };
 };
 
+type LocalizedFallback = {
+  descEn?: string;
+  labelEn?: string;
+  titleEn?: string;
+};
+
 const contentClient = supabase as unknown as SupabaseClient<ContentDatabase>;
 
 export const fallbackSiteContent: SiteContent = {
@@ -159,6 +166,46 @@ function orderBySort<T extends { sort_order?: number | null; slug?: string; id?:
   });
 }
 
+function normalizeNavHref(href: string): string {
+  const [path, suffix = ""] = href.split(/([?#].*)/, 2);
+  const legacyCategoryMatch = path.match(/^\/category\/([^/]+)$/);
+  if (!legacyCategoryMatch) return href;
+
+  const slug = CATEGORY_SLUGS[legacyCategoryMatch[1]];
+  return slug ? `/category/${slug}${suffix}` : href;
+}
+
+function imageUrlOrUndefined(value: string | null | undefined): string | undefined {
+  const url = value?.trim();
+  if (!url) return undefined;
+  if (url.startsWith("@/") || url.startsWith("src/")) return undefined;
+  if (/^(https?:\/\/|\/|data:image\/|blob:)/i.test(url)) return url;
+  return undefined;
+}
+
+function normalizeNavItem<T extends { href: string; submenu?: Array<{ href: string }> }>(
+  item: T,
+): T {
+  return {
+    ...item,
+    href: normalizeNavHref(item.href),
+    submenu: item.submenu?.map((subItem) => ({
+      ...subItem,
+      href: normalizeNavHref(subItem.href),
+    })),
+  };
+}
+
+function dedupeNavItems(items: NavItem[]): NavItem[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = normalizeNavHref(item.href);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 function mapNav(rows: NavRow[] | null | undefined): NavItem[] {
   if (!rows?.length) return fallbackNav;
 
@@ -171,51 +218,56 @@ function mapNav(rows: NavRow[] | null | undefined): NavItem[] {
     childrenByParent.set(row.parent_id, bucket);
   }
 
-  const topLevel = sorted.filter((row) => !row.parent_id || row.depth === 0);
+  const topLevel = sorted.filter((row) => !row.parent_id);
   if (topLevel.length === 0) return fallbackNav;
 
-  const dbNav = topLevel.map((row) => {
-    const submenu = (childrenByParent.get(row.id) ?? []).map((child) => ({
-      label: child.label === "Projector" ? "Projection Screen" : child.label,
-      href: child.href,
-      desc: child.description ?? undefined,
-      image: child.image_url ?? undefined,
-    }));
-    return {
-      label: row.label,
-      href: row.href,
-      submenu: submenu.length > 0 && row.href !== "/brands" ? submenu : undefined,
-    };
-  });
+  const dbNav = dedupeNavItems(
+    topLevel.map((row) => {
+      const submenu = (childrenByParent.get(row.id) ?? []).map((child) => ({
+        label: child.label === "Projector" ? "Projection Screen" : child.label,
+        href: normalizeNavHref(child.href),
+        desc: child.description ?? undefined,
+        image: imageUrlOrUndefined(child.image_url),
+      }));
+      return normalizeNavItem({
+        label: row.label,
+        href: normalizeNavHref(row.href),
+        submenu: submenu.length > 0 && row.href !== "/brands" ? submenu : undefined,
+      });
+    }),
+  );
 
   const dbByHref = new Map(dbNav.map((item) => [item.href, item]));
   const merged = fallbackNav.map((fallbackItem) => {
-    const dbItem = dbByHref.get(fallbackItem.href);
+    const normalizedFallback = normalizeNavItem(fallbackItem);
+    const dbItem = dbByHref.get(normalizedFallback.href);
     if (!dbItem) return fallbackItem;
     return {
-      ...fallbackItem,
+      ...normalizedFallback,
       ...dbItem,
       submenu:
         dbItem.submenu && dbItem.submenu.length > 0
-          ? mergeSubmenu(fallbackItem.submenu, dbItem.submenu)
-          : fallbackItem.submenu,
+          ? mergeSubmenu(normalizedFallback.submenu, dbItem.submenu)
+          : normalizedFallback.submenu,
     };
   });
 
-  const fallbackHrefs = new Set(fallbackNav.map((item) => item.href));
-  return [...merged, ...dbNav.filter((item) => !fallbackHrefs.has(item.href))];
+  const fallbackHrefs = new Set(fallbackNav.map((item) => normalizeNavHref(item.href)));
+  return dedupeNavItems([...merged, ...dbNav.filter((item) => !fallbackHrefs.has(item.href))]);
 }
 
 function mergeSubmenu(fallbackItems: NavItem["submenu"], dbItems: NonNullable<NavItem["submenu"]>) {
-  const dbByHref = new Map(dbItems.map((item) => [item.href, item]));
+  const normalizedDbItems = dbItems.map(normalizeNavItem);
+  const dbByHref = new Map(normalizedDbItems.map((item) => [item.href, item]));
   const merged = (fallbackItems ?? []).map((fallbackItem) => ({
     ...fallbackItem,
-    ...(dbByHref.get(fallbackItem.href) ?? {}),
-    image: dbByHref.get(fallbackItem.href)?.image || fallbackItem.image,
-    desc: dbByHref.get(fallbackItem.href)?.desc || fallbackItem.desc,
+    href: normalizeNavHref(fallbackItem.href),
+    ...(dbByHref.get(normalizeNavHref(fallbackItem.href)) ?? {}),
+    image: dbByHref.get(normalizeNavHref(fallbackItem.href))?.image || fallbackItem.image,
+    desc: dbByHref.get(normalizeNavHref(fallbackItem.href))?.desc || fallbackItem.desc,
   }));
-  const fallbackHrefs = new Set((fallbackItems ?? []).map((item) => item.href));
-  return [...merged, ...dbItems.filter((item) => !fallbackHrefs.has(item.href))];
+  const fallbackHrefs = new Set((fallbackItems ?? []).map((item) => normalizeNavHref(item.href)));
+  return [...merged, ...normalizedDbItems.filter((item) => !fallbackHrefs.has(item.href))];
 }
 
 function mapBrands(rows: BrandRow[] | null | undefined): SiteBrand[] {
@@ -229,10 +281,10 @@ function mapBrands(rows: BrandRow[] | null | undefined): SiteBrand[] {
       name: row.name || fallback.name,
       category: row.category || fallback.category,
       desc: row.description || fallback.desc,
-      descEn: (fallback as any).descEn,
+      descEn: (fallback as LocalizedFallback).descEn,
       color: row.color || fallback.color,
-      imageUrl: row.image_url || undefined,
-      logoUrl: row.logo_url || undefined,
+      imageUrl: imageUrlOrUndefined(row.image_url),
+      logoUrl: imageUrlOrUndefined(row.logo_url),
       accent: row.accent,
     };
   });
@@ -247,10 +299,10 @@ function mapBrands(rows: BrandRow[] | null | undefined): SiteBrand[] {
         name: row.name,
         category: row.category ?? fallback?.category ?? "",
         desc: row.description ?? fallback?.desc ?? "",
-        descEn: (fallback as any)?.descEn,
+        descEn: (fallback as LocalizedFallback | undefined)?.descEn,
         color: row.color ?? fallback?.color ?? "from-blue-500 to-cyan-500",
-        imageUrl: row.image_url,
-        logoUrl: row.logo_url,
+        imageUrl: imageUrlOrUndefined(row.image_url),
+        logoUrl: imageUrlOrUndefined(row.logo_url),
         accent: row.accent,
       };
     });
@@ -266,11 +318,11 @@ function mapSolutions(rows: SolutionRow[] | null | undefined): SiteSolution[] {
     return {
       slug: row.slug,
       title: row.title || fallback.title,
-      titleEn: (fallback as any)?.titleEn,
+      titleEn: (fallback as LocalizedFallback).titleEn,
       icon: row.icon || fallback.icon,
       desc: row.description || fallback.desc,
-      descEn: (fallback as any)?.descEn,
-      imageUrl: row.image_url || undefined,
+      descEn: (fallback as LocalizedFallback).descEn,
+      imageUrl: imageUrlOrUndefined(row.image_url),
     };
   });
 
@@ -282,11 +334,11 @@ function mapSolutions(rows: SolutionRow[] | null | undefined): SiteSolution[] {
       return {
         slug: row.slug,
         title: row.title,
-        titleEn: (fallback as any)?.titleEn,
+        titleEn: (fallback as LocalizedFallback | undefined)?.titleEn,
         icon: row.icon ?? fallback?.icon ?? "Monitor",
         desc: row.description ?? fallback?.desc ?? "",
-        descEn: (fallback as any)?.descEn,
-        imageUrl: row.image_url,
+        descEn: (fallback as LocalizedFallback | undefined)?.descEn,
+        imageUrl: imageUrlOrUndefined(row.image_url),
       };
     });
   return [...mapped, ...additions];
@@ -301,11 +353,11 @@ function mapIndustries(rows: IndustryRow[] | null | undefined): SiteIndustry[] {
     return {
       slug: row.slug,
       title: row.title || fallback.title,
-      titleEn: (fallback as any)?.titleEn,
+      titleEn: (fallback as LocalizedFallback).titleEn,
       icon: row.icon || fallback.icon,
       desc: row.description || fallback.desc,
-      descEn: (fallback as any)?.descEn,
-      imageUrl: row.image_url || undefined,
+      descEn: (fallback as LocalizedFallback).descEn,
+      imageUrl: imageUrlOrUndefined(row.image_url),
     };
   });
 
@@ -317,11 +369,11 @@ function mapIndustries(rows: IndustryRow[] | null | undefined): SiteIndustry[] {
       return {
         slug: row.slug,
         title: row.title,
-        titleEn: (fallback as any)?.titleEn,
+        titleEn: (fallback as LocalizedFallback | undefined)?.titleEn,
         icon: row.icon ?? fallback?.icon ?? "Building2",
         desc: row.description ?? fallback?.desc ?? "",
-        descEn: (fallback as any)?.descEn,
-        imageUrl: row.image_url,
+        descEn: (fallback as LocalizedFallback | undefined)?.descEn,
+        imageUrl: imageUrlOrUndefined(row.image_url),
       };
     });
   return [...mapped, ...additions];
@@ -337,8 +389,8 @@ function mapArticleCategories(
     return {
       slug: fallback.slug,
       label: row?.label || fallback.label,
-      labelEn: (fallback as any).labelEn,
-      imageUrl: row?.image_url || undefined,
+      labelEn: (fallback as LocalizedFallback).labelEn,
+      imageUrl: imageUrlOrUndefined(row?.image_url),
     };
   });
   const fallbackSlugs = new Set(fallbackArticleCategories.map((category) => category.slug));
@@ -350,7 +402,7 @@ function mapArticleCategories(
         slug: row.slug,
         label: row.label,
         labelEn: row.label,
-        imageUrl: row.image_url || undefined,
+        imageUrl: imageUrlOrUndefined(row.image_url),
       })),
   ];
 }

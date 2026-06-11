@@ -1,5 +1,13 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
+type GenericContentRow = { [key: string]: Json | undefined };
+type GenericContentTable = {
+  Row: GenericContentRow;
+  Insert: GenericContentRow;
+  Update: GenericContentRow;
+  Relationships: [];
+};
+
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -26,6 +34,15 @@ export type Database = {
         };
         Relationships: [];
       };
+      contact_submissions: GenericContentTable;
+      content_article_categories: GenericContentTable;
+      content_articles: GenericContentTable;
+      content_brand_category_intros: GenericContentTable;
+      content_brands: GenericContentTable;
+      content_industries: GenericContentTable;
+      content_nav_items: GenericContentTable;
+      content_products: GenericContentTable;
+      content_solutions: GenericContentTable;
     };
     Views: {
       [_ in never]: never;

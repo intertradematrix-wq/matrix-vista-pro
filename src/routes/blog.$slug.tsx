@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { PageHeader } from "@/components/site/PageHeader";
 import { CTASection } from "@/components/site/CTASection";
@@ -16,6 +16,13 @@ export const Route = createFileRoute("/blog/$slug")({
     const content = await loadArticleDetailContent(params.slug);
     const article = content.article;
     if (!article) throw notFound();
+    if (params.slug !== article.slug) {
+      throw redirect({
+        to: "/blog/$slug",
+        params: { slug: article.slug },
+        statusCode: 301,
+      });
+    }
     return { article, category: content.category, relatedArticles: content.relatedArticles };
   },
   head: ({ loaderData }) => ({
@@ -30,7 +37,7 @@ export const Route = createFileRoute("/blog/$slug")({
     links: [
       {
         rel: "canonical",
-        href: loaderData?.article.canonicalUrl || `/blog/${loaderData?.article.slug}`,
+        href: `/blog/${loaderData?.article.slug}`,
       },
     ],
     scripts: loaderData?.article
@@ -48,7 +55,7 @@ export const Route = createFileRoute("/blog/$slug")({
                 "@type": "Organization",
                 name: "Matrix Intertrade",
               },
-              mainEntityOfPage: `https://matrix-vista-pro.lovable.app/blog/${loaderData.article.slug}`,
+              mainEntityOfPage: `https://www.matrixintertrade.com/blog/${loaderData.article.slug}`,
             }),
           },
         ]
@@ -62,7 +69,8 @@ export const Route = createFileRoute("/blog/$slug")({
 function BlogDetail() {
   const { lang } = useLanguage();
   const { article, category: cat, relatedArticles: related } = Route.useLoaderData();
-  const content = articleContents[article.slug];
+  const content =
+    articleContents[article.legacySlug ?? article.slug] ?? articleContents[article.slug];
   const blocks = article.blocks ?? content?.blocks ?? [];
   const firstImg = blocks.find((b) => b.t === "img") as { t: "img"; src: string } | undefined;
   const coverImg = article.coverImageUrl ?? firstImg?.src;
@@ -128,9 +136,9 @@ function BlogDetail() {
           </div>
           <div className="prose prose-lg max-w-none text-foreground/85 leading-relaxed space-y-5">
             <p className="text-xl text-foreground font-medium">{article.excerpt}</p>
-            {(article as any).content_html ? (
+            {article.content_html ? (
               <div
-                dangerouslySetInnerHTML={{ __html: (article as any).content_html }}
+                dangerouslySetInnerHTML={{ __html: article.content_html }}
                 className="article-rich-text prose prose-lg max-w-none prose-img:rounded-xl prose-img:border prose-img:border-border prose-img:shadow-card prose-headings:text-primary prose-a:text-accent prose-a:no-underline hover:prose-a:underline"
               />
             ) : (

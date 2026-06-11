@@ -138,19 +138,19 @@ const EDU_PRODUCTS: EduProduct[] = [
     title: "Grandview Large-stage Series",
     desc: 'จอสำหรับห้องบรรยายขนาดกลาง - ใหญ่ หากห้องเรียนหรือห้องบรรยายของคุณมีขนาดใหญ่เกินกว่าที่ Remarkable Screen จะรองรับได้ Grandview มีจอตั้งแต่ขนาด 100" - 500" ทุกฟอร์แมต ทั้งแบบมือดึงและแบบมอเตอร์',
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1670901206682.png",
-    href: "/category/237068",
+    href: "/category/grandview",
   },
   {
     title: "SkyShow Series",
     desc: "จอสำหรับห้องเพดานสูง หอประชุม หรือห้องบรรยายเพดานสูง โดย Grandview ออกแบบให้เหมาะกับการใช้งานบนเวทีและฮอลล์ขนาดใหญ่",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1670901315618.jpg",
-    href: "/category/237068",
+    href: "/category/grandview",
   },
   {
     title: "KRAMER",
     desc: "อุปกรณ์เพื่อทุกคำตอบสำหรับโซลูชั่นในการนำเสนองานภาพ เสียง และการแลกเปลี่ยนความเห็นในยุคดิจิตอล 4.0",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1670901329807.jpg",
-    href: "/category/235610",
+    href: "/category/kramer",
   },
 ];
 
@@ -248,7 +248,7 @@ function EducationContent() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/category/$id" params={{ id: "237068" }}>
+                <Link to="/category/$slug" params={{ slug: "grandview" }}>
                   ดูสินค้า Grandview
                 </Link>
               </Button>
@@ -282,7 +282,7 @@ function EducationContent() {
                 variant="outline"
                 className="border-white/40 text-white hover:bg-white/10"
               >
-                <Link to="/category/$id" params={{ id: "237677" }}>
+                <Link to="/category/$slug" params={{ slug: "newline" }}>
                   ดูสินค้าทั้งหมด
                 </Link>
               </Button>
@@ -323,7 +323,7 @@ const HOTEL_PRODUCTS: BiProduct[] = [
     descEN:
       'Projection screens for medium-to-large halls and auditoriums — for rooms beyond Remarkable Screen\'s range, from 100" up to 500" in every format, available in pull-down and motorized versions.',
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1671075328335.jpg",
-    href: "/category/237068",
+    href: "/category/grandview",
   },
   {
     title: "KRAMER",
@@ -332,7 +332,7 @@ const HOTEL_PRODUCTS: BiProduct[] = [
     descEN:
       "Equipment that answers every need in audio, video and collaborative presentation for the Digital 4.0 era.",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1671075351806.jpg",
-    href: "/category/235610",
+    href: "/category/kramer",
   },
 ];
 
@@ -433,7 +433,7 @@ const CORP_PRODUCTS: BiProduct[] = [
     descEN:
       'Projection screens for medium-to-large corporate meeting rooms and halls, from 100" up to 500" in every format — manual and motorized options for any room size.',
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1670902079322.jpg",
-    href: "/category/237068",
+    href: "/category/grandview",
   },
   {
     title: "newline Flex",
@@ -460,7 +460,7 @@ const CORP_PRODUCTS: BiProduct[] = [
     descEN:
       "End-to-end AV equipment for presentation, audio and collaboration in Digital 4.0 corporate meeting rooms.",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1670902119602.jpg",
-    href: "/category/235610",
+    href: "/category/kramer",
   },
 ];
 
@@ -645,7 +645,7 @@ const VC_PRODUCTS: BiProduct[] = [
     descEN:
       "Complete video conferencing kits for remote meetings — compatible with all major conferencing platforms.",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422347547.jpg",
-    href: "/category/235610",
+    href: "/category/kramer",
   },
   {
     title: "AV Over IP",
@@ -654,7 +654,7 @@ const VC_PRODUCTS: BiProduct[] = [
     descEN:
       "Transmit audio and video over standard IP networks — high-quality distribution across long distances and multiple endpoints.",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422620134.jpg",
-    href: "/category/235610",
+    href: "/category/kramer",
   },
   {
     title: "Video Switchers 4K",
@@ -663,7 +663,7 @@ const VC_PRODUCTS: BiProduct[] = [
     descEN:
       "Video switchers supporting up to 4K resolution — for meeting rooms and live events that demand top image quality.",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422658470.jpg",
-    href: "/category/235610",
+    href: "/category/kramer",
   },
   {
     title: "Collaboration Devices — Video Conference",
@@ -672,7 +672,7 @@ const VC_PRODUCTS: BiProduct[] = [
     descEN:
       "Devices for video conferencing — efficient communication inside and across organizations.",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422641501.jpg",
-    href: "/category/235610",
+    href: "/category/kramer",
   },
   {
     title: "Room Control Systems",
@@ -681,7 +681,7 @@ const VC_PRODUCTS: BiProduct[] = [
     descEN:
       "Control all classroom and meeting room devices — video, audio, lighting and presentation — from a single control panel.",
     img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422671970.jpg",
-    href: "/category/235610",
+    href: "/category/kramer",
   },
 ];
 

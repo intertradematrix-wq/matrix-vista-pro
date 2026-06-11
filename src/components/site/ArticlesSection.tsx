@@ -9,17 +9,17 @@ import { ArrowUpRight, BookOpen, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/site/Reveal";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
-import { articles } from "@/data/articles";
 import { articleContents } from "@/data/article-contents";
 import { articleImages } from "@/data/article-images";
-import { useSiteContent } from "@/lib/content/use-site-content";
+import { useArticleContent } from "@/lib/content/use-article-content";
 
 export default function ArticlesSection() {
   const { lang } = useLanguage();
-  const { articleCategories } = useSiteContent();
+  const { articles, articleCategories } = useArticleContent();
 
   const featuredArticles = articles
-    .sort((a, b) => b.id - a.id)
+    .filter((a) => a.isFeatured)
+    .concat(articles.filter((a) => !a.isFeatured))
     .slice(0, 5);
 
   return (
@@ -67,8 +67,9 @@ export default function ArticlesSection() {
               const lead = featuredArticles[0];
               const leadContent = articleContents[lead.slug];
               const leadImg =
+                lead.coverImageUrl ??
                 (
-                  leadContent?.blocks.find((b) => b.t === "img") as
+                  leadContent?.blocks?.find((b) => b.t === "img") as
                     | { t: "img"; src: string }
                     | undefined
                 )?.src ?? articleImages[lead.category];
@@ -150,8 +151,9 @@ export default function ArticlesSection() {
               {featuredArticles.slice(1, 5).map((a, i) => {
                 const aContent = articleContents[a.slug];
                 const aImg =
+                  a.coverImageUrl ??
                   (
-                    aContent?.blocks.find((b) => b.t === "img") as
+                    aContent?.blocks?.find((b) => b.t === "img") as
                       | { t: "img"; src: string }
                       | undefined
                   )?.src ?? articleImages[a.category];

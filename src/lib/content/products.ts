@@ -1,11 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
-  productById as getFileProduct,
   products as fileProducts,
   productsByCategoryId as getFileProductsByCategoryId,
   type Product,
 } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
+import { CATEGORY_IDS_BY_SLUG, ensureUniqueProductSlugs } from "@/lib/seo-slugs";
 
 type ContentDatabase = {
   public: {
@@ -13,6 +13,7 @@ type ContentDatabase = {
       content_products: {
         Row: {
           product_id: string;
+          slug: string;
           name: string;
           image_url: string | null;
           price_text: string | null;
@@ -45,6 +46,7 @@ const fileProductOrder = new Map(fileProducts.map((product, index) => [product.i
 function mapProduct(row: ContentDatabase["public"]["Tables"]["content_products"]["Row"]): Product {
   return {
     id: row.product_id,
+    slug: row.slug,
     name: row.name,
     image: row.image_url ?? "",
     price: row.price_text ?? "0.00",
@@ -65,16 +67,21 @@ function sortLikeFiles(products: Product[]) {
   });
 }
 
+function withSlugs(products: Product[]): Product[] {
+  return ensureUniqueProductSlugs(products);
+}
+
 function fromFiles(products = fileProducts, error?: unknown): ProductListContent {
   return {
-    products,
+    products: withSlugs(products),
     source: "files",
     error,
   };
 }
 
 export function fallbackProductsByCategoryId(categoryId: string): ProductListContent {
-  return fromFiles(getFileProductsByCategoryId(categoryId));
+  const resolvedId = CATEGORY_IDS_BY_SLUG[categoryId] ?? categoryId;
+  return fromFiles(getFileProductsByCategoryId(resolvedId));
 }
 
 export async function loadProductListContent(): Promise<ProductListContent> {
@@ -82,7 +89,7 @@ export async function loadProductListContent(): Promise<ProductListContent> {
     const { data, error } = await contentClient
       .from("content_products")
       .select(
-        "product_id,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html",
+        "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html",
       );
 
     if (error) throw error;
@@ -101,8 +108,9 @@ export async function loadProductListContent(): Promise<ProductListContent> {
 }
 
 export async function loadProductsByCategoryContent(
-  categoryId: string,
+  categorySlugOrId: string,
 ): Promise<ProductListContent> {
+  const categoryId = CATEGORY_IDS_BY_SLUG[categorySlugOrId] ?? categorySlugOrId;
   const listContent = await loadProductListContent();
   const products =
     categoryId === "0" || !categoryId
@@ -115,18 +123,24 @@ export async function loadProductsByCategoryContent(
   };
 }
 
-export async function loadProductDetailContent(productId: string): Promise<ProductDetailContent> {
+export async function loadProductDetailContent(slugOrId: string): Promise<ProductDetailContent> {
   const listContent = await loadProductListContent();
-  let product = listContent.products.find((item) => item.id === productId);
+  let product = listContent.products.find((item) => item.slug === slugOrId);
+
+  if (!product) {
+    product = listContent.products.find((item) => item.id === slugOrId);
+  }
 
   if (!product && listContent.source === "supabase") {
-    product = getFileProduct(productId);
+    product = withSlugs(fileProducts).find(
+      (item) => item.slug === slugOrId || item.id === slugOrId,
+    );
   }
 
   const sourceProducts =
     product && listContent.products.some((item) => item.id === product.id)
       ? listContent.products
-      : fileProducts;
+      : withSlugs(fileProducts);
 
   return {
     ...listContent,

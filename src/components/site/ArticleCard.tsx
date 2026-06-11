@@ -6,18 +6,25 @@ import { articleContents } from "@/data/article-contents";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { useArticleViews, formatViews } from "@/lib/article-views";
 
-export function ArticleCard({ article }: { article: Article }) {
+type ArticleWithMeta = Article & {
+  legacySlug?: string;
+  titleEn?: string;
+};
+
+export function ArticleCard({ article }: { article: ArticleWithMeta }) {
   const { lang } = useLanguage();
   const { data: views } = useArticleViews();
   const viewCount = views?.[article.slug] ?? 0;
   const catObj = articleCategories.find((c) => c.slug === article.category);
   const cat = catObj
-    ? t(lang, catObj.label, (catObj as any).labelEn || catObj.label)
+    ? t(lang, catObj.label, catObj.labelEn || catObj.label)
     : t(lang, "บทความ", "Article");
-  const firstImg = articleContents[article.slug]?.blocks.find((b) => b.t === "img") as
+  const content =
+    articleContents[article.legacySlug ?? article.slug] ?? articleContents[article.slug];
+  const firstImg = content?.blocks.find((b) => b.t === "img") as
     | { t: "img"; src: string }
     | undefined;
-  const img = firstImg?.src ?? articleImages[article.category];
+  const img = article.coverImageUrl ?? firstImg?.src ?? articleImages[article.category];
   return (
     <Link
       to="/blog/$slug"
@@ -48,7 +55,7 @@ export function ArticleCard({ article }: { article: Article }) {
       </div>
       <div className="flex-1 p-3 sm:p-5 flex flex-col">
         <h3 className="text-[13px] sm:text-[15px] font-bold text-primary leading-snug line-clamp-3 group-hover:text-accent transition-colors">
-          {t(lang, article.title, (article as any).titleEn || article.title)}
+          {t(lang, article.title, article.titleEn || article.title)}
         </h3>
         <div className="mt-auto pt-3 sm:pt-5 flex items-center justify-between text-[11px] sm:text-xs text-muted-foreground">
           <div className="flex items-center gap-2 sm:gap-3">

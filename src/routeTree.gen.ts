@@ -24,14 +24,15 @@ import { Route as AboutusRouteImport } from './routes/aboutus'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as IndustrySlugRouteImport } from './routes/industry.$slug'
-import { Route as CategoryIdRouteImport } from './routes/category.$id'
+import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BrandsSlugRouteImport } from './routes/brands.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 import { Route as ApiPublicChatbotRouteImport } from './routes/api/public/chatbot'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
+import { Route as ApiAdminSlugSuggestRouteImport } from './routes/api/admin/slug-suggest'
 import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
 
 const WirelessPresentationRoute = WirelessPresentationRouteImport.update({
@@ -109,9 +110,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductIdRoute = ProductIdRouteImport.update({
-  id: '/product/$id',
-  path: '/product/$id',
+const ProductSlugRoute = ProductSlugRouteImport.update({
+  id: '/product/$slug',
+  path: '/product/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndustrySlugRoute = IndustrySlugRouteImport.update({
@@ -119,9 +120,9 @@ const IndustrySlugRoute = IndustrySlugRouteImport.update({
   path: '/industry/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CategoryIdRoute = CategoryIdRouteImport.update({
-  id: '/category/$id',
-  path: '/category/$id',
+const CategorySlugRoute = CategorySlugRouteImport.update({
+  id: '/category/$slug',
+  path: '/category/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandsSlugRoute = BrandsSlugRouteImport.update({
@@ -149,6 +150,11 @@ const ApiAdminUploadRoute = ApiAdminUploadRouteImport.update({
   path: '/api/admin/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminSlugSuggestRoute = ApiAdminSlugSuggestRouteImport.update({
+  id: '/api/admin/slug-suggest',
+  path: '/api/admin/slug-suggest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminContentRoute = ApiAdminContentRouteImport.update({
   id: '/api/admin/content',
   path: '/api/admin/content',
@@ -171,12 +177,13 @@ export interface FileRoutesByFullPath {
   '/wireless-presentation': typeof WirelessPresentationRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/brands/$slug': typeof BrandsSlugRoute
-  '/category/$id': typeof CategoryIdRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/industry/$slug': typeof IndustrySlugRoute
-  '/product/$id': typeof ProductIdRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/api/admin/content': typeof ApiAdminContentRoute
+  '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -197,12 +204,13 @@ export interface FileRoutesByTo {
   '/wireless-presentation': typeof WirelessPresentationRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/brands/$slug': typeof BrandsSlugRoute
-  '/category/$id': typeof CategoryIdRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/industry/$slug': typeof IndustrySlugRoute
-  '/product/$id': typeof ProductIdRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/api/admin/content': typeof ApiAdminContentRoute
+  '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -224,12 +232,13 @@ export interface FileRoutesById {
   '/wireless-presentation': typeof WirelessPresentationRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/brands/$slug': typeof BrandsSlugRoute
-  '/category/$id': typeof CategoryIdRoute
+  '/category/$slug': typeof CategorySlugRoute
   '/industry/$slug': typeof IndustrySlugRoute
-  '/product/$id': typeof ProductIdRoute
+  '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/api/admin/content': typeof ApiAdminContentRoute
+  '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -252,12 +261,13 @@ export interface FileRouteTypes {
     | '/wireless-presentation'
     | '/blog/$slug'
     | '/brands/$slug'
-    | '/category/$id'
+    | '/category/$slug'
     | '/industry/$slug'
-    | '/product/$id'
+    | '/product/$slug'
     | '/admin/'
     | '/blog/'
     | '/api/admin/content'
+    | '/api/admin/slug-suggest'
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
@@ -278,12 +288,13 @@ export interface FileRouteTypes {
     | '/wireless-presentation'
     | '/blog/$slug'
     | '/brands/$slug'
-    | '/category/$id'
+    | '/category/$slug'
     | '/industry/$slug'
-    | '/product/$id'
+    | '/product/$slug'
     | '/admin'
     | '/blog'
     | '/api/admin/content'
+    | '/api/admin/slug-suggest'
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
@@ -304,12 +315,13 @@ export interface FileRouteTypes {
     | '/wireless-presentation'
     | '/blog/$slug'
     | '/brands/$slug'
-    | '/category/$id'
+    | '/category/$slug'
     | '/industry/$slug'
-    | '/product/$id'
+    | '/product/$slug'
     | '/admin/'
     | '/blog/'
     | '/api/admin/content'
+    | '/api/admin/slug-suggest'
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
@@ -330,12 +342,13 @@ export interface RootRouteChildren {
   ThemePreviewRoute: typeof ThemePreviewRoute
   WirelessPresentationRoute: typeof WirelessPresentationRoute
   BlogSlugRoute: typeof BlogSlugRoute
-  CategoryIdRoute: typeof CategoryIdRoute
+  CategorySlugRoute: typeof CategorySlugRoute
   IndustrySlugRoute: typeof IndustrySlugRoute
-  ProductIdRoute: typeof ProductIdRoute
+  ProductSlugRoute: typeof ProductSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ApiAdminContentRoute: typeof ApiAdminContentRoute
+  ApiAdminSlugSuggestRoute: typeof ApiAdminSlugSuggestRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
   ApiPublicChatbotRoute: typeof ApiPublicChatbotRoute
   ApiPublicContactRoute: typeof ApiPublicContactRoute
@@ -448,11 +461,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/product/$id': {
-      id: '/product/$id'
-      path: '/product/$id'
-      fullPath: '/product/$id'
-      preLoaderRoute: typeof ProductIdRouteImport
+    '/product/$slug': {
+      id: '/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof ProductSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/industry/$slug': {
@@ -462,11 +475,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndustrySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/category/$id': {
-      id: '/category/$id'
-      path: '/category/$id'
-      fullPath: '/category/$id'
-      preLoaderRoute: typeof CategoryIdRouteImport
+    '/category/$slug': {
+      id: '/category/$slug'
+      path: '/category/$slug'
+      fullPath: '/category/$slug'
+      preLoaderRoute: typeof CategorySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brands/$slug': {
@@ -502,6 +515,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/upload'
       fullPath: '/api/admin/upload'
       preLoaderRoute: typeof ApiAdminUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/slug-suggest': {
+      id: '/api/admin/slug-suggest'
+      path: '/api/admin/slug-suggest'
+      fullPath: '/api/admin/slug-suggest'
+      preLoaderRoute: typeof ApiAdminSlugSuggestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/content': {
@@ -540,12 +560,13 @@ const rootRouteChildren: RootRouteChildren = {
   ThemePreviewRoute: ThemePreviewRoute,
   WirelessPresentationRoute: WirelessPresentationRoute,
   BlogSlugRoute: BlogSlugRoute,
-  CategoryIdRoute: CategoryIdRoute,
+  CategorySlugRoute: CategorySlugRoute,
   IndustrySlugRoute: IndustrySlugRoute,
-  ProductIdRoute: ProductIdRoute,
+  ProductSlugRoute: ProductSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   ApiAdminContentRoute: ApiAdminContentRoute,
+  ApiAdminSlugSuggestRoute: ApiAdminSlugSuggestRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,
   ApiPublicChatbotRoute: ApiPublicChatbotRoute,
   ApiPublicContactRoute: ApiPublicContactRoute,

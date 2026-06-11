@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { startTransition, useEffect, useState } from "react";
 import { PageHeader } from "@/components/site/PageHeader";
 import { CTASection } from "@/components/site/CTASection";
@@ -12,6 +12,7 @@ import {
 } from "@/lib/content/products";
 import { loadBrandIntroContent, type SiteBrandIntro } from "@/lib/content/site";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { CATEGORY_IDS_BY_SLUG, CATEGORY_SLUGS } from "@/lib/seo-slugs";
 
 const catMap: Record<string, string> = {
   "0": "สินค้าทั้งหมด",
@@ -30,16 +31,28 @@ const catMap: Record<string, string> = {
   "237069": "AVlink",
 };
 
-export const Route = createFileRoute("/category/$id")({
+export const Route = createFileRoute("/category/$slug")({
+  beforeLoad: ({ params }) => {
+    const legacySlug = CATEGORY_SLUGS[params.slug];
+    if (legacySlug) {
+      throw redirect({
+        to: "/category/$slug",
+        params: { slug: legacySlug },
+        statusCode: 301,
+      });
+    }
+  },
   head: ({ params }) => {
-    const name = catMap[params.id] ?? "หมวดสินค้า";
+    const slug = CATEGORY_SLUGS[params.slug] ?? params.slug;
+    const id = CATEGORY_IDS_BY_SLUG[slug] ?? slug;
+    const name = catMap[id] ?? "หมวดสินค้า";
     return {
       meta: [
         { title: `${name} - สินค้า - Matrix Intertrade` },
         { name: "description", content: `เลือกชม ${name} จาก Matrix Intertrade` },
-        { property: "og:url", content: `/category/${params.id}` },
+        { property: "og:url", content: `/category/${slug}` },
       ],
-      links: [{ rel: "canonical", href: `/category/${params.id}` }],
+      links: [{ rel: "canonical", href: `/category/${slug}` }],
     };
   },
   component: CategoryPage,
@@ -47,7 +60,8 @@ export const Route = createFileRoute("/category/$id")({
 
 function CategoryPage() {
   const { lang } = useLanguage();
-  const { id } = Route.useParams();
+  const { slug } = Route.useParams();
+  const id = CATEGORY_IDS_BY_SLUG[slug] ?? slug;
   const name = catMap[id]
     ? id === "0"
       ? t(lang, "สินค้าทั้งหมด", "All Products")
@@ -94,7 +108,7 @@ function CategoryPage() {
               )
         }
         breadcrumbs={[
-          { label: t(lang, "สินค้า", "Products"), href: "/category/0" },
+          { label: t(lang, "สินค้า", "Products"), href: "/category/all-products" },
           { label: name },
         ]}
         variant="clean"
@@ -233,8 +247,8 @@ function CategoryPage() {
               {featuredProducts.map((p) => (
                 <Link
                   key={p.id}
-                  to="/product/$id"
-                  params={{ id: p.id }}
+                  to="/product/$slug"
+                  params={{ slug: p.slug ?? p.id }}
                   className="group grid min-w-0 overflow-hidden rounded-xl border border-border bg-white transition-colors hover:border-accent/50 sm:grid-cols-[150px_minmax(0,1fr)] lg:grid-cols-1"
                 >
                   <div className="relative aspect-square min-h-[150px] bg-white sm:aspect-auto lg:aspect-[1.15/1]">
@@ -306,8 +320,8 @@ function CategoryPage() {
                     className="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-white transition-colors hover:border-accent/50"
                   >
                     <Link
-                      to="/product/$id"
-                      params={{ id: p.id }}
+                      to="/product/$slug"
+                      params={{ slug: p.slug ?? p.id }}
                       className="relative block aspect-square overflow-hidden bg-secondary/45"
                     >
                       <img
@@ -341,7 +355,7 @@ function CategoryPage() {
                       </div>
                       <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
                         <Button asChild size="sm" className="h-11 min-w-0">
-                          <Link to="/product/$id" params={{ id: p.id }}>
+                          <Link to="/product/$slug" params={{ slug: p.slug ?? p.id }}>
                             <Eye className="mr-1 h-3.5 w-3.5" />{" "}
                             {t(lang, "ดูรายละเอียด", "View Details")}
                           </Link>

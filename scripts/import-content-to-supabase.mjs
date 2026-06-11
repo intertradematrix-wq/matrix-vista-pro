@@ -134,6 +134,56 @@ function firstArticleImage(blocks) {
   return blocks.find((block) => block?.t === "img" && typeof block.src === "string")?.src ?? null;
 }
 
+function publicImageUrl(value) {
+  if (!value || typeof value !== "string") return null;
+  const url = value.trim();
+  if (!url || url.startsWith("@/") || url.startsWith("src/")) return null;
+  return /^(https?:\/\/|\/|data:image\/|blob:)/i.test(url) ? url : null;
+}
+
+const mojibakePattern = /[\u00c0-\u00ff]{2,}|เธ|เน|โ€|ยท||||||||/;
+
+function slugifyText(value, fallback) {
+  const ascii = String(value ?? "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " and ")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-")
+    .toLowerCase();
+
+  return ascii || fallback;
+}
+
+function uniqueSlug(base, used) {
+  let slug = base;
+  let index = 2;
+  while (used.has(slug)) {
+    slug = `${base}-${index}`;
+    index += 1;
+  }
+  used.add(slug);
+  return slug;
+}
+
+function productSlugSource(product) {
+  const name = product.name?.trim() ?? "";
+  if (name && !mojibakePattern.test(name)) {
+    return `${product.brand ?? product.brandSlug ?? ""} ${name}`.trim();
+  }
+  return `${product.brand ?? product.brandSlug ?? "product"} ${product.id}`;
+}
+
+function articleSlugSource(article) {
+  const title = article.title?.trim() ?? "";
+  const titleSlug = slugifyText(title, "");
+  if (title && !mojibakePattern.test(title) && titleSlug.split("-").filter(Boolean).length >= 3) {
+    return title;
+  }
+  return `${article.category} guide ${article.id}`;
+}
+
 function buildNavRows(nav) {
   const rows = [];
 
@@ -297,7 +347,7 @@ function buildPayload() {
       title: solution.title,
       icon: solution.icon ?? null,
       description: solution.desc,
-      image_url: solutionImageSources[solution.slug] ?? null,
+      image_url: publicImageUrl(solutionImageSources[solution.slug]),
       payload: {
         ...solution,
         image: solutionImageSources[solution.slug] ?? null,
@@ -311,48 +361,58 @@ function buildPayload() {
       payload: industry,
     })),
     navItems: buildNavRows(nav),
-    articles: articles.map((article) => {
-      const content = articleContents[article.slug] ?? { url: null, blocks: [] };
-      const coverImageUrl =
-        firstArticleImage(content.blocks) ?? articleImages[article.category] ?? null;
+    articles: (() => {
+      const used = new Set();
+      return articles.map((article) => {
+        const content = articleContents[article.slug] ?? { url: null, blocks: [] };
+        const coverImageUrl =
+          firstArticleImage(content.blocks) ?? articleImages[article.category] ?? null;
 
-      return {
-        slug: article.slug,
-        article_id: article.id,
-        title: article.title,
-        category: article.category,
-        excerpt: article.excerpt,
-        published_date: article.date,
-        read_min: article.readMin,
-        canonical_url: content.url ?? null,
-        cover_image_url: coverImageUrl,
-        blocks: content.blocks ?? [],
-        payload: {
-          ...article,
-          content,
-          coverImageUrl,
-        },
-      };
-    }),
-    products: products.map((product) => {
-      const detail = productDetails[product.id] ?? { descriptionText: null, descriptionHtml: null };
-      return {
-        product_id: product.id,
-        name: product.name,
-        image_url: product.image ?? null,
-        price_text: product.price ?? null,
-        source_url: product.url ?? null,
-        brand: product.brand,
-        brand_slug: product.brandSlug,
-        brand_category_id: product.brandCategoryId ?? null,
-        description_text: detail.descriptionText ?? null,
-        description_html: detail.descriptionHtml ?? null,
-        payload: {
-          ...product,
-          detail,
-        },
-      };
-    }),
+        return {
+          slug: uniqueSlug(slugifyText(articleSlugSource(article), `article-${article.id}`), used),
+          article_id: article.id,
+          title: article.title,
+          category: article.category,
+          excerpt: article.excerpt,
+          published_date: article.date,
+          read_min: article.readMin,
+          canonical_url: content.url ?? null,
+          cover_image_url: coverImageUrl,
+          blocks: content.blocks ?? [],
+          payload: {
+            ...article,
+            content,
+            coverImageUrl,
+          },
+        };
+      });
+    })(),
+    products: (() => {
+      const used = new Set();
+      return products.map((product) => {
+        const detail = productDetails[product.id] ?? {
+          descriptionText: null,
+          descriptionHtml: null,
+        };
+        return {
+          product_id: product.id,
+          slug: uniqueSlug(slugifyText(productSlugSource(product), `product-${product.id}`), used),
+          name: product.name,
+          image_url: product.image ?? null,
+          price_text: product.price ?? null,
+          source_url: product.url ?? null,
+          brand: product.brand,
+          brand_slug: product.brandSlug,
+          brand_category_id: product.brandCategoryId ?? null,
+          description_text: detail.descriptionText ?? null,
+          description_html: detail.descriptionHtml ?? null,
+          payload: {
+            ...product,
+            detail,
+          },
+        };
+      });
+    })(),
   };
 }
 
@@ -451,7 +511,12 @@ async function main() {
       "slug",
     ),
     content_nav_items: await upsertTable(supabase, "content_nav_items", payload.navItems, "id"),
-    content_articles: await upsertTable(supabase, "content_articles", payload.articles, "slug"),
+    content_articles: await upsertTable(
+      supabase,
+      "content_articles",
+      payload.articles,
+      "article_id",
+    ),
     content_products: await upsertTable(
       supabase,
       "content_products",

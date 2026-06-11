@@ -52,7 +52,7 @@ function BlogPage() {
   const filtered = articles.filter(
     (a) => (!cat || a.category === cat) && (!q || a.title.toLowerCase().includes(q.toLowerCase())),
   );
-  const featured = articles.slice(0, 3);
+  const featured = articles.filter((a) => a.isFeatured);
   const currentCat = cat ? articleCategories.find((c) => c.slug === cat) : null;
   return (
     <>
@@ -98,7 +98,7 @@ function BlogPage() {
             </div>
           </div>
 
-          {!cat && !q && (
+          {!cat && !q && featured.length > 0 && (
             <div className="mb-12">
               <h2 className="mb-5 text-lg font-bold text-primary">
                 {t(lang, "บทความแนะนำ", "Featured Articles")}

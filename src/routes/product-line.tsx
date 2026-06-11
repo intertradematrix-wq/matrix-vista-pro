@@ -31,7 +31,7 @@ function ProductLinePage() {
           "Overview of brands and product lines we distribute",
         )}
         breadcrumbs={[
-          { label: t(lang, "สินค้า", "Products"), href: "/category/0" },
+          { label: t(lang, "สินค้า", "Products"), href: "/category/all-products" },
           { label: "Product Line" },
         ]}
         bgImage={heroProductLine}

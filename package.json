@@ -19,7 +19,8 @@
     "supabase:migrate-images:audit": "node scripts/migrate-images-to-supabase.mjs --inventory-only --scope=all --report-file=tmp/image-migration-audit.json",
     "supabase:migrate-images:manifest": "node scripts/generate-image-migration-manifest.mjs",
     "supabase:import-content": "node scripts/import-content-to-supabase.mjs",
-    "supabase:import-content:dry-run": "node scripts/import-content-to-supabase.mjs --dry-run"
+    "supabase:import-content:dry-run": "node scripts/import-content-to-supabase.mjs --dry-run",
+    "supabase:verify-admin-content": "node scripts/verify-admin-content-save.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

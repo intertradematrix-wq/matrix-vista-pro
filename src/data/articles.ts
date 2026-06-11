@@ -12,6 +12,7 @@ export type Article = {
   canonicalUrl?: string;
   coverImageUrl?: string;
   blocks?: ArticleBlock[];
+  isFeatured?: boolean;
 };
 
 const titles = [

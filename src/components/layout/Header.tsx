@@ -34,12 +34,12 @@ const submenuImagesByHref: Record<string, string> = {
   "/brands/grandview": brandImages.grandview,
   "/brands/persona": brandImages.persona,
   "/brands/transcreen": brandImages.transcreen,
-  "/category/288194": brandImages.unilumin,
-  "/category/235610": brandImages.kramerav,
-  "/category/288209": brandImages.persona,
-  "/category/288210": brandImages.transcreen,
-  "/category/237068": brandImages.grandview,
-  "/category/237477": solutionImages["av-solutions"],
+  "/category/unilumin": brandImages.unilumin,
+  "/category/kramer": brandImages.kramerav,
+  "/category/persona": brandImages.persona,
+  "/category/transcreen": brandImages.transcreen,
+  "/category/grandview": brandImages.grandview,
+  "/category/hdmi-cable": solutionImages["av-solutions"],
   "/product-line": heroProductLine,
 };
 

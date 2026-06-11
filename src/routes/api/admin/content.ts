@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Database } from "@/integrations/supabase/types";
+import { slugifyText } from "@/lib/seo-slugs";
 
 type ContentKind =
   | "products"
@@ -21,6 +22,20 @@ type ContentConfig = {
   select: string;
   order: string;
   fields: string[];
+  requiredFields?: string[];
+  nullableFields?: string[];
+  numericFields?: string[];
+  booleanFields?: string[];
+  jsonFields?: Record<string, "array" | "object" | "any">;
+  slugFields?: string[];
+  uniqueFields?: string[];
+  foreignKeys?: Array<{
+    field: string;
+    table: string;
+    key: string;
+    label: string;
+  }>;
+  allowCreate?: boolean;
 };
 
 const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
@@ -28,10 +43,11 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     table: "content_products",
     key: "product_id",
     select:
-      "product_id,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
+      "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
     order: "product_id",
     fields: [
       "name",
+      "slug",
       "image_url",
       "price_text",
       "source_url",
@@ -50,6 +66,34 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "seo_no_index",
     ],
+    requiredFields: ["name", "slug", "brand", "brand_slug"],
+    nullableFields: [
+      "image_url",
+      "price_text",
+      "source_url",
+      "brand_category_id",
+      "description_text",
+      "description_html",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_canonical_url",
+    ],
+    booleanFields: ["seo_no_index"],
+    jsonFields: { payload: "object" },
+    slugFields: ["slug"],
+    uniqueFields: ["slug"],
+    foreignKeys: [
+      {
+        field: "brand_slug",
+        table: "content_brands",
+        key: "slug",
+        label: "Brand",
+      },
+    ],
   },
   articles: {
     table: "content_articles",
@@ -58,6 +102,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "slug,article_id,title,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_no_index,updated_at",
     order: "article_id",
     fields: [
+      "article_id",
       "title",
       "category",
       "excerpt",
@@ -75,6 +120,33 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "og_description",
       "og_image_url",
       "seo_no_index",
+      "is_featured",
+    ],
+    requiredFields: ["title", "category", "excerpt"],
+    nullableFields: [
+      "published_date",
+      "read_min",
+      "canonical_url",
+      "cover_image_url",
+      "content_html",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+    ],
+    numericFields: ["article_id", "read_min"],
+    booleanFields: ["seo_no_index", "is_featured"],
+    jsonFields: { blocks: "array", payload: "object" },
+    uniqueFields: ["article_id"],
+    foreignKeys: [
+      {
+        field: "category",
+        table: "content_article_categories",
+        key: "slug",
+        label: "Article category",
+      },
     ],
   },
   articleCategories: {
@@ -83,6 +155,9 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     select: "slug,label,image_url,payload,updated_at",
     order: "slug",
     fields: ["label", "image_url", "payload"],
+    requiredFields: ["label"],
+    nullableFields: ["image_url"],
+    jsonFields: { payload: "object" },
   },
   brands: {
     table: "content_brands",
@@ -108,6 +183,21 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "seo_no_index",
     ],
+    requiredFields: ["name", "category", "description"],
+    nullableFields: [
+      "color",
+      "image_url",
+      "logo_url",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_canonical_url",
+    ],
+    booleanFields: ["seo_no_index"],
+    jsonFields: { accent: "object", payload: "object" },
   },
   brandIntros: {
     table: "content_brand_category_intros",
@@ -116,6 +206,17 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "category_id,brand_slug,tagline,description,highlights,best_for,origin,payload,updated_at",
     order: "category_id",
     fields: ["brand_slug", "tagline", "description", "highlights", "best_for", "origin", "payload"],
+    requiredFields: ["brand_slug", "tagline", "description"],
+    nullableFields: ["origin"],
+    jsonFields: { highlights: "array", best_for: "array", payload: "object" },
+    foreignKeys: [
+      {
+        field: "brand_slug",
+        table: "content_brands",
+        key: "slug",
+        label: "Brand",
+      },
+    ],
   },
   solutions: {
     table: "content_solutions",
@@ -138,6 +239,20 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "seo_no_index",
     ],
+    requiredFields: ["title", "description"],
+    nullableFields: [
+      "icon",
+      "image_url",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_canonical_url",
+    ],
+    booleanFields: ["seo_no_index"],
+    jsonFields: { payload: "object" },
   },
   industries: {
     table: "content_industries",
@@ -160,6 +275,20 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "seo_no_index",
     ],
+    requiredFields: ["title", "description"],
+    nullableFields: [
+      "icon",
+      "image_url",
+      "seo_title",
+      "seo_description",
+      "seo_keywords",
+      "og_title",
+      "og_description",
+      "og_image_url",
+      "seo_canonical_url",
+    ],
+    booleanFields: ["seo_no_index"],
+    jsonFields: { payload: "object" },
   },
   navItems: {
     table: "content_nav_items",
@@ -175,6 +304,18 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "description",
       "image_url",
       "payload",
+    ],
+    requiredFields: ["depth", "sort_order", "label", "href"],
+    nullableFields: ["parent_id", "description", "image_url"],
+    numericFields: ["depth", "sort_order"],
+    jsonFields: { payload: "object" },
+    foreignKeys: [
+      {
+        field: "parent_id",
+        table: "content_nav_items",
+        key: "id",
+        label: "Parent navigation item",
+      },
     ],
   },
   contactSubmissions: {
@@ -193,6 +334,10 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "created_at",
       "is_read",
     ],
+    requiredFields: ["name", "email", "phone"],
+    nullableFields: ["company", "topic", "message"],
+    booleanFields: ["is_read"],
+    allowCreate: false,
   },
 };
 
@@ -228,6 +373,214 @@ function normalizeValue(value: unknown) {
   if (typeof value !== "string") return value;
   const trimmed = value.trim();
   return trimmed === "" ? null : trimmed;
+}
+
+function tableName(config: ContentConfig) {
+  return config.table as keyof Database["public"]["Tables"];
+}
+
+function normalizeId(config: ContentConfig, id: string) {
+  const trimmed = id.trim();
+  return config.key === "slug" ? slugifyText(trimmed, "") : trimmed;
+}
+
+function isPlainObject(value: unknown) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function fieldLabel(field: string) {
+  return field
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function normalizeContentValues(config: ContentConfig, rawValues: Record<string, unknown>) {
+  const values: Record<string, unknown> = {};
+
+  for (const [field, value] of Object.entries(rawValues)) {
+    if (!config.fields.includes(field)) continue;
+
+    let nextValue = normalizeValue(value);
+    if (config.slugFields?.includes(field) && typeof nextValue === "string") {
+      nextValue = slugifyText(nextValue, "");
+    }
+
+    if (nextValue === null) {
+      values[field] = null;
+      continue;
+    }
+
+    if (config.numericFields?.includes(field)) {
+      const numberValue =
+        typeof nextValue === "number" ? nextValue : Number(String(nextValue ?? "").trim());
+      if (!Number.isFinite(numberValue)) {
+        return {
+          error: jsonError(`${fieldLabel(field)} must be a valid number.`, 400),
+          values,
+        };
+      }
+      values[field] = numberValue;
+      continue;
+    }
+
+    if (config.booleanFields?.includes(field)) {
+      if (typeof nextValue === "boolean") {
+        values[field] = nextValue;
+      } else if (nextValue === "true" || nextValue === "false") {
+        values[field] = nextValue === "true";
+      } else {
+        return {
+          error: jsonError(`${fieldLabel(field)} must be true or false.`, 400),
+          values,
+        };
+      }
+      continue;
+    }
+
+    values[field] = nextValue;
+  }
+
+  for (const [field, shape] of Object.entries(config.jsonFields ?? {})) {
+    if (!(field in values) || values[field] === null) continue;
+    const value = values[field];
+    const valid =
+      shape === "any" ||
+      (shape === "array" && Array.isArray(value)) ||
+      (shape === "object" && isPlainObject(value));
+    if (!valid) {
+      return {
+        error: jsonError(`${fieldLabel(field)} must be valid ${shape} JSON.`, 400),
+        values,
+      };
+    }
+  }
+
+  return { values };
+}
+
+function validateRequiredFields(
+  config: ContentConfig,
+  id: string,
+  values: Record<string, unknown>,
+  action: "create" | "update",
+) {
+  if (!id) return jsonError("Primary key (ID/Slug) is required.", 400);
+
+  for (const field of config.requiredFields ?? []) {
+    if (action === "update" && !(field in values)) continue;
+    const value = values[field];
+    if (value === null || value === undefined || (typeof value === "string" && !value.trim())) {
+      return jsonError(`${fieldLabel(field)} is required.`, 400);
+    }
+  }
+
+  return null;
+}
+
+async function ensureItemExists(config: ContentConfig, id: string) {
+  const { data, error } = await supabaseAdmin
+    .from(tableName(config))
+    .select(config.key)
+    .eq(config.key, id)
+    .maybeSingle();
+
+  if (error) return jsonError("Failed to verify the item before saving.", 500, error);
+  if (!data) return jsonError("This item no longer exists. Refresh and try again.", 404);
+  return null;
+}
+
+async function ensureUniqueFields(
+  config: ContentConfig,
+  id: string,
+  values: Record<string, unknown>,
+  action: "create" | "update",
+) {
+  for (const field of config.uniqueFields ?? []) {
+    if (!(field in values)) continue;
+    const value = values[field];
+    if (value === null || value === undefined || value === "") continue;
+
+    let query = supabaseAdmin.from(tableName(config)).select(config.key).eq(field, value).limit(1);
+
+    if (action === "update") query = query.neq(config.key, id);
+
+    const { data, error } = await query.maybeSingle();
+    if (error) return jsonError(`Failed to validate ${fieldLabel(field)}.`, 500, error);
+    if (data) {
+      return jsonError(
+        `${fieldLabel(field)} is already in use. Choose a different value before saving.`,
+        409,
+      );
+    }
+  }
+
+  return null;
+}
+
+async function ensureForeignKeys(config: ContentConfig, values: Record<string, unknown>) {
+  for (const fk of config.foreignKeys ?? []) {
+    const value = values[fk.field];
+    if (value === null || value === undefined || value === "") continue;
+
+    const { data, error } = await supabaseAdmin
+      .from(fk.table as keyof Database["public"]["Tables"])
+      .select(fk.key)
+      .eq(fk.key, value)
+      .maybeSingle();
+
+    if (error) return jsonError(`Failed to validate ${fk.label}.`, 500, error);
+    if (!data) {
+      return jsonError(`${fk.label} "${String(value)}" does not exist.`, 400);
+    }
+  }
+
+  return null;
+}
+
+async function hasColumn(config: ContentConfig, field: string) {
+  const { error } = await supabaseAdmin
+    .from(tableName(config))
+    .select(field)
+    .limit(1)
+    .maybeSingle();
+
+  return !error;
+}
+
+async function selectForWrite(config: ContentConfig, values: Record<string, unknown>) {
+  if (!("image_url" in values) || (await hasColumn(config, "image_url"))) {
+    return { values, select: config.select };
+  }
+
+  const fallbackValues = { ...values };
+  delete fallbackValues.image_url;
+  return {
+    values: fallbackValues,
+    select: config.select
+      .split(",")
+      .filter((column) => column.trim() !== "image_url")
+      .join(","),
+  };
+}
+
+async function executeWrite(
+  config: ContentConfig,
+  action: "create" | "update",
+  id: string,
+  values: Record<string, unknown>,
+) {
+  const write = await selectForWrite(config, values);
+  const query = supabaseAdmin.from(tableName(config));
+
+  if (action === "create") {
+    return query
+      .insert({ [config.key]: id, ...write.values })
+      .select(write.select)
+      .single();
+  }
+
+  return query.update(write.values).eq(config.key, id).select(write.select).single();
 }
 
 async function requireAdmin(request: Request) {
@@ -274,7 +627,7 @@ async function requireAdmin(request: Request) {
 
 async function loadKind(config: ContentConfig) {
   const result = await supabaseAdmin
-    .from(config.table as any)
+    .from(tableName(config))
     .select(config.select)
     .order(config.order, {
       ascending: true,
@@ -287,7 +640,7 @@ async function loadKind(config: ContentConfig) {
       .filter((col) => col.trim() !== "image_url")
       .join(",");
     const fallbackResult = await supabaseAdmin
-      .from(config.table as any)
+      .from(tableName(config))
       .select(fallbackSelect)
       .order(config.order, { ascending: true });
 
@@ -338,81 +691,85 @@ export const Route = createFileRoute("/api/admin/content")({
           return jsonError("Invalid content payload", 400, parsed.error.flatten());
 
         const config = CONTENT_CONFIG[parsed.data.kind];
+        const action = parsed.data.action;
+        const id = normalizeId(config, parsed.data.id);
 
-        if (parsed.data.action === "delete") {
-          const { error } = await supabaseAdmin
-            .from(config.table as any)
-            .delete()
-            .eq(config.key, parsed.data.id);
+        if (action === "delete") {
+          if (!id) return jsonError("Primary key (ID/Slug) is required.", 400);
+          const { error } = await supabaseAdmin.from(tableName(config)).delete().eq(config.key, id);
 
           if (error) return jsonError(`Failed to delete ${parsed.data.kind}`, 500, error);
-          return Response.json({ ok: true, kind: parsed.data.kind, deletedId: parsed.data.id });
+          return Response.json({ ok: true, kind: parsed.data.kind, deletedId: id });
         }
 
-        const values = Object.fromEntries(
-          Object.entries(parsed.data.values)
-            .filter(([field]) => config.fields.includes(field))
-            .map(([field, value]) => [field, normalizeValue(value)]),
-        );
+        if (action === "create" && config.allowCreate === false) {
+          return jsonError(`${parsed.data.kind} cannot be created from Content Management.`, 400);
+        }
+
+        const normalized = normalizeContentValues(config, parsed.data.values);
+        if ("error" in normalized && normalized.error) return normalized.error;
+        const values = normalized.values;
 
         if (Object.keys(values).length === 0) {
           return jsonError("No supported fields to update", 400);
         }
 
-        let query = supabaseAdmin.from(config.table as any);
-        let result;
+        const requiredError = validateRequiredFields(config, id, values, action);
+        if (requiredError) return requiredError;
 
-        if (parsed.data.action === "create") {
-          result = await query
-            .insert({ [config.key]: parsed.data.id, ...values } as any)
-            .select(config.select)
-            .single();
-        } else {
-          result = await query
-            .update(values as any)
-            .eq(config.key, parsed.data.id)
-            .select(config.select)
-            .single();
+        if (action === "update") {
+          const existsError = await ensureItemExists(config, id);
+          if (existsError) return existsError;
         }
 
+        const uniqueError = await ensureUniqueFields(config, id, values, action);
+        if (uniqueError) return uniqueError;
+
+        const fkError = await ensureForeignKeys(config, values);
+        if (fkError) return fkError;
+
+        if (action === "create" && parsed.data.kind === "articles" && !values.article_id) {
+          const { data: maxIdData } = await supabaseAdmin
+            .from("content_articles")
+            .select("article_id")
+            .order("article_id", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          values.article_id = (maxIdData?.article_id || 0) + 1;
+        }
+
+        const result = await executeWrite(config, action, id, values);
+
         if (result.error) {
-          // Retry without image_url if the column doesn't exist yet
-          if (config.select.includes("image_url")) {
-            const fallbackValues = Object.fromEntries(
-              Object.entries(values).filter(([field]) => field !== "image_url"),
+          if (result.error.code === "23505") {
+            return jsonError(
+              `A ${parsed.data.kind} item with this ID or slug already exists.`,
+              409,
+              result.error,
             );
-            const fallbackSelect = config.select
-              .split(",")
-              .filter((col) => col.trim() !== "image_url")
-              .join(",");
-
-            if (Object.keys(fallbackValues).length > 0 || parsed.data.action === "create") {
-              const retryQuery = supabaseAdmin.from(config.table as any);
-              let retryResult;
-
-              if (parsed.data.action === "create") {
-                retryResult = await retryQuery
-                  .insert({ [config.key]: parsed.data.id, ...fallbackValues } as any)
-                  .select(fallbackSelect)
-                  .single();
-              } else {
-                retryResult = await retryQuery
-                  .update(fallbackValues as any)
-                  .eq(config.key, parsed.data.id)
-                  .select(fallbackSelect)
-                  .single();
-              }
-
-              if (!retryResult.error) {
-                return Response.json({ ok: true, kind: parsed.data.kind, item: retryResult.data });
-              }
-            }
           }
-          return jsonError(
-            `Failed to ${parsed.data.action} ${parsed.data.kind}`,
-            500,
-            result.error,
-          );
+
+          if (result.error.code === "23503") {
+            return jsonError(
+              "A referenced item does not exist. Check linked category or brand.",
+              400,
+              result.error,
+            );
+          }
+
+          if (result.error.code === "23502") {
+            return jsonError("A required field is missing.", 400, result.error);
+          }
+
+          if (result.error.code === "PGRST116" && action === "update") {
+            return jsonError(
+              "This item no longer exists. Refresh and try again.",
+              404,
+              result.error,
+            );
+          }
+
+          return jsonError(`Failed to ${action} ${parsed.data.kind}`, 500, result.error);
         }
         return Response.json({ ok: true, kind: parsed.data.kind, item: result.data });
       },

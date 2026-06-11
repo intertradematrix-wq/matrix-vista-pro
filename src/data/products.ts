@@ -1,6 +1,7 @@
 // Auto-generated from matrixintertrade.com/category/0 (site owner-supplied content)
 export type Product = {
   id: string;
+  slug?: string;
   name: string;
   image: string;
   price: string;

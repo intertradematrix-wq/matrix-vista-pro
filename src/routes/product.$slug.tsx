@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { Breadcrumb } from "@/components/site/Breadcrumb";
 import { CTASection } from "@/components/site/CTASection";
 import { Button } from "@/components/ui/button";
@@ -13,16 +13,22 @@ import {
   ShieldCheck,
   Wrench,
 } from "lucide-react";
-import { productById } from "@/data/products";
 import { productDetailById } from "@/data/product-details";
+import type { Product } from "@/data/products";
 import { loadProductDetailContent } from "@/lib/content/products";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { CATEGORY_SLUGS } from "@/lib/seo-slugs";
 
-export const Route = createFileRoute("/product/$id")({
-  head: (ctx: any) => {
+type ProductLoaderData = {
+  product: Product;
+  relatedProducts: Product[];
+};
+
+export const Route = createFileRoute("/product/$slug")({
+  head: (ctx: { loaderData?: ProductLoaderData; params: { slug: string } }) => {
     const { loaderData, params } = ctx;
-    const p = loaderData?.product ?? productById(params.id);
-    const detail = productDetailById(params.id);
+    const p = loaderData?.product;
+    const detail = p ? productDetailById(p.id) : undefined;
     const title = p ? `${p.name} - Matrix Intertrade` : "สินค้า - Matrix Intertrade";
     const desc =
       p?.descriptionText?.slice(0, 200) ||
@@ -45,7 +51,7 @@ export const Route = createFileRoute("/product/$id")({
             ...(hasPrice
               ? { price: p.price }
               : { price: "0", availability: "https://schema.org/InStock" }),
-            url: `https://matrix-vista-pro.lovable.app/product/${params.id}`,
+            url: `https://matrix-vista-pro.lovable.app/product/${p.slug ?? params.slug}`,
           },
         }
       : null;
@@ -58,16 +64,23 @@ export const Route = createFileRoute("/product/$id")({
         { property: "og:type", content: "product" },
         ...(p?.image ? [{ property: "og:image", content: p.image }] : []),
       ],
-      links: [{ rel: "canonical", href: `/product/${params.id}` }],
+      links: [{ rel: "canonical", href: `/product/${p?.slug ?? params.slug}` }],
       ...(productLd
         ? { scripts: [{ type: "application/ld+json", children: JSON.stringify(productLd) }] }
         : {}),
     };
   },
   loader: async ({ params }) => {
-    const content = await loadProductDetailContent(params.id);
+    const content = await loadProductDetailContent(params.slug);
     const product = content.product;
     if (!product) throw notFound();
+    if (product.slug && params.slug !== product.slug) {
+      throw redirect({
+        to: "/product/$slug",
+        params: { slug: product.slug },
+        statusCode: 301,
+      });
+    }
     return { product, relatedProducts: content.relatedProducts };
   },
   notFoundComponent: () => (
@@ -75,7 +88,7 @@ export const Route = createFileRoute("/product/$id")({
       <h1 className="text-2xl font-bold text-primary">ไม่พบสินค้า</h1>
       <p className="mt-2 text-muted-foreground">สินค้านี้อาจถูกย้ายหรือไม่มีในระบบแล้ว</p>
       <Button asChild className="mt-6">
-        <Link to="/category/$id" params={{ id: "0" }}>
+        <Link to="/category/$slug" params={{ slug: "all-products" }}>
           ดูสินค้าทั้งหมด
         </Link>
       </Button>
@@ -86,7 +99,7 @@ export const Route = createFileRoute("/product/$id")({
 
 function ProductPage() {
   const { lang } = useLanguage();
-  const { product: p, relatedProducts: related } = Route.useLoaderData() as any;
+  const { product: p, relatedProducts: related } = Route.useLoaderData() as ProductLoaderData;
   const hasPrice = p.price && p.price !== "0.00";
   const detail = productDetailById(p.id);
   const descriptionHtml = p.descriptionHtml ?? detail?.descriptionHtml;
@@ -113,8 +126,15 @@ function ProductPage() {
         <div className="relative mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
           <Breadcrumb
             items={[
-              { label: t(lang, "สินค้า", "Products"), href: "/category/0" },
-              ...(p.brand ? [{ label: p.brand, href: `/category/${p.brandCategoryId}` }] : []),
+              { label: t(lang, "สินค้า", "Products"), href: "/category/all-products" },
+              ...(p.brand
+                ? [
+                    {
+                      label: p.brand,
+                      href: `/category/${CATEGORY_SLUGS[p.brandCategoryId] ?? p.brandCategoryId}`,
+                    },
+                  ]
+                : []),
               { label: p.name },
             ]}
           />
@@ -270,17 +290,20 @@ function ProductPage() {
                 </p>
               </div>
               <Button asChild variant="outline" className="min-h-11">
-                <Link to="/category/$id" params={{ id: p.brandCategoryId }}>
+                <Link
+                  to="/category/$slug"
+                  params={{ slug: CATEGORY_SLUGS[p.brandCategoryId] ?? p.brandCategoryId }}
+                >
                   {t(lang, "ดูทั้งหมด", "View All")}
                 </Link>
               </Button>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {related.map((r: any) => (
+              {related.map((r) => (
                 <Link
                   key={r.id}
-                  to="/product/$id"
-                  params={{ id: r.id }}
+                  to="/product/$slug"
+                  params={{ slug: r.slug ?? r.id }}
                   className="group overflow-hidden rounded-xl border border-border bg-white transition-colors hover:border-accent/50"
                 >
                   <div className="relative aspect-square overflow-hidden bg-secondary/45">

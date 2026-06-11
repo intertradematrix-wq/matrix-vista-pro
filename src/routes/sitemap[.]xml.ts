@@ -3,6 +3,7 @@ import type {} from "@tanstack/react-start";
 import { brands, industries } from "@/data/site";
 import { articles } from "@/data/articles";
 import { products } from "@/data/products";
+import { ensureUniqueArticleSlugs, ensureUniqueProductSlugs } from "@/lib/seo-slugs";
 
 const BASE_URL = "https://www.matrixintertrade.com";
 
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/av-solutions", changefreq: "monthly", priority: "0.8" },
           { path: "/brands", changefreq: "monthly", priority: "0.7" },
           { path: "/product-line", changefreq: "monthly", priority: "0.6" },
-          { path: "/category/0", changefreq: "weekly", priority: "0.7" },
+          { path: "/category/all-products", changefreq: "weekly", priority: "0.7" },
           { path: "/blog", changefreq: "weekly", priority: "0.7" },
           { path: "/contactus", changefreq: "monthly", priority: "0.6" },
         ];
@@ -44,13 +45,13 @@ export const Route = createFileRoute("/sitemap.xml")({
             changefreq: "monthly" as const,
             priority: "0.6",
           })),
-          ...articles.map((a) => ({
+          ...ensureUniqueArticleSlugs(articles).map((a) => ({
             path: `/blog/${a.slug}`,
             changefreq: "monthly" as const,
             priority: "0.5",
           })),
-          ...products.map((p) => ({
-            path: `/product/${p.id}`,
+          ...ensureUniqueProductSlugs(products).map((p) => ({
+            path: `/product/${p.slug}`,
             changefreq: "monthly" as const,
             priority: "0.5",
           })),
