@@ -3,6 +3,7 @@ import { ArrowUpRight, BadgeCheck } from "lucide-react";
 import { brandImages } from "@/data/brand-images";
 import { brandLogos } from "@/data/brand-logos";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { CATEGORY_IDS_BY_SLUG, CATEGORY_SLUGS } from "@/lib/seo-slugs";
 
 const nameToCatId: Record<string, string> = {
   Unilumin: "288194",
@@ -43,19 +44,9 @@ export function BrandCard({
   const img = imageUrl || brandImages[slug];
   const logo = logoUrl || brandLogos[slug];
 
-  const categoryId = nameToCatId[name] || nameToCatId[slug];
-  // Route to the specific product category page if mapped, else fallback to brand landing page
-  const categorySlugs: Record<string, string> = {
-    "288194": "unilumin",
-    "235610": "kramer",
-    "288209": "persona",
-    "288210": "transcreen",
-    "237068": "grandview",
-    "237477": "hdmi-cable",
-    "237677": "newline",
-  };
+  const categoryId = nameToCatId[name] || nameToCatId[slug] || CATEGORY_IDS_BY_SLUG[slug];
   const targetUrl = categoryId
-    ? `/category/${categorySlugs[categoryId] ?? categoryId}`
+    ? `/category/${CATEGORY_SLUGS[categoryId] ?? categoryId}`
     : `/brands/${slug}`;
 
   return (

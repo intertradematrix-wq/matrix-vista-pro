@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SolutionCard } from "@/components/site/SolutionCard";
 import { CTASection } from "@/components/site/CTASection";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import heroSolutions from "@/assets/hero-solutions.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/solutions")({
   head: () => ({
@@ -46,6 +47,15 @@ function SolutionsPage() {
           {solutions.map((s) => (
             <SolutionCard key={s.slug} {...s} />
           ))}
+        </div>
+        <div className="mx-auto mt-8 max-w-7xl px-4 text-center md:px-6">
+          <Link
+            to="/led-display"
+            className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-5 py-2.5 text-sm font-semibold text-accent transition hover:bg-accent/10"
+          >
+            {t(lang, "ดูรายละเอียด LED Display สำหรับองค์กร", "View enterprise LED Display details")}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
       <CTASection />

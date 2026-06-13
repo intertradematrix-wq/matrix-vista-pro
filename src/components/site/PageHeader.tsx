@@ -7,6 +7,8 @@ export function PageHeader({
   breadcrumbs,
   bgImage,
   variant = "default",
+  compact = false,
+  children,
 }: {
   eyebrow?: string;
   title: string;
@@ -14,6 +16,8 @@ export function PageHeader({
   breadcrumbs?: { label: string; href?: string }[];
   bgImage?: string;
   variant?: "default" | "clean";
+  compact?: boolean;
+  children?: React.ReactNode;
 }) {
   const clean = variant === "clean";
   return (
@@ -46,7 +50,7 @@ export function PageHeader({
       )}
       <div
         className={`relative mx-auto min-w-0 max-w-7xl px-4 md:px-6 ${
-          clean ? "py-8 sm:py-10 md:py-14" : "py-10 sm:py-14 md:py-20"
+          compact ? "py-4 sm:py-6" : clean ? "py-8 sm:py-10 md:py-14" : "py-10 sm:py-14 md:py-20"
         }`}
       >
         {breadcrumbs && (
@@ -90,6 +94,7 @@ export function PageHeader({
             {desc}
           </p>
         )}
+        {children && <div className={compact ? "mt-4 md:mt-5" : "mt-6 md:mt-8"}>{children}</div>}
       </div>
     </section>
   );

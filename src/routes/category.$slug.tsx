@@ -1,9 +1,10 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useEffect, useState, useMemo } from "react";
 import { PageHeader } from "@/components/site/PageHeader";
 import { CTASection } from "@/components/site/CTASection";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Eye, MessageCircle, Check, Sparkles, MapPin, Layers } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, Eye, MessageCircle, Check, Sparkles, MapPin, Layers, Search, Filter, X } from "lucide-react";
 import { brandIntrosByCategoryId } from "@/data/brand-intros";
 import { brandImages } from "@/data/brand-images";
 import {
@@ -69,9 +70,33 @@ function CategoryPage() {
     : t(lang, "หมวดสินค้า", "Category");
   const [productContent, setProductContent] = useState(() => fallbackProductsByCategoryId(id));
   const [intro, setIntro] = useState<SiteBrandIntro | undefined>(() => brandIntrosByCategoryId[id]);
+  
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState<string>("all");
+
   const products = productContent.products;
   const featuredProducts = products.slice(0, 3);
   const introImage = intro ? intro.imageUrl || brandImages[intro.brandSlug] : undefined;
+
+  const uniqueBrands = useMemo(() => {
+    const brands = new Set<string>();
+    products.forEach((p) => {
+      if (p.brand) brands.add(p.brand);
+    });
+    return Array.from(brands).sort();
+  }, [products]);
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      const matchesSearch =
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.brand && p.brand.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesBrand = selectedBrand === "all" || p.brand === selectedBrand;
+      return matchesSearch && matchesBrand;
+    });
+  }, [products, searchTerm, selectedBrand]);
+
+  const isFiltering = searchTerm !== "" || selectedBrand !== "all";
 
   useEffect(() => {
     let isCurrent = true;
@@ -96,25 +121,87 @@ function CategoryPage() {
   return (
     <>
       <PageHeader
-        eyebrow={intro ? `Brand · ${name}` : "Products"}
         title={name}
-        desc={
-          intro
-            ? intro.tagline
-            : t(
-                lang,
-                `${products.length} รายการ พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการเลือกสินค้าและออกแบบระบบ AV`,
-                `${products.length} items with advice from Matrix Intertrade team for product selection and AV design.`,
-              )
-        }
         breadcrumbs={[
           { label: t(lang, "สินค้า", "Products"), href: "/category/all-products" },
           { label: name },
         ]}
         variant="clean"
-      />
+        compact={true}
+      >
+        <div className="flex flex-col gap-4 pt-1">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="relative w-full flex-1 md:max-w-xl">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={t(lang, "ค้นหาสินค้า หรือแบรนด์...", "Search products or brands...")}
+                className="w-full border-border/60 bg-secondary/20 pl-9 pr-10 shadow-none focus-visible:bg-white focus-visible:ring-accent transition-colors"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label={t(lang, "ล้างคำค้นหา", "Clear search")}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:block text-[15px] font-medium text-muted-foreground">
+                {t(lang, "พบสินค้า", "Found")}{" "}
+                <span className="font-bold text-primary">{filteredProducts.length}</span>{" "}
+                {t(lang, "รายการ", "items")}
+              </div>
+              <Button asChild variant="outline" size="sm" className="h-9 shadow-sm shrink-0">
+                <Link to="/contactus">
+                  <MessageCircle className="mr-1.5 h-3.5 w-3.5" />
+                  {t(lang, "ปรึกษาทีมขาย", "Consult Sales")}
+                </Link>
+              </Button>
+            </div>
+          </div>
 
-      {intro && (
+          {uniqueBrands.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex shrink-0 items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                <Filter className="h-4 w-4" />
+                {t(lang, "แบรนด์:", "Brands:")}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedBrand("all")}
+                  className={`shrink-0 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all duration-300 ease-out ${
+                    selectedBrand === "all"
+                      ? "bg-primary text-white shadow-sm ring-1 ring-primary"
+                      : "border border-border/70 bg-white text-muted-foreground hover:border-primary/30 hover:bg-secondary/10 hover:text-primary"
+                  }`}
+                >
+                  {t(lang, "ทั้งหมด", "All")}
+                </button>
+                {uniqueBrands.map((brand) => (
+                  <button
+                    key={brand}
+                    onClick={() => setSelectedBrand(brand)}
+                    className={`shrink-0 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all duration-300 ease-out ${
+                      selectedBrand === brand
+                        ? "bg-primary text-white shadow-sm ring-1 ring-primary"
+                        : "border border-border/70 bg-white text-muted-foreground hover:border-primary/30 hover:bg-secondary/10 hover:text-primary"
+                    }`}
+                  >
+                    {brand}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </PageHeader>
+
+      {!isFiltering && intro && (
         <section className="border-b border-border bg-white py-12 md:py-16">
           <div className="mx-auto max-w-7xl px-4 md:px-6 grid gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center">
             <div>
@@ -200,7 +287,7 @@ function CategoryPage() {
         </section>
       )}
 
-      {intro?.productCategories && intro.productCategories.length > 0 && (
+      {!isFiltering && intro?.productCategories && intro.productCategories.length > 0 && (
         <section className="border-b border-border bg-secondary/30 py-10 md:py-14">
           <div className="mx-auto max-w-7xl px-4 md:px-6">
             <div className="mb-6">
@@ -240,7 +327,7 @@ function CategoryPage() {
         </section>
       )}
 
-      {featuredProducts.length > 0 && (
+      {!isFiltering && featuredProducts.length > 0 && (
         <section className="border-b border-border bg-secondary/35 py-8 md:py-10">
           <div className="mx-auto max-w-7xl px-4 md:px-6">
             <div className="grid gap-4 lg:grid-cols-3">
@@ -249,31 +336,30 @@ function CategoryPage() {
                   key={p.id}
                   to="/product/$slug"
                   params={{ slug: p.slug ?? p.id }}
-                  className="group grid min-w-0 overflow-hidden rounded-xl border border-border bg-white transition-colors hover:border-accent/50 sm:grid-cols-[150px_minmax(0,1fr)] lg:grid-cols-1"
+                  className="group grid min-w-0 overflow-hidden rounded-xl border border-border/60 bg-white shadow-sm transition-all duration-500 ease-out hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl sm:grid-cols-[150px_minmax(0,1fr)] lg:grid-cols-1"
                 >
-                  <div className="relative aspect-square min-h-[150px] bg-white sm:aspect-auto lg:aspect-[1.15/1]">
-                    <div className="absolute inset-3 rounded-lg bg-secondary/55" />
+                  <div className="relative aspect-square min-h-[150px] bg-secondary/20 sm:aspect-auto lg:aspect-[1.15/1]">
                     <img
                       src={p.image}
                       alt={p.name}
                       loading="lazy"
-                      className="absolute inset-0 h-full w-full object-contain p-7 transition-transform duration-500 group-hover:scale-[1.03]"
+                      className="absolute inset-0 h-full w-full object-contain p-7 transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                     />
                   </div>
-                  <div className="flex min-w-0 flex-col justify-between gap-3 p-4">
+                  <div className="flex min-w-0 flex-col justify-between gap-3 p-5">
                     <div className="min-w-0">
-                      <div className="text-xs font-semibold text-accent">{p.brand}</div>
-                      <h2 className="mt-1 line-clamp-2 text-base font-bold leading-snug text-primary">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-accent">{p.brand}</div>
+                      <h2 className="mt-1.5 line-clamp-2 text-base font-bold leading-snug text-primary transition-colors group-hover:text-accent">
                         {p.name}
                       </h2>
                     </div>
-                    <div className="flex min-w-0 items-center justify-between gap-3">
-                      <span className="min-w-0 break-words text-sm font-semibold text-primary">
+                    <div className="mt-1 flex min-w-0 items-center justify-between gap-3">
+                      <span className="min-w-0 break-words text-[15px] font-bold text-primary">
                         {p.price && p.price !== "0.00"
                           ? `${p.price} ${t(lang, "บาท", "THB")}`
                           : t(lang, "ติดต่อสอบถามราคา", "Contact for Price")}
                       </span>
-                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-accent" />
+                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent" />
                     </div>
                   </div>
                 </Link>
@@ -283,65 +369,79 @@ function CategoryPage() {
         </section>
       )}
 
-      <section className="bg-white py-12 md:py-16">
+      <section className="bg-white pt-2 pb-6 md:pt-4 md:pb-8">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-primary md:text-3xl">
-                {t(lang, "รายการสินค้า", "Product List")}
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                {t(
-                  lang,
-                  "เลือกดูรายละเอียดสินค้า หรือส่งข้อมูลให้ทีมขายช่วยประเมินสเปกที่เหมาะกับหน้างาน",
-                  "Browse product details or send info to our sales team to evaluate the right specs for your site.",
-                )}
-              </p>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div className="text-[15px] font-medium text-muted-foreground">
+              {t(lang, "พบสินค้า", "Found")}{" "}
+              <span className="font-bold text-primary">{filteredProducts.length}</span>{" "}
+              {t(lang, "รายการ", "items")}
             </div>
-            <Button asChild variant="outline" className="min-h-11">
+            <Button asChild variant="outline" size="sm" className="h-9 shadow-sm">
               <Link to="/contactus">
-                <MessageCircle className="mr-1 h-4 w-4" />
+                <MessageCircle className="mr-1.5 h-3.5 w-3.5" />
                 {t(lang, "ปรึกษาทีมขาย", "Consult Sales")}
               </Link>
             </Button>
           </div>
 
-          {products.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
-              {t(lang, "ไม่พบสินค้าในหมวดนี้", "No products found in this category")}
+          {filteredProducts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/60 bg-secondary/10 py-16 text-center px-4">
+              <Search className="mb-4 h-10 w-10 text-muted-foreground/50" />
+              <h3 className="text-lg font-bold text-primary">
+                {searchTerm || selectedBrand !== "all"
+                  ? t(lang, "ไม่พบสินค้าที่ตรงกับการค้นหาของคุณ", "No products match your search criteria")
+                  : t(lang, "ไม่พบสินค้าในหมวดนี้", "No products found in this category")}
+              </h3>
+              <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                {t(lang, "ลองค้นหาด้วยคำอื่น หรือปรับตัวกรองแบรนด์เพื่อดูสินค้าอื่นๆ", "Try searching with different terms or adjust brand filters to see other products.")}
+              </p>
+              {(searchTerm || selectedBrand !== "all") && (
+                <Button 
+                  variant="outline" 
+                  className="mt-6 min-h-10 rounded-lg px-6 font-semibold"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedBrand("all");
+                  }}
+                >
+                  <X className="mr-1.5 h-4 w-4" />
+                  {t(lang, "ล้างการค้นหา", "Clear Search")}
+                </Button>
+              )}
             </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {products.map((p) => {
+              {filteredProducts.map((p) => {
                 const hasPrice = p.price && p.price !== "0.00";
                 return (
                   <article
                     key={p.id}
-                    className="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-white transition-colors hover:border-accent/50"
+                    className="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-border/60 bg-white shadow-sm transition-all duration-500 ease-out hover:-translate-y-1 hover:border-primary/20 hover:shadow-xl"
                   >
                     <Link
                       to="/product/$slug"
                       params={{ slug: p.slug ?? p.id }}
-                      className="relative block aspect-square overflow-hidden bg-secondary/45"
+                      className="relative block aspect-square overflow-hidden bg-secondary/20"
                     >
                       <img
                         src={p.image}
                         alt={p.name}
                         loading="lazy"
-                        className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-500 group-hover:scale-[1.03]"
+                        className="absolute inset-0 h-full w-full object-contain p-6 transition-transform duration-700 ease-out group-hover:scale-[1.05]"
                       />
                       {p.brand && (
-                        <div className="absolute left-3 top-3 rounded-full border border-border bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold text-primary backdrop-blur">
+                        <div className="absolute left-3 top-3 rounded-md border border-border/50 bg-white/95 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-primary shadow-sm backdrop-blur">
                           {p.brand}
                         </div>
                       )}
                     </Link>
-                    <div className="flex flex-1 flex-col gap-4 p-4">
+                    <div className="flex flex-1 flex-col gap-4 p-5">
                       <div className="flex-1">
-                        <h3 className="min-h-[2.75rem] text-sm font-bold leading-snug text-primary line-clamp-2">
+                        <h3 className="min-h-[2.75rem] text-sm font-bold leading-snug text-primary line-clamp-2 transition-colors group-hover:text-accent">
                           {p.name}
                         </h3>
-                        <div className="mt-2 text-sm">
+                        <div className="mt-2 text-[15px]">
                           {hasPrice ? (
                             <span className="font-bold text-primary">
                               {p.price} {t(lang, "บาท", "THB")}
@@ -353,14 +453,14 @@ function CategoryPage() {
                           )}
                         </div>
                       </div>
-                      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
-                        <Button asChild size="sm" className="h-11 min-w-0">
+                      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2 pt-1">
+                        <Button asChild size="sm" className="h-10 min-w-0 rounded-lg font-semibold shadow-sm">
                           <Link to="/product/$slug" params={{ slug: p.slug ?? p.id }}>
-                            <Eye className="mr-1 h-3.5 w-3.5" />{" "}
+                            <Eye className="mr-1.5 h-3.5 w-3.5" />{" "}
                             {t(lang, "ดูรายละเอียด", "View Details")}
                           </Link>
                         </Button>
-                        <Button asChild variant="outline" size="sm" className="h-11 w-11 px-0">
+                        <Button asChild variant="outline" size="sm" className="h-10 w-10 rounded-lg px-0 transition-colors group-hover:border-accent/40 group-hover:bg-accent/5 group-hover:text-accent">
                           <Link
                             to="/contactus"
                             aria-label={t(
@@ -369,7 +469,7 @@ function CategoryPage() {
                               `Request quote for ${p.name}`,
                             )}
                           >
-                            <ArrowRight className="h-3.5 w-3.5" />
+                            <ArrowRight className="h-4 w-4" />
                           </Link>
                         </Button>
                       </div>

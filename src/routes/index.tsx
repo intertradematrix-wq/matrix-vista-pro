@@ -280,6 +280,15 @@ function HomePage() {
         )}
       >
         <SolutionSplitPanels solutions={solutions} />
+        <div className="mt-8 text-center">
+          <Link
+            to="/led-display"
+            className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-5 py-2.5 text-sm font-semibold text-accent transition hover:bg-accent/10"
+          >
+            {t(lang, "ดูโซลูชัน LED Display สำหรับองค์กร", "View enterprise LED Display solutions")}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </Section>
 
       {/* INDUSTRIES */}

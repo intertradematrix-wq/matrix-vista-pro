@@ -20,6 +20,28 @@ const slugHero: Record<string, string> = {
   "av-solutions": heroAv,
 };
 
+type SeoSection = {
+  heading: string;
+  headingEn?: string;
+  body: string;
+  bodyEn?: string;
+};
+
+type SeoFaq = {
+  question: string;
+  questionEn?: string;
+  answer: string;
+  answerEn?: string;
+};
+
+type RelatedLink = {
+  label: string;
+  labelEn?: string;
+  href: string;
+  description?: string;
+  descriptionEn?: string;
+};
+
 export function SolutionDetailTemplate({
   slug,
   title,
@@ -30,6 +52,9 @@ export function SolutionDetailTemplate({
   bulletsEn,
   applications,
   applicationsEn,
+  seoSections,
+  relatedLinks,
+  faqs,
 }: {
   slug: string;
   title: string;
@@ -40,6 +65,9 @@ export function SolutionDetailTemplate({
   bulletsEn?: string[];
   applications: string[];
   applicationsEn?: string[];
+  seoSections?: SeoSection[];
+  relatedLinks?: RelatedLink[];
+  faqs?: SeoFaq[];
 }) {
   const { lang } = useLanguage();
   const Icon = resolveIcon(iconName);
@@ -47,6 +75,7 @@ export function SolutionDetailTemplate({
   const displayIntro = introEn ? t(lang, intro, introEn) : intro;
   const displayBullets = bulletsEn && lang === "EN" ? bulletsEn : bullets;
   const displayApps = applicationsEn && lang === "EN" ? applicationsEn : applications;
+  const hasSeoContent = Boolean(seoSections?.length || relatedLinks?.length || faqs?.length);
 
   return (
     <>
@@ -130,6 +159,85 @@ export function SolutionDetailTemplate({
           </div>
         </div>
       </section>
+
+      {hasSeoContent && (
+        <section className="border-y border-border/70 bg-secondary/20 py-14 md:py-18">
+          <div className="mx-auto max-w-5xl px-4 md:px-6">
+            {seoSections?.length ? (
+              <div className="space-y-8">
+                {seoSections.map((section) => (
+                  <article key={section.heading} className="space-y-3">
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-primary">
+                      {t(lang, section.heading, section.headingEn ?? section.heading)}
+                    </h2>
+                    <p className="text-[15px] md:text-base leading-relaxed text-muted-foreground">
+                      {t(lang, section.body, section.bodyEn ?? section.body)}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            ) : null}
+
+            {relatedLinks?.length ? (
+              <div className="mt-10 rounded-2xl border border-border bg-white p-5 shadow-card md:p-6">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-primary">
+                      {t(lang, "อ่านต่อเพื่อวางแผนจอ LED", "Read more about LED screen planning")}
+                    </h2>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {t(
+                        lang,
+                        "รวมบทความที่ช่วยประเมินงบ อุปกรณ์ และเทคโนโลยีก่อนเริ่มโครงการจอ LED",
+                        "Guides for estimating budget, equipment, and technology before starting an LED screen project.",
+                      )}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5 grid gap-3 md:grid-cols-3">
+                  {relatedLinks.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="group rounded-xl border border-border bg-secondary/30 p-4 transition hover:-translate-y-0.5 hover:border-accent/40 hover:bg-accent/5"
+                    >
+                      <span className="flex items-start justify-between gap-3 text-sm font-bold text-primary">
+                        {t(lang, link.label, link.labelEn ?? link.label)}
+                        <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-accent transition group-hover:translate-x-0.5" />
+                      </span>
+                      {link.description ? (
+                        <span className="mt-2 block text-xs leading-relaxed text-muted-foreground">
+                          {t(lang, link.description, link.descriptionEn ?? link.description)}
+                        </span>
+                      ) : null}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {faqs?.length ? (
+              <div className="mt-10">
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-primary">
+                  {t(lang, "คำถามที่พบบ่อยเกี่ยวกับจอ LED", "LED Display FAQ")}
+                </h2>
+                <div className="mt-5 divide-y divide-border rounded-2xl border border-border bg-white shadow-card">
+                  {faqs.map((faq) => (
+                    <details key={faq.question} className="group p-5">
+                      <summary className="cursor-pointer list-none text-base font-bold text-primary marker:hidden">
+                        {t(lang, faq.question, faq.questionEn ?? faq.question)}
+                      </summary>
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                        {t(lang, faq.answer, faq.answerEn ?? faq.answer)}
+                      </p>
+                    </details>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      )}
       <CTASection />
     </>
   );

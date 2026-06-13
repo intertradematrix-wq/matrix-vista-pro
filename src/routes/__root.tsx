@@ -102,7 +102,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           name: "Matrix Intertrade",
           description:
             "AV Solution Specialist — LED Display, Interactive Display, Projector, Wireless Presentation, AV Solutions",
-          url: "/",
+          url: "https://www.matrixintertrade.com/",
           sameAs: [],
         }),
       },

@@ -5,11 +5,17 @@ import { CTASection } from "@/components/site/CTASection";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { articleContents } from "@/data/article-contents";
 import { loadArticleDetailContent } from "@/lib/content/articles";
-import { Calendar, Clock, Tag, ExternalLink, Eye } from "lucide-react";
+import { Calendar, Clock, Tag, ExternalLink, Eye, ArrowRight } from "lucide-react";
 import heroBlog from "@/assets/hero-blog.jpg";
 import { incrementArticleView, useArticleViews, formatViews } from "@/lib/article-views";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+
+const ledDisplayHubArticleSlugs = new Set([
+  "led-led-display",
+  "led-1-led-display",
+  "led-display-vs-lcd-display",
+]);
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: async ({ params }) => {
@@ -77,6 +83,9 @@ function BlogDetail() {
   const contentBlocks = blocks.filter((b) => b !== firstImg);
   const { data: views } = useArticleViews();
   const viewCount = views?.[article.slug] ?? 0;
+  const shouldShowLedDisplayHubCta =
+    ledDisplayHubArticleSlugs.has(article.slug) ||
+    Boolean(article.legacySlug && ledDisplayHubArticleSlugs.has(article.legacySlug));
   const queryClient = useQueryClient();
   useEffect(() => {
     incrementArticleView(article.slug).then((counted) => {
@@ -193,6 +202,32 @@ function BlogDetail() {
             )}
           </div>
         </div>
+        {shouldShowLedDisplayHubCta ? (
+          <div className="mx-auto mt-10 max-w-3xl px-4 md:px-6">
+            <div className="rounded-2xl border border-accent/25 bg-accent/5 p-5 shadow-card md:p-6">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-accent">
+                {t(lang, "โซลูชันหลัก", "Main solution")}
+              </p>
+              <h2 className="mt-2 text-2xl font-bold text-primary">
+                {t(lang, "ต้องการเริ่มโครงการ LED Display สำหรับองค์กร?", "Planning an enterprise LED Display project?")}
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {t(
+                  lang,
+                  "ดูภาพรวมบริการขาย ออกแบบ ติดตั้ง และเลือกสเปกจอ LED ที่เหมาะกับพื้นที่จริงขององค์กร",
+                  "Explore consultation, design, installation, and specification guidance for real enterprise spaces.",
+                )}
+              </p>
+              <Link
+                to="/led-display"
+                className="mt-5 inline-flex items-center gap-2 rounded-md bg-gradient-accent px-4 py-2 text-sm font-semibold text-white shadow-glow"
+              >
+                {t(lang, "ดูบริการ LED Display สำหรับองค์กร", "View enterprise LED Display service")}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        ) : null}
       </article>
 
       {related.length > 0 && (
