@@ -1,12 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
-  Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileCTABar } from "@/components/layout/MobileCTABar";
@@ -20,20 +21,17 @@ import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate({ to: "/", replace: true });
+  }, [navigate]);
+
+  // แสดง placeholder ชั่วคราวระหว่าง redirect
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-primary">404</h1>
-        <h2 className="mt-4 text-xl font-semibold">ไม่พบหน้าที่คุณค้นหา</h2>
-        <p className="mt-2 text-sm text-muted-foreground">หน้านี้อาจถูกย้ายหรือไม่มีอยู่จริง</p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-gradient-accent px-4 py-2 text-sm font-medium text-white"
-          >
-            กลับหน้าแรก
-          </Link>
-        </div>
+        <p className="text-sm text-muted-foreground">กำลังนำคุณกลับสู่หน้าแรก…</p>
       </div>
     </div>
   );
