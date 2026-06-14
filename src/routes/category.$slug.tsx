@@ -79,11 +79,17 @@ function CategoryPage() {
   const introImage = intro ? intro.imageUrl || brandImages[intro.brandSlug] : undefined;
 
   const uniqueBrands = useMemo(() => {
-    const brands = new Set<string>();
+    const brandMap = new Map<string, string>();
     products.forEach((p) => {
-      if (p.brand) brands.add(p.brand);
+      if (p.brand) {
+        const key = p.brand.toLowerCase();
+        // Prefer the version with uppercase letters if multiple exist
+        if (!brandMap.has(key) || p.brand !== key) {
+          brandMap.set(key, p.brand);
+        }
+      }
     });
-    return Array.from(brands).sort();
+    return Array.from(brandMap.values()).sort((a, b) => a.localeCompare(b));
   }, [products]);
 
   const filteredProducts = useMemo(() => {
@@ -91,7 +97,9 @@ function CategoryPage() {
       const matchesSearch =
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (p.brand && p.brand.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesBrand = selectedBrand === "all" || p.brand === selectedBrand;
+      const matchesBrand =
+        selectedBrand === "all" ||
+        (p.brand && p.brand.toLowerCase() === selectedBrand.toLowerCase());
       return matchesSearch && matchesBrand;
     });
   }, [products, searchTerm, selectedBrand]);

@@ -106,6 +106,7 @@ function IndustryPage() {
                   src={ind.imageUrl}
                   alt={ind.title}
                   loading="lazy"
+                  referrerPolicy="no-referrer"
                   width={1280}
                   height={960}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"

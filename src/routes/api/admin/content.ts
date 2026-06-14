@@ -66,11 +66,12 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "seo_no_index",
     ],
-    requiredFields: ["name", "slug", "brand", "brand_slug"],
+    requiredFields: ["name", "slug", "brand"],
     nullableFields: [
       "image_url",
       "price_text",
       "source_url",
+      "brand_slug",
       "brand_category_id",
       "description_text",
       "description_html",
@@ -710,6 +711,10 @@ export const Route = createFileRoute("/api/admin/content")({
         if ("error" in normalized && normalized.error) return normalized.error;
         const values = normalized.values;
 
+        if (parsed.data.kind === "products" && !values.brand_slug && values.brand) {
+          values.brand_slug = slugifyText(values.brand as string, "");
+        }
+
         if (Object.keys(values).length === 0) {
           return jsonError("No supported fields to update", 400);
         }
@@ -736,6 +741,35 @@ export const Route = createFileRoute("/api/admin/content")({
             .limit(1)
             .maybeSingle();
           values.article_id = (maxIdData?.article_id || 0) + 1;
+        }
+
+        // Auto-generate product_id for new products (when sent as "new-{timestamp}")
+        if (action === "create" && parsed.data.kind === "products" && id.startsWith("new-")) {
+          const { data: maxIdData } = await supabaseAdmin
+            .from("content_products")
+            .select("product_id")
+            .order("product_id", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          const maxId = maxIdData?.product_id || "prod-0";
+          const numPart = parseInt(String(maxId).replace(/\D/g, "") || "0", 10);
+          const newId = `prod-${numPart + 1}`;
+
+          // Replace the temporary ID with the generated one
+          return executeWrite(config, action, newId, values).then((result) => {
+            if (result.error) {
+              if (result.error.code === "23505") {
+                return jsonError(
+                  `A ${parsed.data.kind} item with this ID or slug already exists.`,
+                  409,
+                  result.error,
+                );
+              }
+              return jsonError(`Failed to ${action} ${parsed.data.kind}`, 500, result.error);
+            }
+            return Response.json({ ok: true, kind: parsed.data.kind, item: result.data });
+          });
         }
 
         const result = await executeWrite(config, action, id, values);
