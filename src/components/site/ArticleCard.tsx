@@ -31,7 +31,7 @@ export function ArticleCard({ article }: { article: ArticleWithMeta }) {
       params={{ slug: article.slug }}
       className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card hover-lift hover:border-accent/30 hover:shadow-elev transition-all"
     >
-      <div className="relative aspect-[16/9] overflow-hidden bg-gradient-hero">
+      <div className="relative aspect-square overflow-hidden bg-gradient-hero">
         {img && (
           <img
             src={img}

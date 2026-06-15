@@ -9,6 +9,21 @@ import { Button } from "@/components/ui/button";
 import { LazyImage } from "@/components/site/LazyImage";
 import heroSolutions from "@/assets/hero-solutions.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+const GRANDVIEW_IMAGE = "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg";
+const KRAMER_IMAGE = "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg";
+const INTERACTIVE_IMAGE = "/legacy-imports/f7c323982191-interactive_display12.png";
+const LED_IMAGE = "/legacy-imports/a6492e1dbcf9-led_display1.png";
+const AV_IMAGE = "/legacy-imports/7b9fc0dd456f-av_solutions1.png";
+const WIRELESS_IMAGE = "/legacy-imports/55c7fda91436-wireless_presentation1.png";
+
+const INDUSTRY_IMAGE_FALLBACKS: Record<string, string> = {
+  education: INTERACTIVE_IMAGE,
+  hotel: AV_IMAGE,
+  corporate: AV_IMAGE,
+  government: LED_IMAGE,
+  hospital: INTERACTIVE_IMAGE,
+  "video-conference": WIRELESS_IMAGE,
+};
 
 export const Route = createFileRoute("/industry/$slug")({
   loader: async ({ params }) => {
@@ -55,6 +70,7 @@ function IndustryPage() {
     "End-to-end AV solutions for hotels, ballrooms, conference halls, live events, theatres and museums — built on Top-Class, mission-critical equipment.";
   const displayTitle = isHotel ? t(lang, ind.title, hotelTitleEN) : t(lang, ind.title, ind.titleEn);
   const displayDesc = isHotel ? t(lang, ind.desc, hotelDescEN) : t(lang, ind.desc, ind.descEn);
+  const industryImage = ind.imageUrl ?? INDUSTRY_IMAGE_FALLBACKS[ind.slug];
 
   return (
     <>
@@ -101,9 +117,9 @@ function IndustryPage() {
               </ul>
             </div>
             <div className="aspect-[4/3] rounded-3xl bg-gradient-hero relative overflow-hidden shadow-elev grid place-items-center group">
-              {ind.imageUrl ? (
+              {industryImage ? (
                 <img
-                  src={ind.imageUrl}
+                  src={industryImage}
                   alt={ind.title}
                   loading="lazy"
                   referrerPolicy="no-referrer"
@@ -138,19 +154,19 @@ const EDU_PRODUCTS: EduProduct[] = [
   {
     title: "Grandview Large-stage Series",
     desc: 'จอสำหรับห้องบรรยายขนาดกลาง - ใหญ่ หากห้องเรียนหรือห้องบรรยายของคุณมีขนาดใหญ่เกินกว่าที่ Remarkable Screen จะรองรับได้ Grandview มีจอตั้งแต่ขนาด 100" - 500" ทุกฟอร์แมต ทั้งแบบมือดึงและแบบมอเตอร์',
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1670901206682.png",
+    img: "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg",
     href: "/category/grandview",
   },
   {
     title: "SkyShow Series",
     desc: "จอสำหรับห้องเพดานสูง หอประชุม หรือห้องบรรยายเพดานสูง โดย Grandview ออกแบบให้เหมาะกับการใช้งานบนเวทีและฮอลล์ขนาดใหญ่",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1670901315618.jpg",
+    img: "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg",
     href: "/category/grandview",
   },
   {
     title: "KRAMER",
     desc: "อุปกรณ์เพื่อทุกคำตอบสำหรับโซลูชั่นในการนำเสนองานภาพ เสียง และการแลกเปลี่ยนความเห็นในยุคดิจิตอล 4.0",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1670901329807.jpg",
+    img: "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg",
     href: "/category/kramer",
   },
 ];
@@ -200,17 +216,17 @@ function EducationContent() {
         <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-[1fr_1.1fr] gap-10 items-center">
           <div className="grid grid-cols-2 gap-4">
             <LazyImage
-              src="https://www.matrixintertrade.com/images/ready-template/crop-1670901144604.jpg"
+              src="/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg"
               alt="Remarkable Screen ห้องเรียน"
               className="aspect-[4/3] w-full object-cover rounded-2xl shadow-card col-span-2"
             />
             <LazyImage
-              src="https://www.matrixintertrade.com/images/ready-template/crop-1670900202024.png"
+              src="/legacy-imports/652ee847c907-th_kta_pro_full_-231_.png"
               alt="Remarkable Screen ตัวอย่าง"
               className="aspect-square w-full object-cover rounded-2xl shadow-card"
             />
             <LazyImage
-              src="https://www.matrixintertrade.com/images/ready-template/crop-1671003815569.jpg"
+              src="/legacy-imports/f7c323982191-interactive_display12.png"
               alt="Interactive Display ในห้องเรียน"
               className="aspect-square w-full object-cover rounded-2xl shadow-card"
             />
@@ -290,7 +306,7 @@ function EducationContent() {
             </div>
           </div>
           <LazyImage
-            src="https://www.matrixintertrade.com/images/ready-template/crop-1671003815569.jpg"
+            src="/legacy-imports/f7c323982191-interactive_display12.png"
             alt="Interactive Display สำหรับการเรียนการสอน"
             className="aspect-[4/3] w-full object-cover rounded-3xl shadow-elev"
           />
@@ -301,11 +317,11 @@ function EducationContent() {
 }
 
 const HOTEL_BANNERS = [
-  "https://www.matrixintertrade.com/images/banner/crop-1671073076283.jpg",
-  "https://www.matrixintertrade.com/images/banner/crop-1671073103305.jpg",
-  "https://www.matrixintertrade.com/images/banner/crop-1671073124819.jpg",
-  "https://www.matrixintertrade.com/images/banner/crop-1671073152740.jpg",
-  "https://www.matrixintertrade.com/images/banner/crop-1671073175999.jpg",
+  "/legacy-imports/7b9fc0dd456f-av_solutions1.png",
+  "/legacy-imports/a6492e1dbcf9-led_display1.png",
+  "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg",
+  "/legacy-imports/55c7fda91436-wireless_presentation1.png",
+  "/legacy-imports/f7c323982191-interactive_display12.png",
 ];
 
 type BiProduct = {
@@ -323,7 +339,7 @@ const HOTEL_PRODUCTS: BiProduct[] = [
       'จอสำหรับห้องบรรยายและฮอลล์ขนาดกลาง - ใหญ่ รองรับห้องที่ใหญ่เกินกว่า Remarkable Screen ตั้งแต่ขนาด 100" ถึง 500" ทุกฟอร์แมต ทั้งแบบมือดึงและแบบมอเตอร์',
     descEN:
       'Projection screens for medium-to-large halls and auditoriums — for rooms beyond Remarkable Screen\'s range, from 100" up to 500" in every format, available in pull-down and motorized versions.',
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671075328335.jpg",
+    img: "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg",
     href: "/category/grandview",
   },
   {
@@ -332,7 +348,7 @@ const HOTEL_PRODUCTS: BiProduct[] = [
       "อุปกรณ์เพื่อทุกคำตอบสำหรับโซลูชั่นในการนำเสนองานภาพ เสียง และการแลกเปลี่ยนความเห็นในยุคดิจิตอล 4.0",
     descEN:
       "Equipment that answers every need in audio, video and collaborative presentation for the Digital 4.0 era.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671075351806.jpg",
+    img: "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg",
     href: "/category/kramer",
   },
 ];
@@ -433,7 +449,7 @@ const CORP_PRODUCTS: BiProduct[] = [
       'จอสำหรับห้องประชุมและฮอลล์ขนาดกลาง-ใหญ่ ตั้งแต่ 100" ถึง 500" ทุกฟอร์แมต ทั้งแบบมือดึงและมอเตอร์ ตอบโจทย์ทุกขนาดของห้องประชุมในองค์กร',
     descEN:
       'Projection screens for medium-to-large corporate meeting rooms and halls, from 100" up to 500" in every format — manual and motorized options for any room size.',
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1670902079322.jpg",
+    img: "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg",
     href: "/category/grandview",
   },
   {
@@ -442,7 +458,7 @@ const CORP_PRODUCTS: BiProduct[] = [
       "จอ Interactive Display แบบยืดหยุ่น พร้อมระบบสัมผัสและเขียนความคิดเห็นได้บนสไลด์ เหมาะสำหรับห้องประชุมและห้องอบรมยุคใหม่ในองค์กร",
     descEN:
       "Flexible interactive display with touch and annotation — ideal for modern corporate meeting and training rooms.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671003627930.jpg",
+    img: "/legacy-imports/f7c323982191-interactive_display12.png",
     href: "/interactive-display",
   },
   {
@@ -451,7 +467,7 @@ const CORP_PRODUCTS: BiProduct[] = [
       "จอทัชสกรีนอัจฉริยะระดับมืออาชีพ สำหรับห้องประชุมทุกขนาด รองรับการประชุมออนไลน์ การนำเสนอแบบไร้สาย และการ Collaborate แบบเรียลไทม์",
     descEN:
       "Professional smart touchscreens for every meeting room size — built for online meetings, wireless presentation and real-time collaboration.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671003513171.jpg",
+    img: "/legacy-imports/652ee847c907-th_kta_pro_full_-231_.png",
     href: "/interactive-display",
   },
   {
@@ -460,7 +476,7 @@ const CORP_PRODUCTS: BiProduct[] = [
       "อุปกรณ์ระบบ AV ครบวงจร สำหรับการนำเสนอภาพ เสียง และการแลกเปลี่ยนความเห็นในห้องประชุมยุคดิจิตอล 4.0",
     descEN:
       "End-to-end AV equipment for presentation, audio and collaboration in Digital 4.0 corporate meeting rooms.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1670902119602.jpg",
+    img: "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg",
     href: "/category/kramer",
   },
 ];
@@ -545,17 +561,17 @@ function CorporateContent() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <LazyImage
-              src="https://www.matrixintertrade.com/images/ready-template/crop-1670902079322.jpg"
+              src="/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg"
               alt="Remarkable Screen สำนักงาน"
               className="aspect-[4/3] w-full object-cover rounded-2xl shadow-card col-span-2"
             />
             <LazyImage
-              src="https://www.matrixintertrade.com/images/ready-template/crop-1671003627930.jpg"
+              src="/legacy-imports/f7c323982191-interactive_display12.png"
               alt="newline Flex"
               className="aspect-square w-full object-cover rounded-2xl shadow-card"
             />
             <LazyImage
-              src="https://www.matrixintertrade.com/images/ready-template/crop-1671003513171.jpg"
+              src="/legacy-imports/652ee847c907-th_kta_pro_full_-231_.png"
               alt="newline Q Series"
               className="aspect-square w-full object-cover rounded-2xl shadow-card"
             />
@@ -618,7 +634,7 @@ const VC_PRODUCTS: BiProduct[] = [
     descTH:
       "จอภาพ Interactive Digital รองรับระบบสัมผัส รุ่นสูงสุดของ Newline สำหรับห้องประชุมระดับมืออาชีพ",
     descEN: "Top-tier Newline Interactive Digital touchscreen for professional meeting rooms.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671421815130.jpg",
+    img: "/legacy-imports/f7c323982191-interactive_display12.png",
     href: "/interactive-display",
   },
   {
@@ -627,7 +643,7 @@ const VC_PRODUCTS: BiProduct[] = [
       "จอภาพ Interactive Digital รองรับระบบสัมผัส รุ่นมาตรฐาน เหมาะสำหรับห้องประชุมและห้องเรียนทุกขนาด",
     descEN:
       "Standard Newline Interactive Digital touchscreen — ideal for meeting rooms and classrooms of any size.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422226683.jpg",
+    img: "/legacy-imports/652ee847c907-th_kta_pro_full_-231_.png",
     href: "/interactive-display",
   },
   {
@@ -636,7 +652,7 @@ const VC_PRODUCTS: BiProduct[] = [
       "จอภาพ Interactive Digital รองรับระบบสัมผัส ดีไซน์ทันสมัย ตอบโจทย์การประชุมและการนำเสนอแบบไร้สาย",
     descEN:
       "Newline Interactive Digital touchscreen with modern design — built for wireless meetings and presentations.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422237599.jpg",
+    img: "/legacy-imports/55c7fda91436-wireless_presentation1.png",
     href: "/interactive-display",
   },
   {
@@ -645,7 +661,7 @@ const VC_PRODUCTS: BiProduct[] = [
       "ชุดอุปกรณ์วิดีโอคอนเฟอเร้นซ์ครบชุด สำหรับการประชุมทางไกล รองรับการเชื่อมต่อกับแพลตฟอร์มประชุมยอดนิยม",
     descEN:
       "Complete video conferencing kits for remote meetings — compatible with all major conferencing platforms.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422347547.jpg",
+    img: "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg",
     href: "/category/kramer",
   },
   {
@@ -654,7 +670,7 @@ const VC_PRODUCTS: BiProduct[] = [
       "การส่งสัญญาณภาพและเสียงผ่านระบบ Network รองรับการกระจายสัญญาณคุณภาพสูงในระยะไกลและหลายจุดพร้อมกัน",
     descEN:
       "Transmit audio and video over standard IP networks — high-quality distribution across long distances and multiple endpoints.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422620134.jpg",
+    img: "/legacy-imports/7b9fc0dd456f-av_solutions1.png",
     href: "/category/kramer",
   },
   {
@@ -663,7 +679,7 @@ const VC_PRODUCTS: BiProduct[] = [
       "เครื่องสลับสัญญาณภาพ รองรับความละเอียดสูงสุดถึง 4K สำหรับห้องประชุมและงานอีเวนต์ที่ต้องการคุณภาพสูง",
     descEN:
       "Video switchers supporting up to 4K resolution — for meeting rooms and live events that demand top image quality.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422658470.jpg",
+    img: "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg",
     href: "/category/kramer",
   },
   {
@@ -672,7 +688,7 @@ const VC_PRODUCTS: BiProduct[] = [
       "อุปกรณ์สำหรับ Video Conference (การประชุมทางไกล) เพื่อการสื่อสารทั้งภายในและภายนอกองค์กรอย่างมีประสิทธิภาพ",
     descEN:
       "Devices for video conferencing — efficient communication inside and across organizations.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422641501.jpg",
+    img: "/legacy-imports/55c7fda91436-wireless_presentation1.png",
     href: "/category/kramer",
   },
   {
@@ -681,7 +697,7 @@ const VC_PRODUCTS: BiProduct[] = [
       "อุปกรณ์สำหรับควบคุมอุปกรณ์ต่างๆ ภายในห้องเรียน ห้องประชุม ทั้งภาพ เสียง แสง และระบบนำเสนอจากจุดควบคุมเดียว",
     descEN:
       "Control all classroom and meeting room devices — video, audio, lighting and presentation — from a single control panel.",
-    img: "https://www.matrixintertrade.com/images/ready-template/crop-1671422671970.jpg",
+    img: "/legacy-imports/7b9fc0dd456f-av_solutions1.png",
     href: "/category/kramer",
   },
 ];
@@ -693,7 +709,7 @@ function VideoConferenceContent() {
       <section className="py-16 md:py-20 bg-muted/40">
         <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-[1fr_1.1fr] gap-10 items-center">
           <LazyImage
-            src="https://www.matrixintertrade.com/images/ready-template/crop-1671421815130.jpg"
+            src="/legacy-imports/f7c323982191-interactive_display12.png"
             alt="newline Interactive Display"
             className="aspect-[4/3] w-full object-cover rounded-3xl shadow-elev"
           />

@@ -832,7 +832,7 @@ function AdminPage() {
         return {
           ...current,
           [activeKind]: isCreating
-            ? [...list, saved]
+            ? [saved, ...list.filter((item) => text(item[config.key]) !== text(saved[config.key]))]
             : list.map((item) =>
                 text(item[config.key]) === (isCreating ? id : text(selectedItem[config.key]))
                   ? saved

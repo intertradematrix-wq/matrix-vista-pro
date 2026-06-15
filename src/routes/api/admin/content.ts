@@ -21,6 +21,7 @@ type ContentConfig = {
   key: string;
   select: string;
   order: string;
+  orderAscending?: boolean;
   fields: string[];
   requiredFields?: string[];
   nullableFields?: string[];
@@ -45,6 +46,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     select:
       "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
     order: "product_id",
+    orderAscending: false,
     fields: [
       "name",
       "slug",
@@ -102,6 +104,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     select:
       "slug,article_id,title,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_no_index,updated_at",
     order: "article_id",
+    orderAscending: false,
     fields: [
       "article_id",
       "title",
@@ -630,9 +633,7 @@ async function loadKind(config: ContentConfig) {
   const result = await supabaseAdmin
     .from(tableName(config))
     .select(config.select)
-    .order(config.order, {
-      ascending: true,
-    });
+    .order(config.order, { ascending: config.orderAscending ?? true });
 
   // If the query failed (e.g. missing column like image_url), retry without optional columns
   if (result.error && config.select.includes("image_url")) {
@@ -643,7 +644,7 @@ async function loadKind(config: ContentConfig) {
     const fallbackResult = await supabaseAdmin
       .from(tableName(config))
       .select(fallbackSelect)
-      .order(config.order, { ascending: true });
+      .order(config.order, { ascending: config.orderAscending ?? true });
 
     if (!fallbackResult.error) {
       console.warn(`[admin] Column image_url missing from ${config.table}, loaded without it`);
