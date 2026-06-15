@@ -46,12 +46,6 @@ export function ArticleCard({ article }: { article: ArticleWithMeta }) {
         <div className="absolute top-2 left-2 sm:top-3 sm:left-3 rounded-full bg-navy/85 ring-1 ring-white/20 backdrop-blur px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white">
           {cat}
         </div>
-        <div
-          aria-hidden="true"
-          className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 text-2xl sm:text-4xl font-black text-white/40 tabular-nums drop-shadow-lg"
-        >
-          #{String(article.id).padStart(2, "0")}
-        </div>
       </div>
       <div className="flex-1 p-3 sm:p-5 flex flex-col">
         <h3 className="text-[13px] sm:text-[15px] font-bold text-primary leading-snug line-clamp-3 group-hover:text-accent transition-colors">
