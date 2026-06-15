@@ -132,7 +132,7 @@ function BlogDetail() {
               </Link>
             )}
           </div>
-          <div className="aspect-[16/9] rounded-2xl bg-gradient-hero shadow-elev mb-10 relative overflow-hidden">
+          <div className="aspect-square rounded-2xl bg-gradient-hero shadow-elev mb-10 relative overflow-hidden">
             {coverImg && (
               <img
                 src={coverImg}
@@ -148,7 +148,7 @@ function BlogDetail() {
             {article.content_html ? (
               <div
                 dangerouslySetInnerHTML={{ __html: article.content_html }}
-                className="article-rich-text prose prose-lg max-w-none prose-img:rounded-xl prose-img:border prose-img:border-border prose-img:shadow-card prose-headings:text-primary prose-a:text-accent prose-a:no-underline hover:prose-a:underline"
+                className="article-rich-text prose prose-lg max-w-none prose-img:aspect-square prose-img:object-cover prose-img:rounded-xl prose-img:border prose-img:border-border prose-img:shadow-card prose-headings:text-primary prose-a:text-accent prose-a:no-underline hover:prose-a:underline"
               />
             ) : (
               contentBlocks.map((b, i) => {
@@ -159,7 +159,7 @@ function BlogDetail() {
                       src={b.src}
                       alt={`${article.title} - ภาพประกอบ`}
                       loading="lazy"
-                      className="my-6 w-full rounded-xl border border-border shadow-card"
+                      className="my-6 w-full aspect-square object-cover rounded-xl border border-border shadow-card"
                     />
                   );
                 if (b.t === "h2")
