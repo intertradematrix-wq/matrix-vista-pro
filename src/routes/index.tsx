@@ -145,7 +145,7 @@ const processEN = [
 
 function HomePage() {
   const { lang } = useLanguage();
-  const { solutions, brands, industries, articleCategories } = useSiteContent();
+  const { solutions, brands, industries, industryShowcase, articleCategories } = useSiteContent();
   const why = lang === "EN" ? whyEN : whyTH;
   const steps = lang === "EN" ? processEN : processTH;
   const featuredArticles = articles.slice(0, 6);
@@ -292,7 +292,7 @@ function HomePage() {
       </Section>
 
       {/* INDUSTRIES */}
-      <IndustriesShowcase industries={industries} />
+      <IndustriesShowcase industries={industries} section={industryShowcase} />
 
       {/* STATS — asymmetric bento, hero metric + 4 sidekicks */}
       <section className="relative overflow-hidden bg-navy text-white py-16 sm:py-24">

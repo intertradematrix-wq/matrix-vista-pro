@@ -13,6 +13,7 @@ type ContentKind =
   | "brandIntros"
   | "solutions"
   | "industries"
+  | "siteSections"
   | "navItems"
   | "contactSubmissions";
 
@@ -21,6 +22,10 @@ type ContentConfig = {
   key: string;
   select: string;
   order: string;
+  legacySelect?: string;
+  legacyOrder?: string;
+  schemaProbeField?: string;
+  schemaFallbackWarning?: string;
   orderAscending?: boolean;
   fields: string[];
   requiredFields?: string[];
@@ -38,6 +43,21 @@ type ContentConfig = {
   }>;
   allowCreate?: boolean;
 };
+
+const INDUSTRY_BRAND_CARD_FIELDS = [
+  "show_on_brands",
+  "sort_order",
+  "showcase_image_url",
+  "card_tag_th",
+  "card_tag_en",
+  "metric_value",
+  "metric_label_th",
+  "metric_label_en",
+  "link_url",
+];
+
+const INDUSTRY_PRE_CARD_SELECT =
+  "slug,title,icon,description,image_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at";
 
 const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   products: {
@@ -262,13 +282,28 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     table: "content_industries",
     key: "slug",
     select:
-      "slug,title,icon,description,image_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
-    order: "slug",
+      "slug,title,icon,description,image_url,showcase_image_url,show_on_brands,sort_order,card_tag_th,card_tag_en,metric_value,metric_label_th,metric_label_en,link_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
+    order: "sort_order",
+    legacySelect:
+      "slug,title,icon,description,image_url,show_on_brands,sort_order,card_tag_th,card_tag_en,metric_value,metric_label_th,metric_label_en,link_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
+    legacyOrder: "sort_order",
+    schemaProbeField: "showcase_image_url",
+    schemaFallbackWarning:
+      "Industries are using a legacy database schema. Apply the latest Supabase migration to edit the showcase image field.",
     fields: [
       "title",
       "icon",
       "description",
       "image_url",
+      "showcase_image_url",
+      "show_on_brands",
+      "sort_order",
+      "card_tag_th",
+      "card_tag_en",
+      "metric_value",
+      "metric_label_th",
+      "metric_label_en",
+      "link_url",
       "payload",
       "seo_title",
       "seo_description",
@@ -283,6 +318,13 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     nullableFields: [
       "icon",
       "image_url",
+      "showcase_image_url",
+      "card_tag_th",
+      "card_tag_en",
+      "metric_value",
+      "metric_label_th",
+      "metric_label_en",
+      "link_url",
       "seo_title",
       "seo_description",
       "seo_keywords",
@@ -291,8 +333,46 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "og_image_url",
       "seo_canonical_url",
     ],
-    booleanFields: ["seo_no_index"],
+    numericFields: ["sort_order"],
+    booleanFields: ["show_on_brands", "seo_no_index"],
     jsonFields: { payload: "object" },
+  },
+  siteSections: {
+    table: "content_site_sections",
+    key: "section_key",
+    select:
+      "section_key,eyebrow_th,eyebrow_en,title_prefix_th,title_prefix_en,title_highlight_th,title_highlight_en,description_prefix_th,description_prefix_en,description_highlight_th,description_highlight_en,description_suffix_th,description_suffix_en,is_enabled,payload,updated_at",
+    order: "section_key",
+    fields: [
+      "eyebrow_th",
+      "eyebrow_en",
+      "title_prefix_th",
+      "title_prefix_en",
+      "title_highlight_th",
+      "title_highlight_en",
+      "description_prefix_th",
+      "description_prefix_en",
+      "description_highlight_th",
+      "description_highlight_en",
+      "description_suffix_th",
+      "description_suffix_en",
+      "is_enabled",
+      "payload",
+    ],
+    requiredFields: ["eyebrow_th", "eyebrow_en", "title_prefix_th", "title_prefix_en"],
+    nullableFields: [
+      "title_highlight_th",
+      "title_highlight_en",
+      "description_prefix_th",
+      "description_prefix_en",
+      "description_highlight_th",
+      "description_highlight_en",
+      "description_suffix_th",
+      "description_suffix_en",
+    ],
+    booleanFields: ["is_enabled"],
+    jsonFields: { payload: "object" },
+    allowCreate: false,
   },
   navItems: {
     table: "content_nav_items",
@@ -354,6 +434,7 @@ const UpdateSchema = z.object({
     "brandIntros",
     "solutions",
     "industries",
+    "siteSections",
     "navItems",
     "contactSubmissions",
   ]),
@@ -552,16 +633,51 @@ async function hasColumn(config: ContentConfig, field: string) {
   return !error;
 }
 
+function dropColumnFromSelect(select: string, field: string) {
+  return select
+    .split(",")
+    .filter((column) => column.trim() !== field)
+    .join(",");
+}
+
 async function selectForWrite(config: ContentConfig, values: Record<string, unknown>) {
-  if (!("image_url" in values) || (await hasColumn(config, "image_url"))) {
-    return { values, select: config.select };
+  let select = config.select;
+  const writeValues = { ...values };
+
+  if (config.table === "content_industries") {
+    const hasBrandCardFields = await hasColumn(config, "show_on_brands");
+    const hasShowcaseImageField = await hasColumn(config, "showcase_image_url");
+
+    if (!hasBrandCardFields) {
+      INDUSTRY_BRAND_CARD_FIELDS.forEach((field) => {
+        delete writeValues[field];
+      });
+      select = INDUSTRY_PRE_CARD_SELECT;
+    } else if (!hasShowcaseImageField) {
+      delete writeValues.showcase_image_url;
+      select = config.legacySelect ?? dropColumnFromSelect(config.select, "showcase_image_url");
+    }
   }
 
-  const fallbackValues = { ...values };
+  if (
+    config.table !== "content_industries" &&
+    config.legacySelect &&
+    config.schemaProbeField &&
+    !(await hasColumn(config, config.schemaProbeField))
+  ) {
+    select = config.legacySelect;
+    delete writeValues[config.schemaProbeField];
+  }
+
+  if (!("image_url" in writeValues) || (await hasColumn(config, "image_url"))) {
+    return { values: writeValues, select };
+  }
+
+  const fallbackValues = { ...writeValues };
   delete fallbackValues.image_url;
   return {
     values: fallbackValues,
-    select: config.select
+    select: select
       .split(",")
       .filter((column) => column.trim() !== "image_url")
       .join(","),
@@ -632,15 +748,46 @@ async function requireAdmin(request: Request) {
 async function loadKind(config: ContentConfig) {
   const result = await supabaseAdmin
     .from(tableName(config))
-    .select(config.select)
-    .order(config.order, { ascending: config.orderAscending ?? true });
+      .select(config.select)
+      .order(config.order, { ascending: config.orderAscending ?? true });
+
+  if (result.error && config.legacySelect && config.legacyOrder) {
+    const fallbackResult = await supabaseAdmin
+      .from(tableName(config))
+      .select(config.legacySelect)
+      .order(config.legacyOrder, { ascending: config.orderAscending ?? true });
+
+    if (!fallbackResult.error) {
+      console.warn(`[admin] ${config.table} loaded with legacy schema fallback`, result.error);
+      return {
+        ...fallbackResult,
+        warning:
+          config.schemaFallbackWarning ?? `${config.table} was loaded with legacy schema fallback.`,
+      };
+    }
+  }
+
+  if (result.error && config.table === "content_industries") {
+    const legacyCardSelect =
+      "slug,title,icon,description,image_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at";
+    const fallbackResult = await supabaseAdmin
+      .from(tableName(config))
+      .select(legacyCardSelect)
+      .order("slug", { ascending: true });
+
+    if (!fallbackResult.error) {
+      console.warn(`[admin] ${config.table} loaded with pre-card schema fallback`, result.error);
+      return {
+        ...fallbackResult,
+        warning:
+          "Industries are using the pre-card database schema. Apply Supabase migrations before editing homepage and /brands card settings.",
+      };
+    }
+  }
 
   // If the query failed (e.g. missing column like image_url), retry without optional columns
   if (result.error && config.select.includes("image_url")) {
-    const fallbackSelect = config.select
-      .split(",")
-      .filter((col) => col.trim() !== "image_url")
-      .join(",");
+    const fallbackSelect = dropColumnFromSelect(config.select, "image_url");
     const fallbackResult = await supabaseAdmin
       .from(tableName(config))
       .select(fallbackSelect)
@@ -648,7 +795,10 @@ async function loadKind(config: ContentConfig) {
 
     if (!fallbackResult.error) {
       console.warn(`[admin] Column image_url missing from ${config.table}, loaded without it`);
-      return fallbackResult;
+      return {
+        ...fallbackResult,
+        warning: `Column image_url is missing from ${config.table}; loaded without images.`,
+      };
     }
   }
 
@@ -670,10 +820,23 @@ export const Route = createFileRoute("/api/admin/content")({
         );
 
         const payload: Record<string, unknown> = { ok: true, userEmail: admin.email };
+        const loadWarnings: Record<string, string> = {};
         for (const [kind, result] of entries) {
-          if (result.error) return jsonError(`Failed to load ${kind}`, 500, result.error);
+          if (result.error) {
+            if (kind === "siteSections") {
+              payload[kind] = [];
+              loadWarnings[kind] =
+                "Site section editing requires the latest Supabase migration. Public pages are using file fallbacks.";
+              continue;
+            }
+            return jsonError(`Failed to load ${kind}`, 500, result.error);
+          }
           payload[kind] = result.data ?? [];
+          if ("warning" in result && result.warning) {
+            loadWarnings[kind] = String(result.warning);
+          }
         }
+        if (Object.keys(loadWarnings).length > 0) payload.loadWarnings = loadWarnings;
 
         return Response.json(payload);
       },
@@ -698,6 +861,9 @@ export const Route = createFileRoute("/api/admin/content")({
 
         if (action === "delete") {
           if (!id) return jsonError("Primary key (ID/Slug) is required.", 400);
+          if (parsed.data.kind === "siteSections") {
+            return jsonError("Site sections cannot be deleted from Content Management.", 400);
+          }
           const { error } = await supabaseAdmin.from(tableName(config)).delete().eq(config.key, id);
 
           if (error) return jsonError(`Failed to delete ${parsed.data.kind}`, 500, error);
@@ -714,6 +880,58 @@ export const Route = createFileRoute("/api/admin/content")({
 
         if (parsed.data.kind === "products" && !values.brand_slug && values.brand) {
           values.brand_slug = slugifyText(values.brand as string, "");
+        }
+
+        if (parsed.data.kind === "industries") {
+          const hasBrandCardFields = await hasColumn(config, "show_on_brands");
+          const hasShowcaseImageField = await hasColumn(config, "showcase_image_url");
+          const submittedBrandCardFields = INDUSTRY_BRAND_CARD_FIELDS.filter(
+            (field) => field in values,
+          );
+          const submittedLegacyCardFields = submittedBrandCardFields.filter(
+            (field) => field !== "showcase_image_url",
+          );
+          if (submittedLegacyCardFields.length > 0 && !hasBrandCardFields) {
+            return jsonError(
+              "Industry brand card fields are not available yet. Apply the latest Supabase migration before editing /brands card settings.",
+              400,
+              {
+                missingMigration: "20260616090000_add_industry_brand_card_fields.sql",
+                fields: submittedBrandCardFields,
+              },
+            );
+          }
+          if ("showcase_image_url" in values && !hasShowcaseImageField) {
+            return jsonError(
+              "Industry showcase image is not available yet. Apply migration 20260616110000_add_industry_showcase_admin_fields.sql before editing this field.",
+              400,
+              {
+                missingMigration: "20260616110000_add_industry_showcase_admin_fields.sql",
+                fields: ["showcase_image_url"],
+              },
+            );
+          }
+
+          if (
+            hasBrandCardFields &&
+            (values.sort_order === null || values.sort_order === undefined)
+          ) {
+            values.sort_order = 0;
+          }
+          if (
+            hasBrandCardFields &&
+            (values.show_on_brands === null || values.show_on_brands === undefined)
+          ) {
+            values.show_on_brands = true;
+          }
+        }
+
+        if (parsed.data.kind === "siteSections" && !(await hasColumn(config, "section_key"))) {
+          return jsonError(
+            "Site section settings are not available yet. Apply migration 20260616110000_add_industry_showcase_admin_fields.sql before editing section copy.",
+            400,
+            { missingMigration: "20260616110000_add_industry_showcase_admin_fields.sql" },
+          );
         }
 
         if (Object.keys(values).length === 0) {

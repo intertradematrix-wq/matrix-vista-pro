@@ -26,6 +26,31 @@ export type SiteSolution = (typeof fallbackSolutions)[number] & {
 
 export type SiteIndustry = (typeof fallbackIndustries)[number] & {
   imageUrl?: string | null;
+  showcaseImageUrl?: string | null;
+  showOnBrands?: boolean;
+  sortOrder?: number | null;
+  cardTagTh?: string | null;
+  cardTagEn?: string | null;
+  metricValue?: string | null;
+  metricLabelTh?: string | null;
+  metricLabelEn?: string | null;
+  linkUrl?: string | null;
+};
+
+export type SiteShowcaseSection = {
+  eyebrowTh: string;
+  eyebrowEn: string;
+  titlePrefixTh: string;
+  titlePrefixEn: string;
+  titleHighlightTh: string;
+  titleHighlightEn: string;
+  descriptionPrefixTh: string;
+  descriptionPrefixEn: string;
+  descriptionHighlightTh: string;
+  descriptionHighlightEn: string;
+  descriptionSuffixTh: string;
+  descriptionSuffixEn: string;
+  isEnabled: boolean;
 };
 
 export type SiteArticleCategory = (typeof fallbackArticleCategories)[number] & {
@@ -43,6 +68,7 @@ export type SiteContent = {
   brands: SiteBrand[];
   solutions: SiteSolution[];
   industries: SiteIndustry[];
+  industryShowcase: SiteShowcaseSection;
   articleCategories: SiteArticleCategory[];
   brandIntrosByCategoryId: Record<string, SiteBrandIntro>;
   source: "files" | "supabase";
@@ -95,6 +121,32 @@ type IndustryRow = {
   icon: string | null;
   description: string | null;
   image_url?: string | null;
+  showcase_image_url?: string | null;
+  show_on_brands?: boolean | null;
+  sort_order?: number | null;
+  card_tag_th?: string | null;
+  card_tag_en?: string | null;
+  metric_value?: string | null;
+  metric_label_th?: string | null;
+  metric_label_en?: string | null;
+  link_url?: string | null;
+};
+
+type SiteSectionRow = {
+  section_key: string;
+  eyebrow_th: string | null;
+  eyebrow_en: string | null;
+  title_prefix_th: string | null;
+  title_prefix_en: string | null;
+  title_highlight_th: string | null;
+  title_highlight_en: string | null;
+  description_prefix_th: string | null;
+  description_prefix_en: string | null;
+  description_highlight_th: string | null;
+  description_highlight_en: string | null;
+  description_suffix_th: string | null;
+  description_suffix_en: string | null;
+  is_enabled: boolean | null;
 };
 
 type ArticleCategoryRow = {
@@ -110,6 +162,7 @@ type ContentDatabase = {
       content_brands: { Row: BrandRow };
       content_solutions: { Row: SolutionRow };
       content_industries: { Row: IndustryRow };
+      content_site_sections: { Row: SiteSectionRow };
       content_article_categories: { Row: ArticleCategoryRow };
       content_brand_category_intros: { Row: BrandIntroRow };
     };
@@ -124,11 +177,111 @@ type LocalizedFallback = {
 
 const contentClient = supabase as unknown as SupabaseClient<ContentDatabase>;
 
+const fallbackIndustryShowcase: SiteShowcaseSection = {
+  eyebrowTh: "กลุ่มลูกค้าและการใช้งาน",
+  eyebrowEn: "Industry Use Cases",
+  titlePrefixTh: "ออกแบบ",
+  titlePrefixEn: "Designed ",
+  titleHighlightTh: "เพื่อทุกประเภทองค์กร",
+  titleHighlightEn: "for every kind of organization",
+  descriptionPrefixTh: "ประสบการณ์จริงจากการติดตั้งกว่า ",
+  descriptionPrefixEn: "Real-world experience from over ",
+  descriptionHighlightTh: "500+ โปรเจ็ค",
+  descriptionHighlightEn: "500+ projects",
+  descriptionSuffixTh: " ครอบคลุมทุกอุตสาหกรรม",
+  descriptionSuffixEn: " across every industry",
+  isEnabled: true,
+};
+
+const industryCardFallbacks: Record<
+  string,
+  {
+    sortOrder: number;
+    cardTagTh: string;
+    cardTagEn: string;
+    metricValue: string;
+    metricLabelTh: string;
+    metricLabelEn: string;
+  }
+> = {
+  education: {
+    sortOrder: 10,
+    cardTagTh: "Smart Classroom",
+    cardTagEn: "Smart Classroom",
+    metricValue: "120+",
+    metricLabelTh: "ห้องเรียน",
+    metricLabelEn: "Classrooms",
+  },
+  hotel: {
+    sortOrder: 20,
+    cardTagTh: "Ballroom & MICE",
+    cardTagEn: "Ballroom & MICE",
+    metricValue: "60+",
+    metricLabelTh: "โรงแรม",
+    metricLabelEn: "Hotels",
+  },
+  corporate: {
+    sortOrder: 30,
+    cardTagTh: "Hybrid Meeting",
+    cardTagEn: "Hybrid Meeting",
+    metricValue: "200+",
+    metricLabelTh: "องค์กร",
+    metricLabelEn: "Enterprises",
+  },
+  government: {
+    sortOrder: 40,
+    cardTagTh: "Public Sector",
+    cardTagEn: "Public Sector",
+    metricValue: "40+",
+    metricLabelTh: "หน่วยงาน",
+    metricLabelEn: "Agencies",
+  },
+  hospital: {
+    sortOrder: 50,
+    cardTagTh: "Healthcare",
+    cardTagEn: "Healthcare",
+    metricValue: "25+",
+    metricLabelTh: "โรงพยาบาล",
+    metricLabelEn: "Hospitals",
+  },
+  "video-conference": {
+    sortOrder: 60,
+    cardTagTh: "Video Conference",
+    cardTagEn: "Video Conference",
+    metricValue: "300+",
+    metricLabelTh: "ห้องประชุม",
+    metricLabelEn: "Meeting Rooms",
+  },
+};
+
+function withIndustryCardFallbacks(
+  industry: (typeof fallbackIndustries)[number] & { imageUrl?: string | null },
+  row?: IndustryRow,
+  index: number = 0,
+): SiteIndustry {
+  const fallback = industryCardFallbacks[industry.slug];
+  return {
+    ...industry,
+    showOnBrands: row?.show_on_brands ?? true,
+    sortOrder: row?.sort_order ?? fallback?.sortOrder ?? (index + 1) * 10,
+    cardTagTh: row?.card_tag_th ?? fallback?.cardTagTh ?? "Solution",
+    cardTagEn: row?.card_tag_en ?? fallback?.cardTagEn ?? "Solution",
+    metricValue: row?.metric_value ?? fallback?.metricValue ?? "-",
+    metricLabelTh: row?.metric_label_th ?? fallback?.metricLabelTh ?? "",
+    metricLabelEn: row?.metric_label_en ?? fallback?.metricLabelEn ?? "",
+    showcaseImageUrl: imageUrlOrUndefined(row?.showcase_image_url) ?? null,
+    linkUrl: row?.link_url?.trim() || null,
+  };
+}
+
 export const fallbackSiteContent: SiteContent = {
   nav: fallbackNav,
   brands: fallbackBrands,
   solutions: fallbackSolutions,
-  industries: fallbackIndustries,
+  industries: fallbackIndustries.map((industry, index) =>
+    withIndustryCardFallbacks(industry, undefined, index),
+  ),
+  industryShowcase: fallbackIndustryShowcase,
   articleCategories: fallbackArticleCategories,
   brandIntrosByCategoryId: fallbackBrandIntrosByCategoryId,
   source: "files",
@@ -345,38 +498,79 @@ function mapSolutions(rows: SolutionRow[] | null | undefined): SiteSolution[] {
 }
 
 function mapIndustries(rows: IndustryRow[] | null | undefined): SiteIndustry[] {
-  if (!rows?.length) return fallbackIndustries;
+  if (!rows?.length) {
+    return fallbackIndustries.map((industry, index) =>
+      withIndustryCardFallbacks(industry, undefined, index),
+    );
+  }
   const rowsBySlug = new Map(rows.map((row) => [row.slug, row]));
-  const mapped = fallbackIndustries.map((fallback) => {
+  const mapped = fallbackIndustries.map((fallback, index) => {
     const row = rowsBySlug.get(fallback.slug);
-    if (!row) return fallback;
-    return {
-      slug: row.slug,
-      title: row.title || fallback.title,
-      titleEn: (fallback as LocalizedFallback).titleEn,
-      icon: row.icon || fallback.icon,
-      desc: row.description || fallback.desc,
-      descEn: (fallback as LocalizedFallback).descEn,
-      imageUrl: imageUrlOrUndefined(row.image_url),
-    };
+    if (!row) return withIndustryCardFallbacks(fallback, undefined, index);
+    return withIndustryCardFallbacks(
+      {
+        slug: row.slug,
+        title: row.title || fallback.title,
+        titleEn: (fallback as LocalizedFallback).titleEn,
+        icon: row.icon || fallback.icon,
+        desc: row.description || fallback.desc,
+        descEn: (fallback as LocalizedFallback).descEn,
+        imageUrl: imageUrlOrUndefined(row.image_url),
+        showcaseImageUrl: imageUrlOrUndefined(row.showcase_image_url),
+      },
+      row,
+      index,
+    );
   });
 
   const fallbackSlugs = new Set(fallbackIndustries.map((industry) => industry.slug));
   const additions = rows
     .filter((row) => !fallbackSlugs.has(row.slug))
-    .map((row) => {
+    .map((row, index) => {
       const fallback = fallbackIndustries.find((industry) => industry.slug === row.slug);
-      return {
-        slug: row.slug,
-        title: row.title,
-        titleEn: (fallback as LocalizedFallback | undefined)?.titleEn,
-        icon: row.icon ?? fallback?.icon ?? "Building2",
-        desc: row.description ?? fallback?.desc ?? "",
-        descEn: (fallback as LocalizedFallback | undefined)?.descEn,
-        imageUrl: imageUrlOrUndefined(row.image_url),
-      };
+      return withIndustryCardFallbacks(
+        {
+          slug: row.slug,
+          title: row.title,
+          titleEn: (fallback as LocalizedFallback | undefined)?.titleEn,
+          icon: row.icon ?? fallback?.icon ?? "Building2",
+          desc: row.description ?? fallback?.desc ?? "",
+          descEn: (fallback as LocalizedFallback | undefined)?.descEn,
+          imageUrl: imageUrlOrUndefined(row.image_url),
+          showcaseImageUrl: imageUrlOrUndefined(row.showcase_image_url),
+        },
+        row,
+        fallbackIndustries.length + index,
+      );
     });
   return [...mapped, ...additions];
+}
+
+function mapIndustryShowcase(rows: SiteSectionRow[] | null | undefined): SiteShowcaseSection {
+  const row = rows?.find((item) => item.section_key === "industries_showcase");
+  if (!row) return fallbackIndustryShowcase;
+
+  return {
+    eyebrowTh: row.eyebrow_th || fallbackIndustryShowcase.eyebrowTh,
+    eyebrowEn: row.eyebrow_en || fallbackIndustryShowcase.eyebrowEn,
+    titlePrefixTh: row.title_prefix_th || fallbackIndustryShowcase.titlePrefixTh,
+    titlePrefixEn: row.title_prefix_en || fallbackIndustryShowcase.titlePrefixEn,
+    titleHighlightTh: row.title_highlight_th || fallbackIndustryShowcase.titleHighlightTh,
+    titleHighlightEn: row.title_highlight_en || fallbackIndustryShowcase.titleHighlightEn,
+    descriptionPrefixTh:
+      row.description_prefix_th || fallbackIndustryShowcase.descriptionPrefixTh,
+    descriptionPrefixEn:
+      row.description_prefix_en || fallbackIndustryShowcase.descriptionPrefixEn,
+    descriptionHighlightTh:
+      row.description_highlight_th || fallbackIndustryShowcase.descriptionHighlightTh,
+    descriptionHighlightEn:
+      row.description_highlight_en || fallbackIndustryShowcase.descriptionHighlightEn,
+    descriptionSuffixTh:
+      row.description_suffix_th || fallbackIndustryShowcase.descriptionSuffixTh,
+    descriptionSuffixEn:
+      row.description_suffix_en || fallbackIndustryShowcase.descriptionSuffixEn,
+    isEnabled: row.is_enabled ?? fallbackIndustryShowcase.isEnabled,
+  };
 }
 
 function mapArticleCategories(
@@ -450,6 +644,55 @@ function mapBrandIntros(
   };
 }
 
+async function loadIndustryRows() {
+  const result = await contentClient
+    .from("content_industries")
+    .select(
+      "slug,title,icon,description,image_url,showcase_image_url,show_on_brands,sort_order,card_tag_th,card_tag_en,metric_value,metric_label_th,metric_label_en,link_url",
+    )
+    .order("sort_order", { ascending: true });
+
+  if (!result.error) return result;
+
+  const fallbackResult = await contentClient
+    .from("content_industries")
+    .select(
+      "slug,title,icon,description,image_url,show_on_brands,sort_order,card_tag_th,card_tag_en,metric_value,metric_label_th,metric_label_en,link_url",
+    )
+    .order("sort_order", { ascending: true });
+
+  if (!fallbackResult.error) {
+    console.warn("[content] Loaded industries without showcase_image_url fallback", result.error);
+    return fallbackResult;
+  }
+
+  const legacyResult = await contentClient
+    .from("content_industries")
+    .select("slug,title,icon,description,image_url")
+    .order("slug", { ascending: true });
+
+  if (!legacyResult.error) {
+    console.warn("[content] Loaded industries with legacy schema fallback", result.error);
+    return legacyResult;
+  }
+
+  return result;
+}
+
+async function loadSiteSectionRows() {
+  const result = await contentClient
+    .from("content_site_sections")
+    .select(
+      "section_key,eyebrow_th,eyebrow_en,title_prefix_th,title_prefix_en,title_highlight_th,title_highlight_en,description_prefix_th,description_prefix_en,description_highlight_th,description_highlight_en,description_suffix_th,description_suffix_en,is_enabled",
+    )
+    .order("section_key", { ascending: true });
+
+  if (!result.error) return result;
+
+  console.warn("[content] Loaded site sections from file fallback", result.error);
+  return { data: null, error: null };
+}
+
 export async function loadSiteContent(): Promise<SiteContent> {
   try {
     const [
@@ -457,6 +700,7 @@ export async function loadSiteContent(): Promise<SiteContent> {
       brandsResult,
       solutionsResult,
       industriesResult,
+      siteSectionsResult,
       articleCategoriesResult,
       brandIntrosResult,
     ] = await Promise.all([
@@ -472,10 +716,8 @@ export async function loadSiteContent(): Promise<SiteContent> {
         .from("content_solutions")
         .select("slug,title,icon,description,image_url")
         .order("slug", { ascending: true }),
-      contentClient
-        .from("content_industries")
-        .select("slug,title,icon,description,image_url")
-        .order("slug", { ascending: true }),
+      loadIndustryRows(),
+      loadSiteSectionRows(),
       contentClient
         .from("content_article_categories")
         .select("slug,label,image_url")
@@ -491,6 +733,7 @@ export async function loadSiteContent(): Promise<SiteContent> {
       brandsResult.error ??
       solutionsResult.error ??
       industriesResult.error ??
+      siteSectionsResult.error ??
       articleCategoriesResult.error ??
       brandIntrosResult.error;
     if (firstError) throw firstError;
@@ -501,6 +744,7 @@ export async function loadSiteContent(): Promise<SiteContent> {
       brands,
       solutions: mapSolutions(solutionsResult.data as SolutionRow[] | null),
       industries: mapIndustries(industriesResult.data as IndustryRow[] | null),
+      industryShowcase: mapIndustryShowcase(siteSectionsResult.data as SiteSectionRow[] | null),
       articleCategories: mapArticleCategories(
         articleCategoriesResult.data as ArticleCategoryRow[] | null,
       ),

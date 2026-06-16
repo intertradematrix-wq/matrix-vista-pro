@@ -20,11 +20,11 @@ export const Route = createFileRoute("/brands")({
 });
 
 function BrandsPage() {
-  const { industries } = useSiteContent();
+  const { industries, industryShowcase } = useSiteContent();
 
   return (
     <>
-      <IndustriesShowcase industries={industries} />
+      <IndustriesShowcase industries={industries} section={industryShowcase} />
       <CTASection />
     </>
   );

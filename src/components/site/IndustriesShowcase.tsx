@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, ChevronRight, Sparkles } from "lucide-react";
+import type { ReactNode } from "react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { resolveIcon } from "@/lib/icon-map";
 import { industries } from "@/data/site";
 import { Reveal } from "@/components/site/Reveal";
-import { useState } from "react";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import type { SiteShowcaseSection } from "@/lib/content/site";
 import imgEducation from "@/assets/article-smart-classroom.jpg";
 import imgHotel from "@/assets/hero-av.jpg";
 import imgCorporate from "@/assets/article-meeting-room.jpg";
@@ -38,18 +39,105 @@ const metaEN: Record<string, { tag: string; metric: string; metricLabel: string 
   "video-conference": { tag: "Video Conference", metric: "300+", metricLabel: "Meeting Rooms" },
 };
 
-type Industry = (typeof industries)[number];
+type Industry = (typeof industries)[number] & {
+  showOnBrands?: boolean;
+  sortOrder?: number | null;
+  cardTagTh?: string | null;
+  cardTagEn?: string | null;
+  metricValue?: string | null;
+  metricLabelTh?: string | null;
+  metricLabelEn?: string | null;
+  imageUrl?: string | null;
+  showcaseImageUrl?: string | null;
+  linkUrl?: string | null;
+};
+
+const fallbackSection: SiteShowcaseSection = {
+  eyebrowTh: "กลุ่มลูกค้าและการใช้งาน",
+  eyebrowEn: "Industry Use Cases",
+  titlePrefixTh: "ออกแบบ",
+  titlePrefixEn: "Designed ",
+  titleHighlightTh: "เพื่อทุกประเภทองค์กร",
+  titleHighlightEn: "for every kind of organization",
+  descriptionPrefixTh: "ประสบการณ์จริงจากการติดตั้งกว่า ",
+  descriptionPrefixEn: "Real-world experience from over ",
+  descriptionHighlightTh: "500+ โปรเจ็ค",
+  descriptionHighlightEn: "500+ projects",
+  descriptionSuffixTh: " ครอบคลุมทุกอุตสาหกรรม",
+  descriptionSuffixEn: " across every industry",
+  isEnabled: true,
+};
+
+const fallbackSortOrder: Record<string, number> = {
+  education: 10,
+  hotel: 20,
+  corporate: 30,
+  government: 40,
+  hospital: 50,
+  "video-conference": 60,
+};
+
+function sortOrderFor(industry: Industry, index: number) {
+  return industry.sortOrder ?? fallbackSortOrder[industry.slug] ?? (index + 1) * 10;
+}
+
+function cardMetaFor(
+  industry: Industry,
+  lang: "TH" | "EN",
+  fallback: { tag: string; metric: string; metricLabel: string },
+) {
+  return {
+    tag: lang === "EN" ? industry.cardTagEn || fallback.tag : industry.cardTagTh || fallback.tag,
+    metric: industry.metricValue || fallback.metric,
+    metricLabel:
+      lang === "EN"
+        ? industry.metricLabelEn || fallback.metricLabel
+        : industry.metricLabelTh || fallback.metricLabel,
+  };
+}
+
+function IndustryCardLink({
+  href,
+  ariaLabel,
+  className,
+  children,
+}: {
+  href: string;
+  ariaLabel: string;
+  className: string;
+  children: ReactNode;
+}) {
+  if (/^https?:\/\//i.test(href)) {
+    return (
+      <a href={href} aria-label={ariaLabel} className={className} target="_blank" rel="noreferrer">
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={href} aria-label={ariaLabel} className={className}>
+      {children}
+    </Link>
+  );
+}
 
 export function IndustriesShowcase({
   industries: industryItems = industries,
+  section = fallbackSection,
 }: {
   industries?: Industry[];
+  section?: SiteShowcaseSection;
 }) {
   const { lang } = useLanguage();
+  if (section.isEnabled === false) return null;
   const meta = lang === "EN" ? metaEN : metaTH;
-  const [openMobile, setOpenMobile] = useState<number | null>(0);
-  const [activeIdx, setActiveIdx] = useState<number | null>(null);
-  const cards = industryItems.slice(0, 5);
+  const visibleIndustryItems = [...industryItems]
+    .filter((ind) => ind.showOnBrands !== false)
+    .map((ind, index) => ({ ind, index }))
+    .sort((a, b) => sortOrderFor(a.ind, a.index) - sortOrderFor(b.ind, b.index))
+    .map(({ ind }) => ind);
+  const cards = visibleIndustryItems.slice(0, 5);
 
   return (
     <section className="relative overflow-hidden bg-[#E8E4DC] py-14 sm:py-16 lg:py-28 dark:bg-[#1a1814]">
@@ -62,20 +150,20 @@ export function IndustriesShowcase({
           <div className="mx-auto max-w-3xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-white/70 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-accent backdrop-blur-sm dark:bg-white/5">
               <Sparkles className="h-3.5 w-3.5" />
-              {t(lang, "กลุ่มลูกค้าและการใช้งาน", "Industry Use Cases")}
+              {t(lang, section.eyebrowTh, section.eyebrowEn)}
             </div>
             <h2 className="mt-5 text-3xl font-extrabold leading-[1.15] tracking-tight text-primary sm:text-4xl md:text-5xl">
-              {t(lang, "ออกแบบ", "Designed ")}
+              {t(lang, section.titlePrefixTh, section.titlePrefixEn)}
               <span className="bg-gradient-accent bg-clip-text text-transparent">
-                {t(lang, "เพื่อทุกประเภทองค์กร", "for every kind of organization")}
+                {t(lang, section.titleHighlightTh, section.titleHighlightEn)}
               </span>
             </h2>
             <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-              {t(lang, "ประสบการณ์จริงจากการติดตั้งกว่า ", "Real-world experience from over ")}
+              {t(lang, section.descriptionPrefixTh, section.descriptionPrefixEn)}
               <span className="font-semibold text-primary">
-                {t(lang, "500+ โปรเจ็ค", "500+ projects")}
+                {t(lang, section.descriptionHighlightTh, section.descriptionHighlightEn)}
               </span>
-              {t(lang, " ครอบคลุมทุกอุตสาหกรรม", " across every industry")}
+              {t(lang, section.descriptionSuffixTh, section.descriptionSuffixEn)}
             </p>
           </div>
         </Reveal>
@@ -83,42 +171,32 @@ export function IndustriesShowcase({
         <div className="group/row mt-12 hidden lg:flex lg:gap-6">
           {cards.map((ind, i) => {
             const Icon = resolveIcon(ind.icon);
-            const img = industryImages[ind.slug];
-            const m = meta[ind.slug] ?? { tag: "Solution", metric: "—", metricLabel: "" };
-            const isActive = activeIdx === i;
+            const img = ind.showcaseImageUrl || industryImages[ind.slug];
+            const cardMeta = cardMetaFor(
+              ind,
+              lang,
+              meta[ind.slug] ?? { tag: "Solution", metric: "—", metricLabel: "" },
+            );
+            const href = ind.linkUrl || `/industry/${ind.slug}`;
+            const ariaLabel = `View projects: ${t(lang, ind.title, ind.titleEn)}`;
             return (
               <Reveal
                 key={ind.slug}
                 delay={i * 100}
                 variant="slide"
-                className={`flex-[1_1_0%] transition-[flex-grow] duration-700 ease-[cubic-bezier(.22,1,.36,1)] hover:flex-[3.2_1_0%] group-hover/row:[&:not(:hover)]:flex-[0.7_1_0%] ${
-                  isActive ? "!flex-[3.2_1_0%]" : activeIdx !== null ? "!flex-[0.7_1_0%]" : ""
-                }`}
+                className="flex-[1_1_0%] transition-[flex-grow] duration-700 ease-[cubic-bezier(.22,1,.36,1)] hover:flex-[3.2_1_0%] group-hover/row:[&:not(:hover)]:flex-[0.7_1_0%]"
               >
-                <div
-                  role="button"
-                  tabIndex={0}
-                  aria-label={ind.title}
-                  aria-expanded={isActive}
-                  onClick={() => setActiveIdx(isActive ? null : i)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setActiveIdx(isActive ? null : i);
-                    }
-                  }}
-                  className={`group relative block h-[500px] w-full cursor-pointer overflow-hidden rounded-2xl bg-navy shadow-[0_20px_60px_-15px_rgba(0,0,0,0.25)] transition-all duration-700 ease-out hover:shadow-[0_30px_80px_-15px_rgba(0,0,0,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent xl:h-[620px] ${
-                    isActive ? "shadow-[0_30px_80px_-15px_rgba(0,0,0,0.45)]" : ""
-                  }`}
+                <IndustryCardLink
+                  href={href}
+                  ariaLabel={ariaLabel}
+                  className="group relative block h-[500px] w-full cursor-pointer overflow-hidden rounded-2xl bg-navy shadow-[0_20px_60px_-15px_rgba(0,0,0,0.25)] transition-all duration-700 ease-out hover:shadow-[0_30px_80px_-15px_rgba(0,0,0,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent xl:h-[620px]"
                 >
                   {img && (
                     <img
                       src={img}
                       alt={ind.title}
                       loading="lazy"
-                      className={`absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] ${
-                        isActive ? "scale-[1.04]" : ""
-                      }`}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
                       style={{
                         filter: "saturate(1.1) contrast(1.05)",
                         objectPosition: "center center",
@@ -137,11 +215,7 @@ export function IndustriesShowcase({
                   <div className="absolute left-3 top-3 lg:left-4 lg:top-4">
                     <div className="group/badge relative">
                       <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-accent/40 to-cyan/30 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
-                      <div
-                        className={`relative grid h-14 w-14 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-white to-white/90 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.35)] ring-1 ring-white/60 backdrop-blur-md transition-all duration-500 group-hover:-translate-y-0.5 group-hover:shadow-[0_14px_32px_-6px_rgba(0,0,0,0.45)] lg:h-16 lg:w-16 ${
-                          isActive ? "-translate-y-0.5" : ""
-                        }`}
-                      >
+                      <div className="relative grid h-14 w-14 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-white to-white/90 shadow-[0_8px_24px_-4px_rgba(0,0,0,0.35)] ring-1 ring-white/60 backdrop-blur-md transition-all duration-500 group-hover:-translate-y-0.5 group-hover:shadow-[0_14px_32px_-6px_rgba(0,0,0,0.45)] lg:h-16 lg:w-16">
                         <span className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/80 to-transparent" />
                         <span className="pointer-events-none absolute -right-3 -top-3 h-6 w-6 rotate-45 bg-gradient-to-br from-accent to-cyan opacity-90" />
                         <Icon
@@ -154,15 +228,11 @@ export function IndustriesShowcase({
 
                   <div className="absolute right-3 top-3 hidden lg:block">
                     <span className="rounded-full bg-white/15 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-white backdrop-blur-md ring-1 ring-white/20">
-                      {m.tag}
+                      {cardMeta.tag}
                     </span>
                   </div>
 
-                  <div
-                    className={`absolute right-2 top-1/2 -translate-y-1/2 transition-transform duration-500 group-hover:-translate-x-1 lg:right-3 ${
-                      isActive ? "-translate-x-1" : ""
-                    }`}
-                  >
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 transition-transform duration-500 group-hover:-translate-x-1 lg:right-3">
                     <div
                       className="whitespace-nowrap text-sm font-bold tracking-[0.18em] text-white lg:text-base"
                       style={{
@@ -178,52 +248,43 @@ export function IndustriesShowcase({
                   <div className="absolute inset-x-0 bottom-0 p-4 lg:p-5">
                     <div className="flex items-baseline gap-1.5">
                       <span className="text-2xl font-black tracking-tight text-white drop-shadow-lg lg:text-3xl">
-                        {m.metric}
+                        {cardMeta.metric}
                       </span>
                       <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/90">
-                        {m.metricLabel}
+                        {cardMeta.metricLabel}
                       </span>
                     </div>
-                    <div
-                      className={`mt-2 h-[2px] w-8 origin-left rounded-full bg-gradient-accent transition-transform duration-500 group-hover:scale-x-[2.2] ${
-                        isActive ? "scale-x-[2.2]" : ""
-                      }`}
-                    />
-                    <Link
-                      to="/industry/$slug"
-                      params={{ slug: ind.slug }}
-                      onClick={(e) => e.stopPropagation()}
-                      className={`mt-3 inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white opacity-0 ring-1 ring-white/25 backdrop-blur-md transition-all duration-500 hover:bg-accent hover:ring-accent group-hover:opacity-100 ${
-                        isActive ? "!opacity-100" : ""
-                      }`}
-                    >
+                    <div className="mt-2 h-[2px] w-8 origin-left rounded-full bg-gradient-accent transition-transform duration-500 group-hover:scale-x-[2.2]" />
+                    <span className="mt-3 inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-white opacity-0 ring-1 ring-white/25 backdrop-blur-md transition-all duration-500 group-hover:bg-accent group-hover:opacity-100 group-hover:ring-accent">
                       {t(lang, "ดูผลงาน", "View")}
                       <ArrowUpRight className="h-3.5 w-3.5" />
-                    </Link>
+                    </span>
                   </div>
-                </div>
+                </IndustryCardLink>
               </Reveal>
             );
           })}
         </div>
 
         <div className="mt-10 flex flex-col gap-3 lg:hidden">
-          {industryItems.map((ind, i) => {
+          {visibleIndustryItems.map((ind) => {
             const Icon = resolveIcon(ind.icon);
-            const img = industryImages[ind.slug];
-            const m = meta[ind.slug] ?? { tag: "", metric: "—", metricLabel: "" };
-            const isOpen = openMobile === i;
+            const img = ind.showcaseImageUrl || industryImages[ind.slug];
+            const cardMeta = cardMetaFor(
+              ind,
+              lang,
+              meta[ind.slug] ?? { tag: "", metric: "—", metricLabel: "" },
+            );
+            const href = ind.linkUrl || `/industry/${ind.slug}`;
+            const ariaLabel = `View projects: ${t(lang, ind.title, ind.titleEn)}`;
             return (
-              <div
+              <IndustryCardLink
                 key={ind.slug}
-                className="overflow-hidden rounded-2xl border border-border shadow-card"
+                href={href}
+                ariaLabel={ariaLabel}
+                className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/30 hover:shadow-elev focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
-                <button
-                  type="button"
-                  onClick={() => setOpenMobile(isOpen ? null : i)}
-                  aria-expanded={isOpen}
-                  className="relative flex min-h-[96px] w-full items-center gap-3 overflow-hidden p-3 text-left"
-                >
+                <div className="relative flex min-h-[108px] w-full items-center gap-3 overflow-hidden p-3 text-left">
                   {img && (
                     <img
                       src={img}
@@ -241,36 +302,22 @@ export function IndustriesShowcase({
                       {t(lang, ind.title, ind.titleEn)}
                     </div>
                     <div className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80">
-                      {m.metric} · {m.metricLabel}
+                      {cardMeta.metric} · {cardMeta.metricLabel}
                     </div>
                   </div>
-                  <ChevronRight
-                    className={`relative h-5 w-5 text-white/90 transition-transform ${
-                      isOpen ? "rotate-90" : ""
-                    }`}
-                  />
-                </button>
-                <div
-                  className={`grid bg-card transition-[grid-template-rows] duration-500 ease-out ${
-                    isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                  }`}
-                >
-                  <div className="overflow-hidden">
-                    <div className="p-4">
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {t(lang, ind.desc, ind.descEn)}
-                      </p>
-                      <Link
-                        to="/industry/$slug"
-                        params={{ slug: ind.slug }}
-                        className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-accent"
-                      >
-                        {t(lang, "ดูผลงาน", "View Projects")} <ArrowUpRight className="h-4 w-4" />
-                      </Link>
-                    </div>
+                  <div className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15 text-white ring-1 ring-white/25 backdrop-blur-md transition-colors duration-300 group-hover:bg-accent group-hover:ring-accent">
+                    <ArrowUpRight className="h-4 w-4" />
                   </div>
                 </div>
-              </div>
+                <div className="p-4">
+                  <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                    {t(lang, ind.desc, ind.descEn)}
+                  </p>
+                  <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-accent">
+                    {t(lang, "ดูผลงาน", "View Projects")} <ArrowUpRight className="h-4 w-4" />
+                  </span>
+                </div>
+              </IndustryCardLink>
             );
           })}
         </div>

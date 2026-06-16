@@ -52,6 +52,12 @@ import { articleImages } from "@/data/article-images";
 import { brandImages } from "@/data/brand-images";
 import { brandLogos } from "@/data/brand-logos";
 import { solutionImages } from "@/data/solution-images";
+import imgEducation from "@/assets/article-smart-classroom.jpg";
+import imgHotel from "@/assets/hero-av.jpg";
+import imgCorporate from "@/assets/article-meeting-room.jpg";
+import imgGovernment from "@/assets/hero-led.jpg";
+import imgHospital from "@/assets/hero-interactive.jpg";
+import imgVideo from "@/assets/hero-wireless.jpg";
 
 type ContentKind =
   | "products"
@@ -61,6 +67,7 @@ type ContentKind =
   | "brandIntros"
   | "solutions"
   | "industries"
+  | "siteSections"
   | "navItems"
   | "contactSubmissions";
 
@@ -108,9 +115,19 @@ type ContentConfig = {
 type AdminPayload = {
   ok: boolean;
   userEmail: string;
+  loadWarnings?: Partial<Record<ContentKind, string>>;
 } & Record<ContentKind, ContentItem[]>;
 
 type SaveState = "idle" | "saving" | "saved" | "error";
+
+const industryShowcaseImages: Record<string, string> = {
+  education: imgEducation,
+  hotel: imgHotel,
+  corporate: imgCorporate,
+  government: imgGovernment,
+  hospital: imgHospital,
+  "video-conference": imgVideo,
+};
 
 const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   products: {
@@ -132,7 +149,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       {
         key: "name",
         label: "ชื่อสินค้า",
-        placeholder: "เช่น: MAXHUB V6 Classic 86\"",
+        placeholder: 'เช่น: MAXHUB V6 Classic 86"',
         helperText: "ชื่อที่จะแสดงในหน้าสินค้าและการค้นหา",
       },
       {
@@ -174,7 +191,6 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         },
       },
 
-
       {
         key: "price_text",
         label: "ราคา / ข้อความราคา",
@@ -189,7 +205,13 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         placeholder: "https://...",
         helperText: "ลิงก์ไปยังหน้าสินค้าจากเว็บไซต์ผู้ผลิตหรือแหล่งข้อมูล",
       },
-      { key: "payload", label: "Payload JSON", type: "json" as FieldType, rows: 8, group: "advanced" },
+      {
+        key: "payload",
+        label: "Payload JSON",
+        type: "json" as FieldType,
+        rows: 8,
+        group: "advanced",
+      },
       {
         key: "seo_title",
         label: "SEO Title",
@@ -244,7 +266,12 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         placeholder: "ถ้าหน้านี้ซ้ำกับหน้าอื่น ใส่ URL หน้าหลัก",
         helperText: "ใส่เมื่อสินค้านี้มีหน้าซ้ำกันหลายที่",
       },
-      { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle" as FieldType, group: "seo" },
+      {
+        key: "seo_no_index",
+        label: "ซ่อนจาก Google (No Index)",
+        type: "toggle" as FieldType,
+        group: "seo",
+      },
     ],
   },
   articles: {
@@ -476,14 +503,20 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     key: "slug",
     title: "title",
     subtitle: (item) => text(item.slug),
-    image: (item) => text(item.image_url),
+    image: (item) => browserImageUrl(text(item.image_url)) || solutionImages[text(item.slug)] || null,
     href: (item) => `/${text(item.slug)}`,
     fields: [
       { key: "slug", label: "Slug", readOnly: true },
       { key: "title", label: "Title" },
       { key: "icon", label: "Icon" },
       { key: "description", label: "Description", type: "textarea", rows: 5 },
-      { key: "image_url", label: "Image URL", type: "image" },
+      {
+        key: "image_url",
+        label: "Image URL",
+        type: "image",
+        helperText:
+          "Use a browser-ready image URL such as /assets/..., /legacy-imports/..., https://..., or leave blank to use the default image for this solution.",
+      },
       { key: "payload", label: "Payload JSON", type: "json", rows: 10, group: "advanced" },
       {
         key: "seo_title",
@@ -525,7 +558,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     key: "slug",
     title: "title",
     subtitle: (item) => text(item.slug),
-    image: (item) => text(item.image_url),
+    image: (item) =>
+      text(item.showcase_image_url) || industryShowcaseImages[text(item.slug)] || text(item.image_url),
     href: (item) => `/industry/${text(item.slug)}`,
     fields: [
       { key: "slug", label: "Slug", readOnly: true },
@@ -533,6 +567,66 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "icon", label: "Icon" },
       { key: "description", label: "Description", type: "textarea", rows: 5 },
       { key: "image_url", label: "Image URL", type: "image" },
+      {
+        key: "showcase_image_url",
+        label: "Showcase Card Image",
+        type: "image",
+        group: "brands_page",
+        helperText:
+          "Image used by the vertical card on the homepage and /brands. Leave blank to use the original fallback image.",
+      },
+      {
+        key: "show_on_brands",
+        label: "Show on homepage and /brands",
+        type: "toggle",
+        group: "brands_page",
+        helperText: "Turn off to hide this card from the shared showcase section.",
+      },
+      {
+        key: "sort_order",
+        label: "Card Order",
+        type: "number",
+        group: "brands_page",
+        placeholder: "10",
+        helperText: "Lower numbers appear first. Desktop shows the first 5 cards.",
+      },
+      {
+        key: "card_tag_th",
+        label: "Card Tag (TH)",
+        group: "brands_page",
+        placeholder: "เช่น Smart Classroom",
+      },
+      {
+        key: "card_tag_en",
+        label: "Card Tag (EN)",
+        group: "brands_page",
+        placeholder: "e.g. Smart Classroom",
+      },
+      {
+        key: "metric_value",
+        label: "Metric Value",
+        group: "brands_page",
+        placeholder: "120+",
+      },
+      {
+        key: "metric_label_th",
+        label: "Metric Label (TH)",
+        group: "brands_page",
+        placeholder: "เช่น ห้องเรียน",
+      },
+      {
+        key: "metric_label_en",
+        label: "Metric Label (EN)",
+        group: "brands_page",
+        placeholder: "e.g. Classrooms",
+      },
+      {
+        key: "link_url",
+        label: "Card Link Override",
+        group: "brands_page",
+        placeholder: "/industry/education",
+        helperText: "Leave blank to link to /industry/{slug}.",
+      },
       { key: "payload", label: "Payload JSON", type: "json", rows: 12, group: "advanced" },
       {
         key: "seo_title",
@@ -566,6 +660,91 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "og_image_url", label: "OG Image", type: "image", group: "seo" },
       { key: "seo_canonical_url", label: "Canonical URL", group: "seo" },
       { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
+    ],
+  },
+  siteSections: {
+    label: "Showcase Header",
+    description: "Section header copy shared by the homepage and /brands. Card items are managed in Industries.",
+    key: "section_key",
+    title: "section_key",
+    subtitle: (item) =>
+      text(item.section_key) === "industries_showcase"
+        ? "Shared header for the homepage and /brands showcase"
+        : text(item.section_key),
+    href: (item) => (text(item.section_key) === "industries_showcase" ? "/brands" : "/"),
+    fields: [
+      { key: "section_key", label: "Section Key", readOnly: true },
+      {
+        key: "is_enabled",
+        label: "Enable this section",
+        type: "toggle",
+        helperText: "Turns the shared section on or off wherever it is used.",
+      },
+      {
+        key: "eyebrow_th",
+        label: "Eyebrow (TH)",
+        placeholder: "กลุ่มลูกค้าและการใช้งาน",
+      },
+      {
+        key: "eyebrow_en",
+        label: "Eyebrow (EN)",
+        placeholder: "Industry Use Cases",
+      },
+      {
+        key: "title_prefix_th",
+        label: "Title Prefix (TH)",
+        placeholder: "ออกแบบ",
+      },
+      {
+        key: "title_prefix_en",
+        label: "Title Prefix (EN)",
+        placeholder: "Designed ",
+      },
+      {
+        key: "title_highlight_th",
+        label: "Title Highlight (TH)",
+        placeholder: "เพื่อทุกประเภทองค์กร",
+      },
+      {
+        key: "title_highlight_en",
+        label: "Title Highlight (EN)",
+        placeholder: "for every kind of organization",
+      },
+      {
+        key: "description_prefix_th",
+        label: "Description Prefix (TH)",
+        type: "textarea",
+        rows: 2,
+      },
+      {
+        key: "description_prefix_en",
+        label: "Description Prefix (EN)",
+        type: "textarea",
+        rows: 2,
+      },
+      {
+        key: "description_highlight_th",
+        label: "Description Highlight (TH)",
+        placeholder: "500+ โปรเจ็ค",
+      },
+      {
+        key: "description_highlight_en",
+        label: "Description Highlight (EN)",
+        placeholder: "500+ projects",
+      },
+      {
+        key: "description_suffix_th",
+        label: "Description Suffix (TH)",
+        type: "textarea",
+        rows: 2,
+      },
+      {
+        key: "description_suffix_en",
+        label: "Description Suffix (EN)",
+        type: "textarea",
+        rows: 2,
+      },
+      { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
     ],
   },
   navItems: {
@@ -640,6 +819,7 @@ function AdminPage() {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const [content, setContent] = useState<Partial<Record<ContentKind, ContentItem[]>>>({});
+  const [loadWarnings, setLoadWarnings] = useState<Partial<Record<ContentKind, string>>>({});
   const [activeKind, setActiveKind] = useState<ContentKind>("products");
   const [selectedIds, setSelectedIds] = useState<Partial<Record<ContentKind, string>>>({});
   const [draft, setDraft] = useState<Draft>({});
@@ -650,6 +830,18 @@ function AdminPage() {
   const [isCreating, setIsCreating] = useState(false);
 
   const config = CONTENT_CONFIG[activeKind];
+  const activeSchemaWarning = loadWarnings[activeKind];
+  const activeFields = useMemo(
+    () => {
+      if (activeKind !== "industries" || !activeSchemaWarning) return config.fields;
+      if (activeSchemaWarning.includes("pre-card")) {
+        return config.fields.filter((field) => field.group !== "brands_page");
+      }
+      return config.fields.filter((field) => field.key !== "showcase_image_url");
+    },
+    [activeKind, activeSchemaWarning, config.fields],
+  );
+  const editorConfig = useMemo(() => ({ ...config, fields: activeFields }), [activeFields, config]);
   const items = content[activeKind] ?? [];
   const selectedId = selectedIds[activeKind] ?? "";
   const foundItem = items.find((item) => text(item[config.key]) === selectedId);
@@ -673,6 +865,7 @@ function AdminPage() {
   useEffect(() => {
     if (!sessionToken) {
       setContent({});
+      setLoadWarnings({});
       setAdminEmail(null);
       return;
     }
@@ -693,7 +886,7 @@ function AdminPage() {
     const nextId = text(selectedItem[config.key]);
     if (!selectedId) setSelectedIds((current) => ({ ...current, [activeKind]: nextId }));
 
-    const initialDraft = toDraft(selectedItem, config.fields);
+    const initialDraft = toDraft(selectedItem, activeFields);
 
     // Auto-migrate legacy blocks to content_html for articles
     if (activeKind === "articles" && !initialDraft.content_html && selectedItem.blocks) {
@@ -709,7 +902,7 @@ function AdminPage() {
     }
 
     // Auto-populate SEO fields if they are empty
-    const hasSeo = config.fields.some((f) => f.group === "seo");
+    const hasSeo = activeFields.some((f) => f.group === "seo");
     if (hasSeo) {
       const mainTitle = text(
         selectedItem[config.title] ||
@@ -737,15 +930,15 @@ function AdminPage() {
 
     setDraft(initialDraft);
     setSaveState("idle");
-  }, [activeKind, config.fields, config.key, selectedId, selectedItem, isCreating]);
+  }, [activeFields, activeKind, config.key, selectedId, selectedItem, isCreating]);
 
   const filteredItems = useMemo(() => {
     const term = query.trim().toLowerCase();
     if (!term) return items;
     return items.filter((item) =>
-      config.fields.some((field) => text(item[field.key]).toLowerCase().includes(term)),
+      activeFields.some((field) => text(item[field.key]).toLowerCase().includes(term)),
     );
-  }, [config.fields, items, query]);
+  }, [activeFields, items, query]);
 
   async function loadAdminContent(token: string) {
     setLoading(true);
@@ -757,6 +950,7 @@ function AdminPage() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "Cannot load admin content");
       const data = payload as AdminPayload;
+      setLoadWarnings(data.loadWarnings ?? {});
       setContent(
         Object.fromEntries(CONTENT_KINDS.map((kind) => [kind, data[kind] ?? []])) as Record<
           ContentKind,
@@ -795,7 +989,7 @@ function AdminPage() {
 
     let values: Record<string, unknown>;
     try {
-      values = fromDraft(draft, config.fields);
+      values = fromDraft(draft, activeFields);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Invalid form value");
       setSaveState("error");
@@ -843,24 +1037,37 @@ function AdminPage() {
       setSelectedIds((current) => ({ ...current, [activeKind]: text(saved[config.key]) }));
       setIsCreating(false);
       setSaveState("saved");
-      toast.success(activeKind === "articles" ? "บันทึกบทความสำเร็จ!" : activeKind === "products" ? "บันทึกสินค้าสำเร็จ!" : "Saved successfully!");
+      toast.success(
+        activeKind === "articles"
+          ? "บันทึกบทความสำเร็จ!"
+          : activeKind === "products"
+            ? "บันทึกสินค้าสำเร็จ!"
+            : "Saved successfully!",
+      );
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : `Cannot save ${config.label}`;
       setStatus(errMsg);
       setSaveState("error");
-      toast.error(activeKind === "articles" ? "เกิดข้อผิดพลาดในการบันทึก" : activeKind === "products" ? "เกิดข้อผิดพลาดในการบันทึก" : "Save failed", {
-        description: errMsg,
-      });
+      toast.error(
+        activeKind === "articles"
+          ? "เกิดข้อผิดพลาดในการบันทึก"
+          : activeKind === "products"
+            ? "เกิดข้อผิดพลาดในการบันทึก"
+            : "Save failed",
+        {
+          description: errMsg,
+        },
+      );
     }
   }
 
   async function deleteCurrentItem() {
     if (!sessionToken || !selectedItem || isCreating) return;
-    const confirmMsg = activeKind === "articles" || activeKind === "products"
-      ? `คุณต้องการลบ${activeKind === "articles" ? "บทความ" : "สินค้า"}นี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้`
-      : `Are you sure you want to delete this ${config.label}? This action cannot be undone.`;
-    if (!window.confirm(confirmMsg))
-      return;
+    const confirmMsg =
+      activeKind === "articles" || activeKind === "products"
+        ? `คุณต้องการลบ${activeKind === "articles" ? "บทความ" : "สินค้า"}นี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้`
+        : `Are you sure you want to delete this ${config.label}? This action cannot be undone.`;
+    if (!window.confirm(confirmMsg)) return;
 
     setSaveState("saving");
     setStatus("");
@@ -887,14 +1094,27 @@ function AdminPage() {
       });
       setSelectedIds((current) => ({ ...current, [activeKind]: "" }));
       setSaveState("idle");
-      toast.success(activeKind === "articles" ? "ลบบทความสำเร็จ" : activeKind === "products" ? "ลบสินค้าสำเร็จ" : "Deleted successfully");
+      toast.success(
+        activeKind === "articles"
+          ? "ลบบทความสำเร็จ"
+          : activeKind === "products"
+            ? "ลบสินค้าสำเร็จ"
+            : "Deleted successfully",
+      );
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : `Cannot delete ${config.label}`;
       setStatus(errMsg);
       setSaveState("error");
-      toast.error(activeKind === "articles" ? "เกิดข้อผิดพลาดในการลบ" : activeKind === "products" ? "เกิดข้อผิดพลาดในการลบ" : "Delete failed", {
-        description: errMsg,
-      });
+      toast.error(
+        activeKind === "articles"
+          ? "เกิดข้อผิดพลาดในการลบ"
+          : activeKind === "products"
+            ? "เกิดข้อผิดพลาดในการลบ"
+            : "Delete failed",
+        {
+          description: errMsg,
+        },
+      );
     }
   }
 
@@ -930,7 +1150,7 @@ function AdminPage() {
 
   function discardDraft() {
     if (selectedItem) {
-      setDraft(toDraft(selectedItem, config.fields));
+      setDraft(toDraft(selectedItem, activeFields));
       setSaveState("idle");
     }
   }
@@ -999,6 +1219,10 @@ function AdminPage() {
         </div>
       </div>
 
+      {Object.keys(loadWarnings).length > 0 && (
+        <LoadWarningsPanel warnings={loadWarnings} activeKind={activeKind} />
+      )}
+
       <Tabs
         value={activeKind}
         onValueChange={(value) => {
@@ -1015,7 +1239,32 @@ function AdminPage() {
             ))}
           </TabsList>
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <p className="text-sm text-muted-foreground">{config.description}</p>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">{config.description}</p>
+              {activeKind === "siteSections" && (
+                <div className="flex max-w-3xl flex-col gap-3 rounded-xl border border-accent/20 bg-white px-4 py-3 text-sm text-muted-foreground shadow-sm md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="font-semibold text-primary">This tab edits one shared section header.</p>
+                    <p>
+                      The 5 vertical showcase cards, images, metrics, order, visibility and links are edited in
+                      Industries.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="shrink-0"
+                    onClick={() => {
+                      setActiveKind("industries");
+                      setIsCreating(false);
+                    }}
+                  >
+                    Edit cards in Industries
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
             <div className="relative w-full md:max-w-sm">
               <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -1045,26 +1294,30 @@ function AdminPage() {
                 }));
                 setSaveState("idle");
               }}
-              onAddNew={() => {
-                setIsCreating(true);
-                const newId = `new-${Date.now()}`;
-                setSelectedIds((current) => ({
-                  ...current,
-                  [activeKind]: newId,
-                }));
-                const newDraft: Draft = { [config.key]: newId };
-                config.fields.forEach((f) => {
-                  if (f.key !== config.key) newDraft[f.key] = "";
-                });
-                setDraft(newDraft);
-                setSaveState("idle");
-              }}
+              onAddNew={
+                activeKind === "contactSubmissions" || activeKind === "siteSections"
+                  ? undefined
+                  : () => {
+                      setIsCreating(true);
+                      const newId = `new-${Date.now()}`;
+                      setSelectedIds((current) => ({
+                        ...current,
+                        [activeKind]: newId,
+                      }));
+                      const newDraft: Draft = { [config.key]: newId };
+                      activeFields.forEach((f) => {
+                        if (f.key !== config.key) newDraft[f.key] = "";
+                      });
+                      setDraft(newDraft);
+                      setSaveState("idle");
+                    }
+              }
             />
             {selectedItem && (
               <div className="grid gap-5 xl:grid-cols-[1fr_420px]">
                 <ContentEditor
                   kind={activeKind}
-                  config={config}
+                  config={editorConfig}
                   draft={draft}
                   setDraft={setDraft}
                   isCreating={isCreating}
@@ -1073,15 +1326,15 @@ function AdminPage() {
                 />
                 <ContentPreview
                   kind={activeKind}
-                  config={config}
-                  item={mergePreviewItem(selectedItem, draft, config.fields)}
+                  config={editorConfig}
+                  item={mergePreviewItem(selectedItem, draft, activeFields)}
                   allContent={content}
                   saveState={saveState}
                   onSave={saveCurrentItem}
                   isDirty={isDirty || isCreating}
                   onDiscard={discardDraft}
                   isCreating={isCreating}
-                  onDelete={deleteCurrentItem}
+                  onDelete={activeKind === "siteSections" ? undefined : deleteCurrentItem}
                 />
               </div>
             )}
@@ -1104,6 +1357,40 @@ function AdminShell({ children, status }: { children?: ReactNode; status?: strin
         {children}
       </div>
     </main>
+  );
+}
+
+function LoadWarningsPanel({
+  warnings,
+  activeKind,
+}: {
+  warnings: Partial<Record<ContentKind, string>>;
+  activeKind: ContentKind;
+}) {
+  const entries = Object.entries(warnings).filter((entry): entry is [ContentKind, string] =>
+    Boolean(entry[1]),
+  );
+  if (entries.length === 0) return null;
+
+  return (
+    <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+      <div className="flex gap-3">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+        <div className="space-y-1">
+          <p className="font-semibold">Some content sections loaded with a legacy schema.</p>
+          <ul className="space-y-1">
+            {entries.map(([kind, warning]) => (
+              <li key={kind}>
+                <span className="font-medium">{CONTENT_CONFIG[kind].label}:</span> {warning}
+                {activeKind === kind && kind === "industries"
+                  ? " The /brands card settings are hidden until the migration is applied."
+                  : ""}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1150,6 +1437,7 @@ function ContentList({
         {items.map((item) => {
           const id = text(item[config.key]);
           const image = previewImage(kind, config, item, allContent);
+          const fallbackImage = previewFallbackImage(kind, item);
           return (
             <button
               key={id}
@@ -1163,7 +1451,21 @@ function ContentList({
             >
               <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-lg bg-secondary">
                 {image ? (
-                  <img src={image} alt="" className="h-full w-full object-cover" loading="lazy" />
+                  <img
+                    src={image}
+                    alt=""
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    onError={(event) => {
+                      const img = event.currentTarget;
+                      if (fallbackImage && img.dataset.fallbackApplied !== "true") {
+                        img.dataset.fallbackApplied = "true";
+                        img.src = fallbackImage;
+                        return;
+                      }
+                      img.style.display = "none";
+                    }}
+                  />
                 ) : (
                   <ImageIcon className="h-5 w-5 text-muted-foreground" />
                 )}
@@ -1438,8 +1740,11 @@ function ContentEditor({
                 <SearchCheck className="h-4 w-4 shrink-0 mt-0.5" />
                 <p>
                   <strong>Tip:</strong> หากปล่อยว่างไว้ ระบบจะสร้าง Meta Tag และ Open Graph
-                  ให้โดยอัตโนมัติจาก {isProduct ? "ชื่อสินค้า คำอธิบาย และรูปสินค้า" : "หัวข้อบทความ เกริ่นนำ และรูปปก"} เพื่อให้ถูกหลัก SEO
-                  มากที่สุดควรกรอกให้ครบถ้วน
+                  ให้โดยอัตโนมัติจาก{" "}
+                  {isProduct
+                    ? "ชื่อสินค้า คำอธิบาย และรูปสินค้า"
+                    : "หัวข้อบทความ เกริ่นนำ และรูปปก"}{" "}
+                  เพื่อให้ถูกหลัก SEO มากที่สุดควรกรอกให้ครบถ้วน
                 </p>
               </div>
               {seoFields.map((field) => renderField(field, draft, update, isCreating, allContent))}
@@ -1560,7 +1865,9 @@ function renderField(
   }
 
   if (field.type === "select") {
-    const options = field.getOptions ? field.getOptions(allContent as Record<ContentKind, ContentItem[]>) : [];
+    const options = field.getOptions
+      ? field.getOptions(allContent as Record<ContentKind, ContentItem[]>)
+      : [];
     return (
       <div key={field.key} className="grid gap-1.5">
         <label className="text-sm font-medium text-primary">{field.label}</label>
@@ -1791,6 +2098,7 @@ function ContentPreview({
   onDelete?: () => void;
 }) {
   const image = previewImage(kind, config, item, allContent);
+  const fallbackImage = previewFallbackImage(kind, item);
   const href = config.href?.(item);
   const title = text(item[config.title]) || text(item[config.key]);
   const description = previewDescription(kind, item);
@@ -1830,6 +2138,15 @@ function ContentPreview({
                   src={image}
                   alt={title}
                   className="absolute inset-0 h-full w-full object-cover"
+                  onError={(event) => {
+                    const img = event.currentTarget;
+                    if (fallbackImage && img.dataset.fallbackApplied !== "true") {
+                      img.dataset.fallbackApplied = "true";
+                      img.src = fallbackImage;
+                      return;
+                    }
+                    img.style.display = "none";
+                  }}
                 />
               ) : (
                 <div className="grid h-full place-items-center text-sm text-muted-foreground">
@@ -1849,20 +2166,32 @@ function ContentPreview({
             </div>
           </div>
 
-          {/* Body content preview for articles and products */}
-          {(kind === "articles" || kind === "products") && text(kind === "articles" ? item.content_html : item.description_html) && (
-            <div className="rounded-xl border border-border bg-white overflow-hidden">
-              <div className="px-4 py-2.5 border-b border-border bg-muted/30">
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {kind === "products" ? "ตัวอย่างรายละเอียดสินค้า" : "ตัวอย่างเนื้อหา"}
-                </span>
-              </div>
-              <div
-                dangerouslySetInnerHTML={{ __html: text(kind === "articles" ? item.content_html : item.description_html) }}
-                className="max-h-[300px] overflow-auto p-4 prose prose-sm max-w-none text-foreground/85 prose-img:rounded-xl prose-headings:text-primary prose-a:text-accent"
-              />
-            </div>
+          {kind === "solutions" && <SolutionCardPreview item={item} href={href} />}
+          {kind === "siteSections" && (
+            <>
+              <SiteSectionHeaderPreview item={item} />
+              <SiteSectionAdminNote />
+            </>
           )}
+          {kind === "industries" && <IndustryShowcaseCardPreview item={item} />}
+
+          {/* Body content preview for articles and products */}
+          {(kind === "articles" || kind === "products") &&
+            text(kind === "articles" ? item.content_html : item.description_html) && (
+              <div className="rounded-xl border border-border bg-white overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-border bg-muted/30">
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {kind === "products" ? "ตัวอย่างรายละเอียดสินค้า" : "ตัวอย่างเนื้อหา"}
+                  </span>
+                </div>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: text(kind === "articles" ? item.content_html : item.description_html),
+                  }}
+                  className="max-h-[300px] overflow-auto p-4 prose prose-sm max-w-none text-foreground/85 prose-img:rounded-xl prose-headings:text-primary prose-a:text-accent"
+                />
+              </div>
+            )}
 
           {/* SEO Completeness checklist for articles */}
           {kind === "articles" && <ArticleSeoChecklist item={item} />}
@@ -1874,7 +2203,9 @@ function ContentPreview({
             {isDirty && (
               <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs font-medium text-amber-700 flex items-center gap-2">
                 <Circle className="h-2 w-2 fill-amber-500 text-amber-500" />
-                {kind === "articles" || kind === "products" ? "มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก" : "Unsaved changes"}
+                {kind === "articles" || kind === "products"
+                  ? "มีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก"
+                  : "Unsaved changes"}
               </div>
             )}
             <Button
@@ -1911,7 +2242,9 @@ function ContentPreview({
                 onClick={onDiscard}
                 disabled={saveState === "saving"}
               >
-                {kind === "articles" || kind === "products" ? "ยกเลิกการเปลี่ยนแปลง" : "Discard Changes"}
+                {kind === "articles" || kind === "products"
+                  ? "ยกเลิกการเปลี่ยนแปลง"
+                  : "Discard Changes"}
               </Button>
             )}
             {!isCreating && onDelete && (
@@ -1922,7 +2255,11 @@ function ContentPreview({
                 disabled={saveState === "saving"}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                {kind === "articles" ? "ลบบทความ" : kind === "products" ? "ลบสินค้า" : `Delete ${config.label}`}
+                {kind === "articles"
+                  ? "ลบบทความ"
+                  : kind === "products"
+                    ? "ลบสินค้า"
+                    : `Delete ${config.label}`}
               </Button>
             )}
             {saveState === "error" && (
@@ -2048,6 +2385,171 @@ function PreviewFacts({ config, item }: { config: ContentConfig; item: ContentIt
           <span className="truncate text-muted-foreground">{text(item[field.key]) || "-"}</span>
         </div>
       ))}
+    </div>
+  );
+}
+
+function SolutionCardPreview({ item, href }: { item: ContentItem; href?: string | null }) {
+  const slug = text(item.slug);
+  const directImage = browserImageUrl(text(item.image_url));
+  const fallbackImage = solutionImages[slug] || "";
+  const image = directImage || fallbackImage;
+  const title = text(item.title) || slug;
+  const description = text(item.description);
+  const icon = text(item.icon) || "-";
+
+  return (
+    <div className="rounded-xl border border-accent/20 bg-white p-4">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-primary">Solution card preview</div>
+          <div className="text-xs leading-relaxed text-muted-foreground">
+            Used for solution cards and navigation previews. Invalid source paths fall back to the
+            default image for this slug.
+          </div>
+        </div>
+        <Badge variant="secondary" className="shrink-0">
+          {href || `/${slug}`}
+        </Badge>
+      </div>
+      <div className="overflow-hidden rounded-xl border border-border bg-secondary">
+        <div className="relative aspect-[16/9] bg-secondary">
+          {image ? (
+            <img
+              src={image}
+              alt={title}
+              className="absolute inset-0 h-full w-full object-cover"
+              onError={(event) => {
+                const img = event.currentTarget;
+                if (fallbackImage && img.dataset.fallbackApplied !== "true") {
+                  img.dataset.fallbackApplied = "true";
+                  img.src = fallbackImage;
+                  return;
+                }
+                img.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="grid h-full place-items-center text-sm text-muted-foreground">
+              No solution image
+            </div>
+          )}
+        </div>
+        <div className="space-y-3 bg-white p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">{slug}</Badge>
+            <Badge variant="outline">Icon: {icon}</Badge>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold leading-tight text-primary">{title}</h3>
+            {description && (
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SiteSectionHeaderPreview({ item }: { item: ContentItem }) {
+  const enabled = item.is_enabled === true || text(item.is_enabled) === "true";
+  const titlePrefixTh = text(item.title_prefix_th) || "ออกแบบ";
+  const titleHighlightTh = text(item.title_highlight_th) || "เพื่อทุกประเภทองค์กร";
+  const descPrefixTh = text(item.description_prefix_th) || "ประสบการณ์จริงจากการติดตั้งกว่า ";
+  const descHighlightTh = text(item.description_highlight_th) || "500+ โปรเจ็ค";
+  const descSuffixTh = text(item.description_suffix_th) || " ครอบคลุมทุกอุตสาหกรรม";
+
+  return (
+    <div className="rounded-xl border border-accent/20 bg-[#E8E4DC] p-5 text-center">
+      <div className="mb-3 inline-flex items-center rounded-full border border-accent/20 bg-white/70 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-accent">
+        {text(item.eyebrow_th) || "กลุ่มลูกค้าและการใช้งาน"}
+      </div>
+      <div className="text-2xl font-extrabold leading-tight text-primary">
+        {titlePrefixTh}
+        <span className="text-accent">{titleHighlightTh}</span>
+      </div>
+      <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        {descPrefixTh}
+        <span className="font-semibold text-primary">{descHighlightTh}</span>
+        {descSuffixTh}
+      </p>
+      <div className="mt-4 rounded-lg border border-border bg-white/75 px-3 py-2 text-xs text-muted-foreground">
+        Used on homepage and /brands {enabled ? "" : "• currently disabled"}
+      </div>
+    </div>
+  );
+}
+
+function SiteSectionAdminNote() {
+  return (
+    <div className="rounded-xl border border-border bg-secondary/70 p-4 text-sm text-muted-foreground">
+      <p className="font-semibold text-primary">Header preview only</p>
+      <p className="mt-1">
+        This item controls the headline copy above the shared showcase on the homepage and
+        /brands. Edit the 5 vertical cards in Industries: image, tag, metric, order, visibility
+        and destination link.
+      </p>
+    </div>
+  );
+}
+
+function IndustryShowcaseCardPreview({ item }: { item: ContentItem }) {
+  const slug = text(item.slug);
+  const image = text(item.showcase_image_url) || industryShowcaseImages[slug] || "";
+  const title = text(item.title) || slug;
+  const tag = text(item.card_tag_th) || text(item.card_tag_en) || "Solution";
+  const metric = text(item.metric_value) || "-";
+  const metricLabel = text(item.metric_label_th) || text(item.metric_label_en);
+  const href = text(item.link_url) || `/industry/${slug}`;
+  const isVisible = item.show_on_brands !== false && text(item.show_on_brands) !== "false";
+
+  return (
+    <div className="rounded-xl border border-accent/20 bg-white p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-primary">Homepage and /brands card</div>
+          <div className="text-xs text-muted-foreground">
+            {isVisible ? "Visible in the shared showcase" : "Hidden from the shared showcase"}
+          </div>
+        </div>
+        <Badge variant="secondary" className="shrink-0">
+          {href}
+        </Badge>
+      </div>
+      <div className="mx-auto max-w-[220px] overflow-hidden rounded-2xl bg-navy shadow-[0_20px_50px_-24px_rgba(0,0,0,0.5)]">
+        <div className="relative h-[360px]">
+          {image ? (
+            <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 grid place-items-center bg-secondary text-xs text-muted-foreground">
+              No showcase image
+            </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/5 to-black/80" />
+          <div className="absolute left-4 top-4 grid h-14 w-14 place-items-center rounded-2xl bg-white text-xl font-black text-navy shadow-lg">
+            {title.charAt(0)}
+          </div>
+          <div className="absolute right-3 top-4 rounded-full bg-white/20 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-white ring-1 ring-white/20">
+            {tag}
+          </div>
+          <div
+            className="absolute right-3 top-1/2 -translate-y-1/2 whitespace-nowrap text-sm font-bold tracking-[0.18em] text-white"
+            style={{ writingMode: "vertical-rl", textShadow: "0 2px 8px rgba(0,0,0,0.65)" }}
+          >
+            {title}
+          </div>
+          <div className="absolute inset-x-0 bottom-0 p-4">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-3xl font-black tracking-tight text-white">{metric}</span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/90">
+                {metricLabel}
+              </span>
+            </div>
+            <div className="mt-2 h-[2px] w-8 rounded-full bg-accent" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -2611,6 +3113,19 @@ function text(value: unknown) {
   return JSON.stringify(value);
 }
 
+function browserImageUrl(value: unknown) {
+  const url = text(value).trim();
+  if (!url) return "";
+  if (url.startsWith("@/") || url.startsWith("src/")) return "";
+  if (/^(https?:\/\/|\/|data:image\/|blob:)/i.test(url)) return url;
+  return "";
+}
+
+function previewFallbackImage(kind: ContentKind, item: ContentItem) {
+  if (kind === "solutions") return solutionImages[text(item.slug)] ?? "";
+  return "";
+}
+
 function firstImageFromBlocks(blocks: unknown) {
   if (!Array.isArray(blocks)) return null;
   const imageBlock = blocks.find(
@@ -2632,7 +3147,8 @@ function previewImage(
   allContent: Partial<Record<ContentKind, ContentItem[]>>,
 ) {
   const direct = config.image?.(item);
-  if (direct) return direct;
+  const directUrl = browserImageUrl(direct);
+  if (directUrl) return directUrl;
 
   if (kind === "articleCategories") {
     return articleImages[text(item.slug)] ?? null;
