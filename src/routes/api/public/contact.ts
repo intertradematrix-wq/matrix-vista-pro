@@ -13,6 +13,41 @@ const Schema = z.object({
 
 const TO_EMAIL = "matrixintertrade2026@gmail.com";
 
+type ContactSubmission = z.infer<typeof Schema>;
+
+function escapeHtml(s: string) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function formatLineQuoteMessage(d: ContactSubmission, nowTh: string) {
+  return [
+    "คำขอใบเสนอราคาใหม่จากเว็บไซต์",
+    `วันที่/เวลา: ${nowTh}`,
+    `ชื่อ-นามสกุล: ${d.name}`,
+    `บริษัท / องค์กร: ${d.company || "-"}`,
+    `อีเมล: ${d.email}`,
+    `โทรศัพท์: ${d.phone}`,
+    `หัวข้อที่สนใจ: ${d.topic || "-"}`,
+    "รายละเอียด:",
+    d.message || "-",
+  ].join("\n");
+}
+
+function formatEmailHtml(d: ContactSubmission, nowTh: string) {
+  return `
+    <h2>คำขอใบเสนอราคาใหม่จากเว็บไซต์</h2>
+    <table cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">
+      <tr><td><b>วันที่/เวลา</b></td><td>${escapeHtml(nowTh)}</td></tr>
+      <tr><td><b>ชื่อ-นามสกุล</b></td><td>${escapeHtml(d.name)}</td></tr>
+      <tr><td><b>บริษัท / องค์กร</b></td><td>${escapeHtml(d.company || "-")}</td></tr>
+      <tr><td><b>อีเมล</b></td><td>${escapeHtml(d.email)}</td></tr>
+      <tr><td><b>โทรศัพท์</b></td><td>${escapeHtml(d.phone)}</td></tr>
+      <tr><td><b>หัวข้อที่สนใจ</b></td><td>${escapeHtml(d.topic || "-")}</td></tr>
+      <tr><td valign="top"><b>รายละเอียด</b></td><td><pre style="white-space:pre-wrap;margin:0;font-family:inherit">${escapeHtml(d.message || "-")}</pre></td></tr>
+    </table>
+  `;
+}
+
 export const Route = createFileRoute("/api/public/contact")({
   server: {
     handlers: {
@@ -33,10 +68,7 @@ export const Route = createFileRoute("/api/public/contact")({
         }
         const d = parsed.data;
 
-        const esc = (s: string) =>
-          s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-        // 1. Insert into Supabase FIRST, so we never lose data
+        // 1. Insert into Supabase FIRST, so we never lose data.
         const { error: dbError } = await supabaseAdmin.from("contact_submissions").insert([
           {
             name: d.name,
@@ -53,49 +85,68 @@ export const Route = createFileRoute("/api/public/contact")({
           // If the table doesn't exist, this will fail. We log it and continue.
         }
 
-        // 2. Check if Resend is configured
+        const nowTh = new Date().toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
+
+        // 2. Send email if Resend is configured.
         const apiKey = process.env.RESEND_API_KEY;
         if (!apiKey) {
           console.warn("RESEND_API_KEY is not set. Skipping email notification.");
-          // We still return OK because the data was saved to DB (if migration was run)
-          return Response.json({ ok: true, warning: "Email not sent (missing API key)" });
+        } else {
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              from: "Matrix Intertrade <noreply@matrixintertrade.com>",
+              to: [TO_EMAIL, "nattee.pao@gmail.com"],
+              reply_to: d.email,
+              subject: `[คำขอใบเสนอราคา] ${d.name}${d.topic ? " - " + d.topic : ""}`,
+              html: formatEmailHtml(d, nowTh),
+            }),
+          });
+
+          if (!res.ok) {
+            const errText = await res.text();
+            console.error("Resend error:", res.status, errText);
+            return Response.json({ error: "Failed to send email" }, { status: 502 });
+          }
         }
 
-        // 3. Send Email
-        const nowTh = new Date().toLocaleString("th-TH", { timeZone: "Asia/Bangkok" });
+        // 3. Push notification to LINE group.
+        const lineChannelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+        const lineGroupId = process.env.LINE_GROUP_ID;
 
-        const html = `
-          <h2>คำขอใบเสนอราคาใหม่จากเว็บไซต์</h2>
-          <table cellpadding="6" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">
-            <tr><td><b>วันที่/เวลา</b></td><td>${esc(nowTh)}</td></tr>
-            <tr><td><b>ชื่อ-นามสกุล</b></td><td>${esc(d.name)}</td></tr>
-            <tr><td><b>บริษัท / องค์กร</b></td><td>${esc(d.company || "-")}</td></tr>
-            <tr><td><b>อีเมล</b></td><td>${esc(d.email)}</td></tr>
-            <tr><td><b>โทรศัพท์</b></td><td>${esc(d.phone)}</td></tr>
-            <tr><td><b>หัวข้อที่สนใจ</b></td><td>${esc(d.topic || "-")}</td></tr>
-            <tr><td valign="top"><b>รายละเอียด</b></td><td><pre style="white-space:pre-wrap;margin:0;font-family:inherit">${esc(d.message || "-")}</pre></td></tr>
-          </table>
-        `;
+        if (!lineChannelAccessToken || !lineGroupId) {
+          const missing = [
+            ...(!lineChannelAccessToken ? ["LINE_CHANNEL_ACCESS_TOKEN"] : []),
+            ...(!lineGroupId ? ["LINE_GROUP_ID"] : []),
+          ];
+          console.error(`Missing LINE environment variable(s): ${missing.join(", ")}`);
+          return Response.json({ ok: true, warning: "LINE notification skipped", missing });
+        }
 
-        const res = await fetch("https://api.resend.com/emails", {
+        const lineRes = await fetch("https://api.line.me/v2/bot/message/push", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${apiKey}`,
+            Authorization: `Bearer ${lineChannelAccessToken}`,
           },
           body: JSON.stringify({
-            from: "Matrix Intertrade <noreply@matrixintertrade.com>",
-            to: [TO_EMAIL, "nattee.pao@gmail.com"],
-            reply_to: d.email,
-            subject: `[คำขอใบเสนอราคา] ${d.name}${d.topic ? " - " + d.topic : ""}`,
-            html,
+            to: lineGroupId,
+            messages: [{ type: "text", text: formatLineQuoteMessage(d, nowTh) }],
           }),
         });
 
-        if (!res.ok) {
-          const errText = await res.text();
-          console.error("Resend error:", res.status, errText);
-          return Response.json({ error: "Failed to send email" }, { status: 502 });
+        if (!lineRes.ok) {
+          const errText = await lineRes.text();
+          console.error("LINE push error:", lineRes.status, errText);
+          return Response.json({
+            ok: true,
+            warning: "LINE notification failed",
+            lineStatus: lineRes.status,
+          });
         }
 
         return Response.json({ ok: true });
