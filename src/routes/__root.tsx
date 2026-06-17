@@ -17,8 +17,14 @@ import { FloatingSocial } from "@/components/site/FloatingSocial";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { Toaster } from "sonner";
+import { getGoogleTagManagerSettings } from "@/lib/runtime-settings.functions";
 
 import appCss from "../styles.css?url";
+
+type RootLoaderData = {
+  googleTagManagerId: string;
+  gtmSource: "runtime" | "env" | "missing";
+};
 
 function NotFoundComponent() {
   const navigate = useNavigate();
@@ -65,7 +71,14 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
+  loader: async (): Promise<RootLoaderData> => {
+    const settings = await getGoogleTagManagerSettings();
+    return {
+      googleTagManagerId: settings.googleTagManagerId,
+      gtmSource: settings.source,
+    };
+  },
+  head: ({ loaderData }: { loaderData?: RootLoaderData }) => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -94,6 +107,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
     scripts: [
+      ...(loaderData?.googleTagManagerId
+        ? [
+            {
+              children: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${loaderData.googleTagManagerId}');`,
+            },
+          ]
+        : []),
       {
         type: "application/ld+json",
         children: JSON.stringify({
@@ -130,8 +150,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { googleTagManagerId } = Route.useLoaderData();
   return (
     <QueryClientProvider client={queryClient}>
+      {googleTagManagerId && (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${googleTagManagerId}`}
+            height="0"
+            width="0"
+            title="Google Tag Manager"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+      )}
       <ThemeProvider>
         <LanguageProvider>
           <div className="flex min-h-screen flex-col">

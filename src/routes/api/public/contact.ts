@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import {
+  LINE_CHANNEL_ACCESS_TOKEN_KEY,
+  LINE_GROUP_ID_KEY,
+  loadLineSettings,
+} from "@/lib/admin-runtime-settings.server";
 
 const Schema = z.object({
   name: z.string().min(1).max(200),
@@ -115,15 +120,16 @@ export const Route = createFileRoute("/api/public/contact")({
         }
 
         // 3. Push notification to LINE group.
-        const lineChannelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
-        const lineGroupId = process.env.LINE_GROUP_ID;
+        const lineSettings = await loadLineSettings();
+        const lineChannelAccessToken = lineSettings.lineChannelAccessToken;
+        const lineGroupId = lineSettings.lineGroupId;
 
         if (!lineChannelAccessToken || !lineGroupId) {
           const missing = [
-            ...(!lineChannelAccessToken ? ["LINE_CHANNEL_ACCESS_TOKEN"] : []),
-            ...(!lineGroupId ? ["LINE_GROUP_ID"] : []),
+            ...(!lineChannelAccessToken ? [LINE_CHANNEL_ACCESS_TOKEN_KEY] : []),
+            ...(!lineGroupId ? [LINE_GROUP_ID_KEY] : []),
           ];
-          console.error(`Missing LINE environment variable(s): ${missing.join(", ")}`);
+          console.error(`Missing LINE setting(s): ${missing.join(", ")}`);
           return Response.json({ ok: true, warning: "LINE notification skipped", missing });
         }
 

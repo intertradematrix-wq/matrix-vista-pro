@@ -32,7 +32,9 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 import { Route as ApiPublicChatbotRouteImport } from './routes/api/public/chatbot'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
+import { Route as ApiAdminTrackingSettingsRouteImport } from './routes/api/admin/tracking-settings'
 import { Route as ApiAdminSlugSuggestRouteImport } from './routes/api/admin/slug-suggest'
+import { Route as ApiAdminLineSettingsRouteImport } from './routes/api/admin/line-settings'
 import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
 
 const WirelessPresentationRoute = WirelessPresentationRouteImport.update({
@@ -150,9 +152,20 @@ const ApiAdminUploadRoute = ApiAdminUploadRouteImport.update({
   path: '/api/admin/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminTrackingSettingsRoute =
+  ApiAdminTrackingSettingsRouteImport.update({
+    id: '/api/admin/tracking-settings',
+    path: '/api/admin/tracking-settings',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminSlugSuggestRoute = ApiAdminSlugSuggestRouteImport.update({
   id: '/api/admin/slug-suggest',
   path: '/api/admin/slug-suggest',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminLineSettingsRoute = ApiAdminLineSettingsRouteImport.update({
+  id: '/api/admin/line-settings',
+  path: '/api/admin/line-settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminContentRoute = ApiAdminContentRouteImport.update({
@@ -183,7 +196,9 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/api/admin/content': typeof ApiAdminContentRoute
+  '/api/admin/line-settings': typeof ApiAdminLineSettingsRoute
   '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
+  '/api/admin/tracking-settings': typeof ApiAdminTrackingSettingsRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -210,7 +225,9 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/api/admin/content': typeof ApiAdminContentRoute
+  '/api/admin/line-settings': typeof ApiAdminLineSettingsRoute
   '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
+  '/api/admin/tracking-settings': typeof ApiAdminTrackingSettingsRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -238,7 +255,9 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/api/admin/content': typeof ApiAdminContentRoute
+  '/api/admin/line-settings': typeof ApiAdminLineSettingsRoute
   '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
+  '/api/admin/tracking-settings': typeof ApiAdminTrackingSettingsRoute
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
@@ -267,7 +286,9 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/api/admin/content'
+    | '/api/admin/line-settings'
     | '/api/admin/slug-suggest'
+    | '/api/admin/tracking-settings'
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
@@ -294,7 +315,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/blog'
     | '/api/admin/content'
+    | '/api/admin/line-settings'
     | '/api/admin/slug-suggest'
+    | '/api/admin/tracking-settings'
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
@@ -321,7 +344,9 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/api/admin/content'
+    | '/api/admin/line-settings'
     | '/api/admin/slug-suggest'
+    | '/api/admin/tracking-settings'
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
@@ -348,7 +373,9 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ApiAdminContentRoute: typeof ApiAdminContentRoute
+  ApiAdminLineSettingsRoute: typeof ApiAdminLineSettingsRoute
   ApiAdminSlugSuggestRoute: typeof ApiAdminSlugSuggestRoute
+  ApiAdminTrackingSettingsRoute: typeof ApiAdminTrackingSettingsRoute
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
   ApiPublicChatbotRoute: typeof ApiPublicChatbotRoute
   ApiPublicContactRoute: typeof ApiPublicContactRoute
@@ -517,11 +544,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/tracking-settings': {
+      id: '/api/admin/tracking-settings'
+      path: '/api/admin/tracking-settings'
+      fullPath: '/api/admin/tracking-settings'
+      preLoaderRoute: typeof ApiAdminTrackingSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/slug-suggest': {
       id: '/api/admin/slug-suggest'
       path: '/api/admin/slug-suggest'
       fullPath: '/api/admin/slug-suggest'
       preLoaderRoute: typeof ApiAdminSlugSuggestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/line-settings': {
+      id: '/api/admin/line-settings'
+      path: '/api/admin/line-settings'
+      fullPath: '/api/admin/line-settings'
+      preLoaderRoute: typeof ApiAdminLineSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/content': {
@@ -566,7 +607,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   ApiAdminContentRoute: ApiAdminContentRoute,
+  ApiAdminLineSettingsRoute: ApiAdminLineSettingsRoute,
   ApiAdminSlugSuggestRoute: ApiAdminSlugSuggestRoute,
+  ApiAdminTrackingSettingsRoute: ApiAdminTrackingSettingsRoute,
   ApiAdminUploadRoute: ApiAdminUploadRoute,
   ApiPublicChatbotRoute: ApiPublicChatbotRoute,
   ApiPublicContactRoute: ApiPublicContactRoute,

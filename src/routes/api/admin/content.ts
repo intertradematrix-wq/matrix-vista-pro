@@ -126,6 +126,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     order: "article_id",
     orderAscending: false,
     fields: [
+      "slug",
       "article_id",
       "title",
       "category",
@@ -146,7 +147,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_no_index",
       "is_featured",
     ],
-    requiredFields: ["title", "category", "excerpt"],
+    requiredFields: ["slug", "title", "category", "excerpt"],
     nullableFields: [
       "published_date",
       "read_min",
@@ -163,7 +164,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     numericFields: ["article_id", "read_min"],
     booleanFields: ["seo_no_index", "is_featured"],
     jsonFields: { blocks: "array", payload: "object" },
-    uniqueFields: ["article_id"],
+    slugFields: ["slug"],
+    uniqueFields: ["slug", "article_id"],
     foreignKeys: [
       {
         field: "category",
@@ -178,10 +180,12 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     key: "slug",
     select: "slug,label,image_url,payload,updated_at",
     order: "slug",
-    fields: ["label", "image_url", "payload"],
-    requiredFields: ["label"],
+    fields: ["slug", "label", "image_url", "payload"],
+    requiredFields: ["slug", "label"],
     nullableFields: ["image_url"],
     jsonFields: { payload: "object" },
+    slugFields: ["slug"],
+    uniqueFields: ["slug"],
   },
   brands: {
     table: "content_brands",
@@ -190,6 +194,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "slug,name,category,description,color,image_url,logo_url,accent,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
     order: "slug",
     fields: [
+      "slug",
       "name",
       "category",
       "description",
@@ -207,7 +212,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "seo_no_index",
     ],
-    requiredFields: ["name", "category", "description"],
+    requiredFields: ["slug", "name", "category", "description"],
     nullableFields: [
       "color",
       "image_url",
@@ -222,6 +227,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     ],
     booleanFields: ["seo_no_index"],
     jsonFields: { accent: "object", payload: "object" },
+    slugFields: ["slug"],
+    uniqueFields: ["slug"],
   },
   brandIntros: {
     table: "content_brand_category_intros",
@@ -229,10 +236,21 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     select:
       "category_id,brand_slug,tagline,description,highlights,best_for,origin,payload,updated_at",
     order: "category_id",
-    fields: ["brand_slug", "tagline", "description", "highlights", "best_for", "origin", "payload"],
-    requiredFields: ["brand_slug", "tagline", "description"],
+    fields: [
+      "category_id",
+      "brand_slug",
+      "tagline",
+      "description",
+      "highlights",
+      "best_for",
+      "origin",
+      "payload",
+    ],
+    requiredFields: ["category_id", "brand_slug", "tagline", "description"],
     nullableFields: ["origin"],
     jsonFields: { highlights: "array", best_for: "array", payload: "object" },
+    slugFields: ["category_id", "brand_slug"],
+    uniqueFields: ["category_id"],
     foreignKeys: [
       {
         field: "brand_slug",
@@ -249,6 +267,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "slug,title,icon,description,image_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
     order: "slug",
     fields: [
+      "slug",
       "title",
       "icon",
       "description",
@@ -263,7 +282,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "seo_no_index",
     ],
-    requiredFields: ["title", "description"],
+    requiredFields: ["slug", "title", "description"],
     nullableFields: [
       "icon",
       "image_url",
@@ -277,6 +296,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     ],
     booleanFields: ["seo_no_index"],
     jsonFields: { payload: "object" },
+    slugFields: ["slug"],
+    uniqueFields: ["slug"],
   },
   industries: {
     table: "content_industries",
@@ -291,6 +312,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     schemaFallbackWarning:
       "Industries are using a legacy database schema. Apply the latest Supabase migration to edit the showcase image field.",
     fields: [
+      "slug",
       "title",
       "icon",
       "description",
@@ -314,7 +336,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "seo_no_index",
     ],
-    requiredFields: ["title", "description"],
+    requiredFields: ["slug", "title", "description"],
     nullableFields: [
       "icon",
       "image_url",
@@ -336,6 +358,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     numericFields: ["sort_order"],
     booleanFields: ["show_on_brands", "seo_no_index"],
     jsonFields: { payload: "object" },
+    slugFields: ["slug"],
+    uniqueFields: ["slug"],
   },
   siteSections: {
     table: "content_site_sections",
@@ -748,8 +772,8 @@ async function requireAdmin(request: Request) {
 async function loadKind(config: ContentConfig) {
   const result = await supabaseAdmin
     .from(tableName(config))
-      .select(config.select)
-      .order(config.order, { ascending: config.orderAscending ?? true });
+    .select(config.select)
+    .order(config.order, { ascending: config.orderAscending ?? true });
 
   if (result.error && config.legacySelect && config.legacyOrder) {
     const fallbackResult = await supabaseAdmin

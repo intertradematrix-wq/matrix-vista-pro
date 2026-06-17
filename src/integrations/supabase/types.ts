@@ -34,6 +34,7 @@ export type Database = {
         };
         Relationships: [];
       };
+      admin_runtime_settings: GenericContentTable;
       contact_submissions: GenericContentTable;
       content_article_categories: GenericContentTable;
       content_articles: GenericContentTable;
