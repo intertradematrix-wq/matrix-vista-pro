@@ -2,18 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
-  GOOGLE_TAG_MANAGER_ID_KEY,
-  isValidGoogleTagManagerId,
-  loadGoogleTagManagerSettings,
+  GOOGLE_ANALYTICS_ID_KEY,
+  isValidGoogleAnalyticsId,
+  loadGoogleAnalyticsSettings,
   loadRuntimeSettings,
-  normalizeGoogleTagManagerId,
+  normalizeGoogleAnalyticsId,
   saveRuntimeSettings,
   type RuntimeSetting,
 } from "@/lib/admin-runtime-settings.server";
 
 const SaveSchema = z.object({
   action: z.literal("save").optional().default("save"),
-  googleTagManagerId: z.string().max(100).optional().default(""),
+  googleAnalyticsId: z.string().max(100).optional().default(""),
 });
 
 function jsonError(message: string, status: number, details?: unknown) {
@@ -53,21 +53,19 @@ async function requireAdmin(request: Request) {
 }
 
 async function trackingSettingsPayload() {
-  const runtimeSettings = await loadRuntimeSettings([GOOGLE_TAG_MANAGER_ID_KEY]);
-  const mergedSettings = await loadGoogleTagManagerSettings();
-  const runtimeId = normalizeGoogleTagManagerId(
-    runtimeSettings.get(GOOGLE_TAG_MANAGER_ID_KEY)?.value ?? "",
+  const runtimeSettings = await loadRuntimeSettings([GOOGLE_ANALYTICS_ID_KEY]);
+  const mergedSettings = await loadGoogleAnalyticsSettings();
+  const runtimeId = normalizeGoogleAnalyticsId(
+    runtimeSettings.get(GOOGLE_ANALYTICS_ID_KEY)?.value ?? "",
   );
-  const envId = normalizeGoogleTagManagerId(
-    process.env.GOOGLE_TAG_MANAGER_ID ?? process.env.GTM_ID ?? "",
-  );
-  const googleTagManagerId = runtimeId || envId;
+  const envId = normalizeGoogleAnalyticsId(process.env.GOOGLE_ANALYTICS_ID ?? "");
+  const googleAnalyticsId = runtimeId || envId;
 
   return {
     ok: true,
     source: mergedSettings.source,
-    configured: Boolean(googleTagManagerId),
-    googleTagManagerId,
+    configured: Boolean(googleAnalyticsId),
+    googleAnalyticsId,
     idSource: runtimeId ? "runtime" : envId ? "env" : "missing",
   };
 }
@@ -97,14 +95,14 @@ export const Route = createFileRoute("/api/admin/tracking-settings")({
           return jsonError("Invalid tracking settings payload", 400, parsed.error.flatten());
         }
 
-        const nextId = normalizeGoogleTagManagerId(parsed.data.googleTagManagerId);
-        if (nextId && !isValidGoogleTagManagerId(nextId)) {
-          return jsonError("GTM ID must use the format GTM-XXXX.", 400);
+        const nextId = normalizeGoogleAnalyticsId(parsed.data.googleAnalyticsId);
+        if (nextId && !isValidGoogleAnalyticsId(nextId)) {
+          return jsonError("Google Analytics ID must use the format G-XXXX.", 400);
         }
 
         const rows: RuntimeSetting[] = [
           {
-            key: GOOGLE_TAG_MANAGER_ID_KEY,
+            key: GOOGLE_ANALYTICS_ID_KEY,
             value: nextId,
             is_secret: false,
           },

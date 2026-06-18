@@ -2,14 +2,14 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const LINE_CHANNEL_ACCESS_TOKEN_KEY = "LINE_CHANNEL_ACCESS_TOKEN";
 export const LINE_GROUP_ID_KEY = "LINE_GROUP_ID";
-export const GOOGLE_TAG_MANAGER_ID_KEY = "GOOGLE_TAG_MANAGER_ID";
+export const GOOGLE_ANALYTICS_ID_KEY = "GOOGLE_ANALYTICS_ID";
 
 const ADMIN_RUNTIME_SETTINGS_TABLE = "admin_runtime_settings";
 
 export type RuntimeSettingKey =
   | typeof LINE_CHANNEL_ACCESS_TOKEN_KEY
   | typeof LINE_GROUP_ID_KEY
-  | typeof GOOGLE_TAG_MANAGER_ID_KEY
+  | typeof GOOGLE_ANALYTICS_ID_KEY
   | (string & {});
 
 export type RuntimeSetting = {
@@ -24,17 +24,17 @@ export type LineSettings = {
   source: "runtime" | "env" | "mixed" | "missing";
 };
 
-export type GoogleTagManagerSettings = {
-  googleTagManagerId: string;
+export type GoogleAnalyticsSettings = {
+  googleAnalyticsId: string;
   source: "runtime" | "env" | "missing";
 };
 
-export function normalizeGoogleTagManagerId(value: string) {
+export function normalizeGoogleAnalyticsId(value: string) {
   return value.trim().toUpperCase();
 }
 
-export function isValidGoogleTagManagerId(value: string) {
-  return /^GTM-[A-Z0-9]+$/.test(normalizeGoogleTagManagerId(value));
+export function isValidGoogleAnalyticsId(value: string) {
+  return /^G-[A-Z0-9]+$/.test(normalizeGoogleAnalyticsId(value));
 }
 
 export function maskSecret(value: string) {
@@ -106,20 +106,16 @@ export async function loadLineSettings(): Promise<LineSettings> {
   };
 }
 
-export async function loadGoogleTagManagerSettings(): Promise<GoogleTagManagerSettings> {
-  const settings = await loadRuntimeSettings([GOOGLE_TAG_MANAGER_ID_KEY]);
+export async function loadGoogleAnalyticsSettings(): Promise<GoogleAnalyticsSettings> {
+  const settings = await loadRuntimeSettings([GOOGLE_ANALYTICS_ID_KEY]);
 
-  const runtimeId = normalizeGoogleTagManagerId(
-    settings.get(GOOGLE_TAG_MANAGER_ID_KEY)?.value ?? "",
-  );
-  const envId = normalizeGoogleTagManagerId(
-    process.env.GOOGLE_TAG_MANAGER_ID ?? process.env.GTM_ID ?? "",
-  );
+  const runtimeId = normalizeGoogleAnalyticsId(settings.get(GOOGLE_ANALYTICS_ID_KEY)?.value ?? "");
+  const envId = normalizeGoogleAnalyticsId(process.env.GOOGLE_ANALYTICS_ID ?? "");
 
-  const googleTagManagerId = runtimeId || envId;
+  const googleAnalyticsId = runtimeId || envId;
 
   return {
-    googleTagManagerId,
+    googleAnalyticsId,
     source: runtimeId ? "runtime" : envId ? "env" : "missing",
   };
 }

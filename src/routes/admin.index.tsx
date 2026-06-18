@@ -139,7 +139,7 @@ type TrackingSettingsPayload = {
   ok: boolean;
   source: "runtime" | "env" | "missing";
   configured: boolean;
-  googleTagManagerId: string;
+  googleAnalyticsId: string;
   idSource: "runtime" | "env" | "missing";
   message?: string;
 };
@@ -1291,7 +1291,7 @@ function AdminPage() {
                 {isLineSettingsTab
                   ? "Manage LINE notification credentials used by the contact form."
                   : isTrackingSettingsTab
-                    ? "Manage Google Tag Manager tracking for the public website."
+                    ? "Manage Google Analytics tracking for the public website."
                     : config.description}
               </p>
               {!isSettingsTab && activeKind === "siteSections" && (
@@ -1631,7 +1631,7 @@ function LineSettingsPanel({ sessionToken }: { sessionToken: string }) {
 
 function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
   const [settings, setSettings] = useState<TrackingSettingsPayload | null>(null);
-  const [googleTagManagerId, setGoogleTagManagerId] = useState("");
+  const [googleAnalyticsId, setGoogleAnalyticsId] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -1648,7 +1648,7 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
 
       const data = payload as TrackingSettingsPayload;
       setSettings(data);
-      setGoogleTagManagerId(data.googleTagManagerId ?? "");
+      setGoogleAnalyticsId(data.googleAnalyticsId ?? "");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Cannot load tracking settings");
     } finally {
@@ -1672,7 +1672,7 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
         },
         body: JSON.stringify({
           action: "save",
-          googleTagManagerId,
+          googleAnalyticsId,
         }),
       });
       const payload = await response.json();
@@ -1680,7 +1680,7 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
 
       const data = payload as TrackingSettingsPayload;
       setSettings(data);
-      setGoogleTagManagerId(data.googleTagManagerId ?? "");
+      setGoogleAnalyticsId(data.googleAnalyticsId ?? "");
       setStatus("Tracking settings saved.");
       toast.success("Tracking settings saved.");
     } catch (error) {
@@ -1692,7 +1692,7 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
     }
   }
 
-  const gtmReady = settings?.configured ?? false;
+  const analyticsReady = settings?.configured ?? false;
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -1702,10 +1702,10 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
             <div>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Code2 className="h-5 w-5 text-accent" />
-                Google Tag Manager
+                Google Analytics
               </CardTitle>
               <CardDescription>
-                Runtime tracking settings used by the public website layout.
+                Runtime GA4 measurement settings used by the public website layout.
               </CardDescription>
             </div>
             <Button type="button" variant="outline" size="sm" onClick={loadSettings}>
@@ -1715,16 +1715,16 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
         </CardHeader>
         <CardContent className="grid gap-5 p-4 sm:p-6">
           <label className="grid gap-1.5 text-sm font-medium text-primary">
-            GOOGLE_TAG_MANAGER_ID
+            GOOGLE_ANALYTICS_ID
             <Input
-              value={googleTagManagerId}
-              placeholder="GTM-XXXXXXX"
-              onChange={(event) => setGoogleTagManagerId(event.target.value.toUpperCase())}
+              value={googleAnalyticsId}
+              placeholder="G-XXXXXXXX"
+              onChange={(event) => setGoogleAnalyticsId(event.target.value.toUpperCase())}
               autoComplete="off"
             />
             <span className="text-xs font-normal text-muted-foreground">
-              Use the container ID only, for example GTM-XXXXXXX. Leave blank to disable the runtime
-              override.
+              Use the GA4 measurement ID only, for example G-683MZXTBW1. Leave blank to disable the
+              runtime override.
             </span>
           </label>
 
@@ -1754,14 +1754,14 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <StatusRow
-            label="GTM container"
-            ready={gtmReady}
+            label="GA measurement ID"
+            ready={analyticsReady}
             source={settings?.idSource ?? "missing"}
-            value={settings?.googleTagManagerId || "Not configured"}
+            value={settings?.googleAnalyticsId || "Not configured"}
           />
           <div className="rounded-lg bg-secondary/70 p-3 text-xs leading-relaxed text-muted-foreground">
-            Runtime values saved here take priority. Environment variables GOOGLE_TAG_MANAGER_ID or
-            GTM_ID remain available as fallback.
+            Runtime values saved here take priority. Environment variable GOOGLE_ANALYTICS_ID
+            remains available as fallback.
           </div>
         </CardContent>
       </Card>
