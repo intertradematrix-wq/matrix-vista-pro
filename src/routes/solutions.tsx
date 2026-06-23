@@ -41,6 +41,7 @@ function SolutionsPage() {
         )}
         breadcrumbs={[{ label: t(lang, "โซลูชั่นของเรา", "Our Solutions") }]}
         bgImage={heroSolutions}
+        variant="light"
       />
       <section className="py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 md:px-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

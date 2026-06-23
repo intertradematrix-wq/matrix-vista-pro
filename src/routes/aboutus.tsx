@@ -174,6 +174,7 @@ function AboutPage() {
         )}
         breadcrumbs={[{ label: t(lang, "เกี่ยวกับเรา", "About Us") }]}
         bgImage={heroAbout}
+        variant="light"
       />
 
       {/* Full-width feature image */}

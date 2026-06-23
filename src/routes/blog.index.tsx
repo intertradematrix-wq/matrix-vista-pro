@@ -66,6 +66,7 @@ function BlogPage() {
         )}
         breadcrumbs={[{ label: t(lang, "บทความ", "Articles") }]}
         bgImage={heroBlog}
+        variant="light"
       />
       <section className="py-12">
         <div className="mx-auto max-w-7xl px-4 md:px-6">

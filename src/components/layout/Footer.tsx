@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone, Facebook, Youtube, Music2, ArrowUpRight, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import matrixLogo from "@/assets/matrix-logo.png";
+import matrixLogo from "@/assets/matrix-logo.jpg";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
@@ -55,7 +55,9 @@ export function Footer() {
 
       <div className="relative mx-auto grid max-w-7xl gap-9 px-4 py-10 sm:py-12 md:grid-cols-2 md:px-6 lg:grid-cols-12 lg:py-16">
         <div className="lg:col-span-4 space-y-5">
-          <img src={matrixLogo} alt="Matrix Intertrade Co., Ltd." className="h-14 w-auto" />
+          <span className="relative inline-block h-20 w-20 overflow-hidden rounded-2xl ring-1 ring-[#ffd24a]/30 shadow-[0_4px_20px_-6px_rgba(255,204,25,0.3)]">
+            <img src={matrixLogo} alt="Matrix Intertrade Co., Ltd." className="absolute inset-0 h-full w-full object-contain" />
+          </span>
           <p className="max-w-md break-words text-sm leading-relaxed text-white/80">
             {t(
               lang,

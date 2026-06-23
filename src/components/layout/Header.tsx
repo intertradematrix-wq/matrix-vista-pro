@@ -4,7 +4,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { X, ChevronDown, Phone, Globe, ArrowUpRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import matrixLogo from "@/assets/matrix-logo.png";
+import matrixLogo from "@/assets/matrix-logo.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import { articleImages } from "@/data/article-images";
@@ -109,11 +109,20 @@ export function Header() {
         )}
       >
         <Link to="/" className="flex items-center gap-3 shrink-0 group">
-          <img
-            src={matrixLogo}
-            alt="Matrix Intertrade Co., Ltd."
-            className={cn("w-auto transition-all", scrolled ? "h-10" : "h-12")}
-          />
+          <span
+            className={cn(
+              "relative overflow-hidden rounded-xl ring-1 ring-[#ffd24a]/30 shadow-[0_2px_12px_-4px_rgba(255,204,25,0.25)] transition-all duration-300 group-hover:ring-[#ffd24a]/60 group-hover:shadow-[0_6px_24px_-6px_rgba(255,204,25,0.45)]",
+              scrolled
+                ? "h-14 w-14 md:h-[60px] md:w-[60px]"
+                : "h-16 w-16 md:h-[72px] md:w-[72px]",
+            )}
+          >
+            <img
+              src={matrixLogo}
+              alt="Matrix Intertrade Co., Ltd."
+              className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+            />
+          </span>
         </Link>
 
         <nav className="hidden xl:flex items-center gap-1" onMouseLeave={() => setHover(null)}>
@@ -443,7 +452,9 @@ function MobileDrawer({
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4 sticky top-0 bg-background/95 backdrop-blur z-10">
-          <img src={matrixLogo} alt="Matrix Intertrade" className="h-9 w-auto" />
+          <span className="relative h-12 w-12 overflow-hidden rounded-xl ring-1 ring-[#ffd24a]/30 shadow-[0_2px_12px_-4px_rgba(255,204,25,0.25)]">
+            <img src={matrixLogo} alt="Matrix Intertrade" className="absolute inset-0 h-full w-full object-contain" />
+          </span>
           <button
             onClick={onClose}
             aria-label="ปิดเมนู"
