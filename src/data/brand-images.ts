@@ -8,12 +8,6 @@ export const brandImages: Record<string, string> = {
   poly: "https://shop-image.readyplanet.com/1JP8W7LJ-JOXokXJ4P1KHNjdWwg=/500x500/2a7128f73a3245c2a32cae55aac5b120",
   newline:
     "https://shop-image.readyplanet.com/g8DaehX9M6W4eQr4L8Wh4wEFoq0=/500x500/7e2245c75c104f639c1f221ea82c395f",
-  audiopressbox:
-    "https://shop-image.readyplanet.com/Ieil-LtbKQLkgGVBmwoAamoiSL8=/500x500/ed7593f624624c9fa16003678e3d676e",
-  enewave:
-    "https://shop-image.readyplanet.com/3fbbqs25YMIR14Hei_UU7yxeT08=/500x500/c42e82d5f49c472eb296d588a4bf87e1",
-  avlink:
-    "https://shop-image.readyplanet.com/u6uNub_BfRzlZPQu7yK3klPUJOM=/500x500/ed863ab0680443ce8d4be2ec7d44990a",
   kramer:
     "https://shop-image.readyplanet.com/_D2F2YWYK8XYfx-fZX3H9xkJZq0=/500x500/3da16c1ea07b40a59fbb90a62ec4c1c6",
   "hdmi-cable":

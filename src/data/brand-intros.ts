@@ -203,30 +203,6 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
       { name: "Unified Collaboration Display", desc: "จอประชุมแบบ All-in-One พร้อม Camera, Mic, Speaker ในตัว สำหรับ Video Conference" },
     ],
   },
-  "237467": {
-    brandSlug: "enewave",
-    tagline: "อุปกรณ์จัดการสัญญาณ AV คุณภาพสูง",
-    description:
-      "Enewave — ผู้ผลิตอุปกรณ์จัดการสัญญาณ AV ที่มุ่งเน้นความเสถียรและประสิทธิภาพ ครอบคลุม HDMI Splitter, Switcher, Extender และ AV Converter สำหรับงานระบบ AV ทั้งขนาดเล็กและขนาดใหญ่ ราคาคุ้มค่า ใช้งานง่าย ทนทาน เป็นตัวเลือกที่ดีสำหรับโปรเจกต์ที่ต้องการอุปกรณ์ Signal Management ที่มีคุณภาพในราคาสมเหตุสมผล",
-    highlights: [
-      "HDMI Splitter / Switcher / Extender ครบครัน",
-      "รองรับ 4K60 HDR ทุกรุ่น",
-      "ติดตั้งง่าย ใช้งานเสถียร",
-      "ราคาคุ้มค่าสำหรับงาน System Integration",
-    ],
-    bestFor: [
-      "ห้องประชุมขนาดเล็ก-กลาง",
-      "ระบบ Digital Signage",
-      "ห้องเรียน Smart Classroom",
-      "ระบบ AV สำหรับร้านค้า / โชว์รูม",
-    ],
-    productCategories: [
-      { name: "HDMI Splitter", desc: "แยกสัญญาณ HDMI จาก 1 แหล่ง ไปยังหลายจอพร้อมกัน รองรับ 4K60" },
-      { name: "HDMI Switcher", desc: "สลับสัญญาณ HDMI จากหลายแหล่งไปยังจอเดียว พร้อมรีโมท" },
-      { name: "HDMI Extender", desc: "ขยายสัญญาณ HDMI ผ่านสาย LAN ระยะไกลสูงสุด 70–150 เมตร" },
-      { name: "AV Converter", desc: "ตัวแปลงสัญญาณ SDI-to-HDMI, VGA-to-HDMI และอื่นๆ สำหรับเชื่อมต่ออุปกรณ์เดิม" },
-    ],
-  },
   "237596": {
     brandSlug: "poly",
     tagline: "อุปกรณ์ Video Conference สำหรับห้องประชุมทุกขนาด",
@@ -299,53 +275,6 @@ export const brandIntrosByCategoryId: Record<string, BrandIntro> = {
       { name: "ระบบ Discussion & Voting", desc: "ระบบอภิปรายพร้อมระบบลงคะแนนอิเล็กทรอนิกส์ แสดงผลแบบ Real-time" },
       { name: "ระบบแปลภาษาพร้อมกัน (Interpretation)", desc: "ระบบแปลภาษาสำหรับการประชุมนานาชาติ รองรับหลายภาษาพร้อมกัน" },
       { name: "Central Control Unit", desc: "เครื่องควบคุมระบบไมค์ประชุมส่วนกลาง จัดการสิทธิ์การพูด บันทึกเสียง และเชื่อมต่อระบบ AV" },
-    ],
-  },
-  "237468": {
-    brandSlug: "audiopressbox",
-    tagline: "ระบบกระจายสัญญาณเสียงสำหรับงาน Press Conference",
-    description:
-      "AudioPressBox — ผู้เชี่ยวชาญด้านระบบกระจายสัญญาณเสียง (Audio Distribution) สำหรับงานแถลงข่าว งาน Press Conference และงาน Broadcast ส่งสัญญาณเสียงจากแหล่งเดียวไปยังอุปกรณ์บันทึกของสื่อมวลชนหลายสิบช่อง พร้อมกัน สัญญาณสะอาด ไม่มี Interference เป็นมาตรฐานสากลที่ใช้ในงานแถลงข่าวของรัฐบาลและองค์กรระดับโลก",
-    highlights: [
-      "กระจายสัญญาณเสียงจาก 1 แหล่ง ไปยัง 16–124 ช่อง",
-      "สัญญาณเสียง Line-level สะอาด ไม่มี Noise",
-      "มีทั้งแบบ Portable และ Rack Mount",
-      "ใช้ในงานแถลงข่าวของรัฐบาลและสื่อระดับสากล",
-    ],
-    bestFor: [
-      "งานแถลงข่าว (Press Conference)",
-      "งาน Broadcast / สื่อมวลชน",
-      "งานสัมมนาและงานอีเวนต์",
-      "หน่วยงานรัฐ / ทำเนียบรัฐบาล",
-    ],
-    origin: "Lithuania",
-    productCategories: [
-      { name: "Portable Press Box", desc: "กล่องกระจายสัญญาณเสียงแบบพกพา 8–16 ช่อง สำหรับงานแถลงข่าวเคลื่อนที่" },
-      { name: "Rack Mount Press Box", desc: "ระบบกระจายสัญญาณแบบติดตั้งในตู้ Rack รองรับ 32–124 ช่อง สำหรับห้องแถลงข่าวถาวร" },
-    ],
-  },
-  "237069": {
-    brandSlug: "avlink",
-    tagline: "อุปกรณ์ AV Connectivity & Distribution",
-    description:
-      "AVlink — ผู้ผลิตอุปกรณ์เชื่อมต่อและกระจายสัญญาณ AV (AV Connectivity) ครอบคลุม HDMI Matrix, Video Wall Controller, KVM Extender และอุปกรณ์ AV over IP ราคาสมเหตุสมผล คุณภาพระดับมืออาชีพ เหมาะกับงาน Digital Signage, Control Room และระบบ AV ในองค์กรที่ต้องการกระจายสัญญาณภาพและเสียงไปยังหลายจุด",
-    highlights: [
-      "HDMI Matrix / Video Wall Controller ครบครัน",
-      "รองรับ 4K60 HDR",
-      "AV over IP ราคาคุ้มค่า",
-      "เหมาะกับงาน Digital Signage และ Control Room",
-    ],
-    bestFor: [
-      "ระบบ Digital Signage",
-      "Control Room / Command Center",
-      "Video Wall",
-      "ระบบ AV สำหรับองค์กร",
-    ],
-    productCategories: [
-      { name: "HDMI Matrix Switcher", desc: "สลับและกระจายสัญญาณ HDMI จากหลายแหล่งไปยังหลายจอ (4x4, 8x8, 16x16)" },
-      { name: "Video Wall Controller", desc: "ตัวควบคุม Video Wall แสดงภาพเดียวข้ามหลายจอ รองรับหลาย Layout" },
-      { name: "KVM Extender", desc: "ขยายสัญญาณ Keyboard, Video, Mouse ระยะไกลผ่านสาย CAT/Fiber สำหรับ Control Room" },
-      { name: "AV over IP", desc: "ระบบส่งสัญญาณ AV ผ่านเครือข่าย LAN รองรับ 4K60 ส่งได้ไม่จำกัดระยะ" },
     ],
   },
 };

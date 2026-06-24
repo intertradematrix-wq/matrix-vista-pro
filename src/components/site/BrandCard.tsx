@@ -14,12 +14,9 @@ const nameToCatId: Record<string, string> = {
   Grandview: "237068",
   "HDMI Cable": "237477",
   Newline: "237677",
-  Enewave: "237467",
   Poly: "237596",
   Yealink: "237676",
   Vissonic: "237678",
-  AudioPressBox: "237468",
-  AVlink: "237069",
 };
 
 export function BrandCard({

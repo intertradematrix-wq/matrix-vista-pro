@@ -7,12 +7,9 @@ export const CATEGORY_SLUGS: Record<string, string> = {
   "237068": "grandview",
   "237477": "hdmi-cable",
   "237677": "newline",
-  "237467": "enewave",
   "237596": "poly",
   "237676": "yealink",
   "237678": "vissonic",
-  "237468": "audiopressbox",
-  "237069": "avlink",
 };
 
 export const CATEGORY_IDS_BY_SLUG = Object.fromEntries(
@@ -28,12 +25,9 @@ export const CATEGORY_NAMES_BY_SLUG: Record<string, string> = {
   grandview: "Grandview",
   "hdmi-cable": "HDMI Cable",
   newline: "Newline",
-  enewave: "Enewave",
   poly: "Poly",
   yealink: "Yealink",
   vissonic: "Vissonic",
-  audiopressbox: "AudioPressBox",
-  avlink: "AVlink",
 };
 
 const mojibakePattern = /[\u00c0-\u00ff]{2,}|เธ|เน|โ€|ยท||||||||/;

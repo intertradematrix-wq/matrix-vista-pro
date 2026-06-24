@@ -24,12 +24,9 @@ const catMap: Record<string, string> = {
   "237068": "Grandview",
   "237477": "HDMI Cable",
   "237677": "Newline",
-  "237467": "Enewave",
   "237596": "Poly",
   "237676": "Yealink",
   "237678": "Vissonic",
-  "237468": "AudioPressBox",
-  "237069": "AVlink",
 };
 
 export const Route = createFileRoute("/category/$slug")({
