@@ -4,6 +4,7 @@ import { CTASection } from "@/components/site/CTASection";
 import heroAbout from "@/assets/hero-aboutus.jpg";
 import ledLineup2026 from "@/assets/about/led-lineup-2026.jpg";
 import premiumSolutions2026 from "@/assets/about/premium-solutions-2026.jpg";
+<<<<<<< HEAD
 import partnerKramer from "@/assets/about/partner-1.png";
 import partnerGrandview from "@/assets/about/partner-2.png";
 import partnerNewline from "@/assets/about/partner-3.png";
@@ -102,6 +103,8 @@ const partners = [
 const industries = [
   {
     Icon: GraduationCap,
+=======
+>>>>>>> 261f496460b5a5e06999430de974821464267cd6
     title: "โรงเรียน และสถาบันการศึกษา",
     titleEn: "Schools & Educational Institutions",
     subtitle: "Education",
