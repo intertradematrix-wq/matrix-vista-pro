@@ -209,7 +209,7 @@ function BlogDetail() {
                 {t(lang, "โซลูชันหลัก", "Main solution")}
               </p>
               <h2 className="mt-2 text-2xl font-bold text-primary">
-                {t(lang, "ต้องการเริ่มโครงการ LED Display สำหรับองค์กร?", "Planning an enterprise LED Display project?")}
+                {t(lang, "ต้องการเริ่มโครงการจอ LED สำหรับองค์กร?", "Planning an enterprise LED Display project?")}
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {t(
@@ -222,7 +222,7 @@ function BlogDetail() {
                 to="/led-display"
                 className="mt-5 inline-flex items-center gap-2 rounded-md bg-gradient-accent px-4 py-2 text-sm font-semibold text-white shadow-glow"
               >
-                {t(lang, "ดูบริการ LED Display สำหรับองค์กร", "View enterprise LED Display service")}
+                {t(lang, "ดูบริการจอ LED สำหรับองค์กร", "View enterprise LED Display service")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

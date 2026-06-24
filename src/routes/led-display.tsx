@@ -5,7 +5,7 @@ const siteUrl = "https://www.matrixintertrade.com";
 
 const ledDisplayFaqs = [
   {
-    question: "ควรเลือก Pixel Pitch ของจอแอลอีดีอย่างไร?",
+    question: "ควรเลือก Pixel Pitch ของจอ LED อย่างไร?",
     answer:
       "ให้เริ่มจากระยะมองจริงของผู้ชม หากนั่งใกล้ เช่น ห้องประชุมหรือ Control Room ควรใช้ P0.9-P2.5 แต่ถ้าเป็นพื้นที่กว้างหรือ Outdoor DOOH สามารถใช้ P3.9-P10 เพื่อคุมงบและยังมองเห็นชัดเจน",
     questionEn: "How should I choose an LED display pixel pitch?",
@@ -54,8 +54,8 @@ const faqJsonLd = {
 const serviceJsonLd = {
   "@context": "https://schema.org",
   "@type": "Service",
-  name: "LED Display สำหรับองค์กร",
-  serviceType: "LED Display consultation, design and installation",
+  name: "จอ LED สำหรับองค์กร | LED Display Indoor Outdoor",
+  serviceType: "จอ LED consultation, design and installation",
   url: `${siteUrl}/led-display`,
   provider: {
     "@type": "Organization",
@@ -67,7 +67,7 @@ const serviceJsonLd = {
     name: "Thailand",
   },
   description:
-    "บริการขาย ออกแบบ และติดตั้ง LED Display สำหรับห้องประชุม องค์กร โรงแรม หน่วยงานรัฐ และงาน Outdoor DOOH พร้อมทีมผู้เชี่ยวชาญในประเทศไทย",
+    "บริการขาย ออกแบบ และติดตั้งจอ LED หรือ LED Display สำหรับห้องประชุม องค์กร โรงแรม หน่วยงานรัฐ และงาน Outdoor DOOH พร้อมทีมผู้เชี่ยวชาญในประเทศไทย",
 };
 
 const breadcrumbJsonLd = {
@@ -89,7 +89,7 @@ const breadcrumbJsonLd = {
     {
       "@type": "ListItem",
       position: 3,
-      name: "LED Display สำหรับองค์กร",
+      name: "จอ LED สำหรับองค์กร",
       item: `${siteUrl}/led-display`,
     },
   ],
@@ -98,13 +98,13 @@ const breadcrumbJsonLd = {
 export const Route = createFileRoute("/led-display")({
   head: () => ({
     meta: [
-      { title: "LED Display สำหรับองค์กร | จอ LED Indoor Outdoor - Matrix Intertrade" },
+      { title: "จอ LED สำหรับองค์กร | LED Display Indoor Outdoor - Matrix Intertrade" },
       {
         name: "description",
         content:
-          "LED Display สำหรับองค์กรไทย บริการขาย ออกแบบ ติดตั้งจอ LED Indoor, Outdoor และ All-in-One จาก Unilumin พร้อมทีมดูแลครบวงจรโดย Matrix Intertrade",
+          "จอ LED สำหรับองค์กรไทย บริการขาย ออกแบบ ติดตั้ง LED Display Indoor, Outdoor และ All-in-One จาก Unilumin พร้อมทีมดูแลครบวงจรโดย Matrix Intertrade",
       },
-      { property: "og:title", content: "LED Display สำหรับองค์กร | Matrix Intertrade" },
+      { property: "og:title", content: "จอ LED สำหรับองค์กร | LED Display - Matrix Intertrade" },
       {
         property: "og:description",
         content:
@@ -131,9 +131,9 @@ export const Route = createFileRoute("/led-display")({
   component: () => (
     <SolutionDetailTemplate
       slug="led-display"
-      title="LED Display สำหรับองค์กร"
+      title="จอ LED สำหรับองค์กร | LED Display Indoor Outdoor"
       iconName="Monitor"
-      intro="โซลูชันสำหรับองค์กรที่ต้องการจอแอลอีดี LED Displays คุณภาพสูงจาก Unilumin ใช้งานได้ทั้ง Indoor, Outdoor และ All-in-One พร้อมทีมขาย ออกแบบ ติดตั้ง และดูแลหลังการขายแบบครบวงจร"
+      intro="โซลูชันสำหรับองค์กรที่ต้องการจอ LED หรือ LED Display คุณภาพสูงจาก Unilumin ใช้งานได้ทั้ง Indoor, Outdoor และ All-in-One พร้อมทีมขาย ออกแบบ ติดตั้ง และดูแลหลังการขายแบบครบวงจร"
       introEn="Enterprise LED Display solutions from Unilumin for indoor, outdoor, and All-in-One applications, supported by consultation, design, installation, and after-sales teams."
       bullets={[
         "บริการขาย ออกแบบ และติดตั้งจอ LED แบบครบวงจรสำหรับองค์กรไทย",
@@ -169,7 +169,7 @@ export const Route = createFileRoute("/led-display")({
       ]}
       seoSections={[
         {
-          heading: "LED Display คืออะไร และเหมาะกับองค์กรแบบไหน",
+          heading: "จอ LED คืออะไร และ LED Display เหมาะกับองค์กรแบบไหน",
           body:
             "ระบบจอ LED คือจอแสดงผลที่ประกอบจากโมดูล LED หลายชุด ทำให้สร้างจอขนาดใหญ่ได้แบบไร้รอยต่อ เหมาะกับองค์กรที่ต้องการภาพคมชัด สว่าง และใช้งานต่อเนื่อง เช่น ห้องประชุมใหญ่ ห้องควบคุม โชว์รูม โรงแรม หน่วยงานรัฐ และพื้นที่สื่อสารแบรนด์ที่ต้องการความน่าเชื่อถือสูง",
           headingEn: "What is an LED Display and which organizations should use it?",
@@ -177,7 +177,7 @@ export const Route = createFileRoute("/led-display")({
             "An LED Display is a modular display system that can create large seamless screens with strong brightness and clarity. It suits meeting rooms, control rooms, showrooms, hotels, government agencies, and branded communication spaces that need reliable long-term operation.",
         },
         {
-          heading: "บริการออกแบบและติดตั้ง LED Display แบบครบวงจร",
+          heading: "บริการติดตั้งจอ LED และออกแบบ LED Display แบบครบวงจร",
           body:
             "Matrix Intertrade ดูแลตั้งแต่ให้คำปรึกษา สำรวจพื้นที่ ออกแบบขนาดจอ เลือก Pixel Pitch วางโครงสร้างและระบบไฟ ไปจนถึงติดตั้ง ทดสอบระบบ อบรมการใช้งาน และดูแลหลังการขาย เพื่อให้จอ LED ทำงานได้เหมาะกับพื้นที่จริง ไม่ใช่แค่สเปกบนกระดาษ",
           headingEn: "Turnkey LED Display design and installation service",
@@ -185,7 +185,7 @@ export const Route = createFileRoute("/led-display")({
             "Matrix Intertrade supports consultation, site survey, screen sizing, pixel pitch selection, structure and power planning, installation, commissioning, training, and after-sales service so the display works well in the real environment.",
         },
         {
-          heading: "เลือก LED Display Indoor, Outdoor และ All-in-One",
+          heading: "เลือกจอ LED Indoor, Outdoor และ All-in-One",
           body:
             "การเลือกจอ LED ต้องดูระยะมอง ความละเอียด ความสว่าง สภาพแสง และรูปแบบการติดตั้งร่วมกัน งาน Indoor มักเน้น Pixel Pitch ละเอียดและความสบายตา งาน Outdoor ต้องเน้น brightness และความทนทาน ส่วน All-in-One เหมาะกับห้องประชุมที่ต้องการจอใหญ่ ใช้งานง่าย และลดอุปกรณ์ต่อพ่วง",
           headingEn: "Choose indoor, outdoor, and All-in-One LED Display systems",

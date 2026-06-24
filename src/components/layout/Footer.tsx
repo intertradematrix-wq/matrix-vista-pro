@@ -5,9 +5,26 @@ import matrixLogo from "@/assets/matrix-logo.jpg";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
+const FOOTER_BRANDS = [
+  { slug: "grandview", label: "Grandview" },
+  { slug: "hdmi-cable", label: "HDMI Cable" },
+  { slug: "kramer", label: "Kramer" },
+  { slug: "newline", label: "Newline" },
+  { slug: "persona", label: "Persona" },
+  { slug: "poly", label: "Poly" },
+  { slug: "transcreen", label: "tranScreen" },
+  { slug: "unilumin", label: "Unilumin" },
+  { slug: "vissonic", label: "Vissonic" },
+  { slug: "yealink", label: "Yealink" },
+] as const;
+
 export function Footer() {
-  const { solutions, brands, articleCategories } = useSiteContent();
+  const { solutions, articleCategories } = useSiteContent();
   const { lang } = useLanguage();
+  const footerBrandItems = FOOTER_BRANDS.map((footerBrand) => ({
+    label: footerBrand.label,
+    href: `/category/${footerBrand.slug}`,
+  }));
 
   return (
     <footer className="relative mt-24 overflow-hidden bg-navy text-navy-foreground">
@@ -136,9 +153,7 @@ export function Footer() {
         <FooterCol
           className="lg:col-span-2"
           title={t(lang, "แบรนด์สินค้า", "Brands")}
-          items={brands
-            .filter((b) => !["Newline", "Poly", "Vissonic", "Yealink"].includes(b.name))
-            .map((b) => ({ label: b.name, href: `/brands/${b.slug}` }))}
+          items={footerBrandItems}
         />
         <FooterCol
           className="lg:col-span-2"

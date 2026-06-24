@@ -54,7 +54,7 @@ function SolutionsPage() {
             to="/led-display"
             className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-5 py-2.5 text-sm font-semibold text-accent transition hover:bg-accent/10"
           >
-            {t(lang, "ดูรายละเอียด LED Display สำหรับองค์กร", "View enterprise LED Display details")}
+            {t(lang, "ดูรายละเอียดจอ LED สำหรับองค์กร", "View enterprise LED Display details")}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

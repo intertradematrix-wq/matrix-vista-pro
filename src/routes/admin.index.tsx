@@ -865,6 +865,7 @@ function AdminPage() {
   const [draft, setDraft] = useState<Draft>({});
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [status, setStatus] = useState("");
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [isCreating, setIsCreating] = useState(false);
@@ -980,6 +981,15 @@ function AdminPage() {
     );
   }, [activeFields, items, query]);
 
+  const lastSyncedLabel = useMemo(() => {
+    if (!lastSyncedAt) return "Not synced yet";
+    return `Last synced ${lastSyncedAt.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    })}`;
+  }, [lastSyncedAt]);
+
   async function loadAdminContent(token: string) {
     setLoading(true);
     setStatus("");
@@ -990,14 +1000,28 @@ function AdminPage() {
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error ?? "Cannot load admin content");
       const data = payload as AdminPayload;
+      const nextContent = Object.fromEntries(
+        CONTENT_KINDS.map((kind) => [kind, data[kind] ?? []]),
+      ) as Record<ContentKind, ContentItem[]>;
       setLoadWarnings(data.loadWarnings ?? {});
-      setContent(
-        Object.fromEntries(CONTENT_KINDS.map((kind) => [kind, data[kind] ?? []])) as Record<
-          ContentKind,
-          ContentItem[]
-        >,
-      );
+      setContent(nextContent);
+      setSelectedIds((current) => {
+        const next = { ...current };
+        CONTENT_KINDS.forEach((kind) => {
+          const kindConfig = CONTENT_CONFIG[kind];
+          const list = nextContent[kind] ?? [];
+          const currentId = next[kind] ?? "";
+          const currentStillExists = list.some((item) => text(item[kindConfig.key]) === currentId);
+          if (!currentStillExists) {
+            next[kind] = list.length > 0 ? text(list[0][kindConfig.key]) : "";
+          }
+        });
+        return next;
+      });
+      setIsCreating(false);
+      setDraft({});
       setAdminEmail(data.userEmail);
+      setLastSyncedAt(new Date());
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Cannot load admin content");
     } finally {
@@ -1249,7 +1273,13 @@ function AdminPage() {
         </div>
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           {adminEmail && <span>{adminEmail}</span>}
-          <Button variant="outline" onClick={() => void loadAdminContent(sessionToken)}>
+          <span className="text-xs">{loading ? "Syncing..." : lastSyncedLabel}</span>
+          <Button
+            variant="outline"
+            onClick={() => void loadAdminContent(sessionToken)}
+            disabled={loading}
+          >
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Refresh
           </Button>
           <Button variant="outline" onClick={signOut}>
@@ -1344,6 +1374,9 @@ function AdminPage() {
               kind={activeKind}
               config={config}
               items={filteredItems}
+              totalCount={items.length}
+              filteredCount={filteredItems.length}
+              query={query}
               allContent={content}
               selectedId={selectedId}
               isCreating={isCreating}
@@ -1922,6 +1955,9 @@ function ContentList({
   kind,
   config,
   items,
+  totalCount,
+  filteredCount,
+  query,
   allContent,
   selectedId,
   isCreating,
@@ -1931,6 +1967,9 @@ function ContentList({
   kind: ContentKind;
   config: ContentConfig;
   items: ContentItem[];
+  totalCount: number;
+  filteredCount: number;
+  query: string;
   allContent: Partial<Record<ContentKind, ContentItem[]>>;
   selectedId: string;
   isCreating?: boolean;
@@ -1942,7 +1981,11 @@ function ContentList({
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="space-y-1">
           <CardTitle className="text-base">Items</CardTitle>
-          <CardDescription>Select an item to edit and preview.</CardDescription>
+          <CardDescription>
+            {filteredCount === totalCount
+              ? `${totalCount} total`
+              : `${filteredCount} of ${totalCount} shown`}
+          </CardDescription>
         </div>
         {onAddNew && (
           <Button variant="outline" size="sm" onClick={onAddNew} disabled={isCreating}>
@@ -1957,6 +2000,19 @@ function ContentList({
             <div className="font-semibold text-primary">New {config.label}</div>
             <div className="text-xs text-muted-foreground">{selectedId}</div>
           </button>
+        )}
+        {items.length === 0 && !isCreating && (
+          <div className="rounded-xl border border-dashed border-border bg-secondary/30 px-4 py-8 text-center">
+            <Search className="mx-auto mb-3 h-5 w-5 text-muted-foreground" />
+            <div className="text-sm font-semibold text-primary">
+              {query.trim() ? "No matching items" : "No items yet"}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {query.trim()
+                ? "Try another search term or refresh to load the latest content."
+                : "Refresh to check Supabase again, or add a new item when this section supports it."}
+            </p>
+          </div>
         )}
         {items.map((item) => {
           const id = text(item[config.key]);
