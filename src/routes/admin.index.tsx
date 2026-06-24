@@ -141,6 +141,9 @@ type TrackingSettingsPayload = {
   configured: boolean;
   googleAnalyticsId: string;
   idSource: "runtime" | "env" | "missing";
+  metaPixelId: string;
+  pixelConfigured: boolean;
+  pixelIdSource: "runtime" | "env" | "hardcoded" | "missing";
   message?: string;
 };
 
@@ -1291,7 +1294,7 @@ function AdminPage() {
                 {isLineSettingsTab
                   ? "Manage LINE notification credentials used by the contact form."
                   : isTrackingSettingsTab
-                    ? "Manage Google Analytics tracking for the public website."
+                    ? "Manage Google Analytics and Meta Pixel tracking for the public website."
                     : config.description}
               </p>
               {!isSettingsTab && activeKind === "siteSections" && (
@@ -1632,6 +1635,7 @@ function LineSettingsPanel({ sessionToken }: { sessionToken: string }) {
 function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
   const [settings, setSettings] = useState<TrackingSettingsPayload | null>(null);
   const [googleAnalyticsId, setGoogleAnalyticsId] = useState("");
+  const [metaPixelId, setMetaPixelId] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -1649,6 +1653,7 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
       const data = payload as TrackingSettingsPayload;
       setSettings(data);
       setGoogleAnalyticsId(data.googleAnalyticsId ?? "");
+      setMetaPixelId(data.metaPixelId ?? "");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Cannot load tracking settings");
     } finally {
@@ -1673,6 +1678,7 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
         body: JSON.stringify({
           action: "save",
           googleAnalyticsId,
+          metaPixelId,
         }),
       });
       const payload = await response.json();
@@ -1681,6 +1687,7 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
       const data = payload as TrackingSettingsPayload;
       setSettings(data);
       setGoogleAnalyticsId(data.googleAnalyticsId ?? "");
+      setMetaPixelId(data.metaPixelId ?? "");
       setStatus("Tracking settings saved.");
       toast.success("Tracking settings saved.");
     } catch (error) {
@@ -1693,64 +1700,143 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
   }
 
   const analyticsReady = settings?.configured ?? false;
+  const pixelReady = settings?.pixelConfigured ?? false;
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <Card className="overflow-hidden">
-        <CardHeader className="border-b border-border">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="space-y-5">
+        {/* Google Analytics card */}
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b border-border">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Code2 className="h-5 w-5 text-accent" />
+                  Google Analytics
+                </CardTitle>
+                <CardDescription>
+                  Runtime GA4 measurement settings used by the public website layout.
+                </CardDescription>
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={loadSettings}>
+                Refresh
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-5 p-4 sm:p-6">
+            <label className="grid gap-1.5 text-sm font-medium text-primary">
+              GOOGLE_ANALYTICS_ID
+              <Input
+                value={googleAnalyticsId}
+                placeholder="G-XXXXXXXX"
+                onChange={(event) => setGoogleAnalyticsId(event.target.value.toUpperCase())}
+                autoComplete="off"
+              />
+              <span className="text-xs font-normal text-muted-foreground">
+                Use the GA4 measurement ID only, for example G-683MZXTBW1. Leave blank to disable the
+                runtime override.
+              </span>
+            </label>
+          </CardContent>
+        </Card>
+
+        {/* Meta Pixel card */}
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b border-border">
             <div>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Code2 className="h-5 w-5 text-accent" />
-                Google Analytics
+                <Share2 className="h-5 w-5 text-accent" />
+                Meta (Facebook) Pixel
               </CardTitle>
               <CardDescription>
-                Runtime GA4 measurement settings used by the public website layout.
+                Manage Meta Pixel for conversion tracking and audience building on Facebook/Instagram.
               </CardDescription>
             </div>
-            <Button type="button" variant="outline" size="sm" onClick={loadSettings}>
-              Refresh
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="grid gap-5 p-4 sm:p-6">
-          <label className="grid gap-1.5 text-sm font-medium text-primary">
-            GOOGLE_ANALYTICS_ID
-            <Input
-              value={googleAnalyticsId}
-              placeholder="G-XXXXXXXX"
-              onChange={(event) => setGoogleAnalyticsId(event.target.value.toUpperCase())}
-              autoComplete="off"
-            />
-            <span className="text-xs font-normal text-muted-foreground">
-              Use the GA4 measurement ID only, for example G-683MZXTBW1. Leave blank to disable the
-              runtime override.
-            </span>
-          </label>
+          </CardHeader>
+          <CardContent className="grid gap-5 p-4 sm:p-6">
+            <label className="grid gap-1.5 text-sm font-medium text-primary">
+              META_PIXEL_ID
+              <Input
+                value={metaPixelId}
+                placeholder="1578638136531199"
+                onChange={(event) => setMetaPixelId(event.target.value.replace(/[^0-9]/g, ""))}
+                autoComplete="off"
+              />
+              <span className="text-xs font-normal text-muted-foreground">
+                Use the numeric Pixel ID from Meta Events Manager. Leave blank to use the default
+                hardcoded ID.
+              </span>
+            </label>
 
-          {status && (
-            <div className="rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">
-              {status}
+            {/* Event Tracking Info */}
+            <div className="rounded-lg border border-border bg-secondary/40 p-4">
+              <h4 className="mb-3 text-sm font-semibold text-primary flex items-center gap-2">
+                <Globe className="h-4 w-4 text-accent" />
+                Active Event Tracking
+              </h4>
+              <div className="space-y-2">
+                {[
+                  {
+                    event: "PageView",
+                    description: "Auto-fired on every page/route change",
+                    trigger: "Automatic",
+                  },
+                  {
+                    event: "Lead",
+                    description: "Fired when Contact Form is submitted successfully",
+                    trigger: "Form Submit",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.event}
+                    className="flex items-center gap-3 rounded-lg bg-white px-3 py-2.5 border border-border/60"
+                  >
+                    <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent/10">
+                      <CheckCircle2 className="h-4 w-4 text-accent" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-primary">
+                        fbq(&apos;track&apos;, &apos;{item.event}&apos;)
+                      </div>
+                      <div className="text-xs text-muted-foreground">{item.description}</div>
+                    </div>
+                    <Badge variant="secondary" className="text-[10px] shrink-0">
+                      {item.trigger}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Add more events by importing <code className="rounded bg-secondary px-1 py-0.5 text-[11px]">fbqTrack</code> from <code className="rounded bg-secondary px-1 py-0.5 text-[11px]">@/lib/meta-pixel</code> in any component.
+              </p>
             </div>
-          )}
+          </CardContent>
+        </Card>
 
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" onClick={saveSettings} disabled={loading || saving}>
-              {saving ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Save Settings
-            </Button>
+        {/* Shared status and save */}
+        {status && (
+          <div className="rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">
+            {status}
           </div>
-        </CardContent>
-      </Card>
+        )}
 
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" onClick={saveSettings} disabled={loading || saving}>
+            {saving ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            Save All Tracking Settings
+          </Button>
+        </div>
+      </div>
+
+      {/* Status sidebar */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Current Status</CardTitle>
-          <CardDescription>Resolved GTM container used during page render.</CardDescription>
+          <CardDescription>Resolved tracking IDs used during page render.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <StatusRow
@@ -1759,9 +1845,15 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
             source={settings?.idSource ?? "missing"}
             value={settings?.googleAnalyticsId || "Not configured"}
           />
+          <StatusRow
+            label="Meta Pixel ID"
+            ready={pixelReady}
+            source={settings?.pixelIdSource ?? "missing"}
+            value={settings?.metaPixelId || "Not configured"}
+          />
           <div className="rounded-lg bg-secondary/70 p-3 text-xs leading-relaxed text-muted-foreground">
-            Runtime values saved here take priority. Environment variable GOOGLE_ANALYTICS_ID
-            remains available as fallback.
+            Runtime values saved here take priority. Environment variables remain available as fallback.
+            The Meta Pixel also has a hardcoded default if neither runtime nor env values are set.
           </div>
         </CardContent>
       </Card>

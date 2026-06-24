@@ -17,13 +17,16 @@ import { FloatingSocial } from "@/components/site/FloatingSocial";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { Toaster } from "sonner";
-import { getGoogleAnalyticsSettings } from "@/lib/runtime-settings.functions";
+import { getGoogleAnalyticsSettings, getMetaPixelSettings } from "@/lib/runtime-settings.functions";
+import { usePageTracking } from "@/hooks/use-page-tracking";
 
 import appCss from "../styles.css?url";
 
 type RootLoaderData = {
   googleAnalyticsId: string;
   analyticsSource: "runtime" | "env" | "missing";
+  metaPixelId: string;
+  pixelSource: "runtime" | "env" | "hardcoded" | "missing";
 };
 
 function NotFoundComponent() {
@@ -72,10 +75,15 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: async (): Promise<RootLoaderData> => {
-    const settings = await getGoogleAnalyticsSettings();
+    const [gaSettings, pixelSettings] = await Promise.all([
+      getGoogleAnalyticsSettings(),
+      getMetaPixelSettings(),
+    ]);
     return {
-      googleAnalyticsId: settings.googleAnalyticsId,
-      analyticsSource: settings.source,
+      googleAnalyticsId: gaSettings.googleAnalyticsId,
+      analyticsSource: gaSettings.source,
+      metaPixelId: pixelSettings.metaPixelId,
+      pixelSource: pixelSettings.source,
     };
   },
   head: ({ loaderData }: { loaderData?: RootLoaderData }) => ({
@@ -107,6 +115,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
     scripts: [
+      // ─── Meta (Facebook) Pixel base code ────────────────────────────────────
+      ...(loaderData?.metaPixelId
+        ? [
+            {
+              children: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){
+n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','${loaderData.metaPixelId}');
+fbq('track','PageView');`,
+            },
+          ]
+        : []),
+      // ─── Google Analytics ────────────────────────────────────────────────────
       ...(loaderData?.googleAnalyticsId
         ? [
             {
@@ -154,6 +179,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // Auto-fire PageView on every SPA route change (initial load is covered by base code)
+  usePageTracking();
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>

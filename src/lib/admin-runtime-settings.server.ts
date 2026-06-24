@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const LINE_CHANNEL_ACCESS_TOKEN_KEY = "LINE_CHANNEL_ACCESS_TOKEN";
 export const LINE_GROUP_ID_KEY = "LINE_GROUP_ID";
 export const GOOGLE_ANALYTICS_ID_KEY = "GOOGLE_ANALYTICS_ID";
+export const META_PIXEL_ID_KEY = "META_PIXEL_ID";
 
 const ADMIN_RUNTIME_SETTINGS_TABLE = "admin_runtime_settings";
 
@@ -10,6 +11,7 @@ export type RuntimeSettingKey =
   | typeof LINE_CHANNEL_ACCESS_TOKEN_KEY
   | typeof LINE_GROUP_ID_KEY
   | typeof GOOGLE_ANALYTICS_ID_KEY
+  | typeof META_PIXEL_ID_KEY
   | (string & {});
 
 export type RuntimeSetting = {
@@ -27,6 +29,11 @@ export type LineSettings = {
 export type GoogleAnalyticsSettings = {
   googleAnalyticsId: string;
   source: "runtime" | "env" | "missing";
+};
+
+export type MetaPixelSettings = {
+  metaPixelId: string;
+  source: "runtime" | "env" | "hardcoded" | "missing";
 };
 
 export function normalizeGoogleAnalyticsId(value: string) {
@@ -117,5 +124,36 @@ export async function loadGoogleAnalyticsSettings(): Promise<GoogleAnalyticsSett
   return {
     googleAnalyticsId,
     source: runtimeId ? "runtime" : envId ? "env" : "missing",
+  };
+}
+
+/** Validate that a Meta Pixel ID is a 10–20 digit numeric string. */
+export function isValidMetaPixelId(value: string): boolean {
+  return /^\d{10,20}$/.test(value.trim());
+}
+
+export function normalizeMetaPixelId(value: string): string {
+  return value.trim();
+}
+
+export async function loadMetaPixelSettings(): Promise<MetaPixelSettings> {
+  const { DEFAULT_META_PIXEL_ID } = await import("@/lib/meta-pixel");
+
+  const settings = await loadRuntimeSettings([META_PIXEL_ID_KEY]);
+
+  const runtimeId = normalizeMetaPixelId(settings.get(META_PIXEL_ID_KEY)?.value ?? "");
+  const envId = normalizeMetaPixelId(process.env.META_PIXEL_ID ?? "");
+
+  const metaPixelId = runtimeId || envId || DEFAULT_META_PIXEL_ID;
+
+  return {
+    metaPixelId,
+    source: runtimeId
+      ? "runtime"
+      : envId
+        ? "env"
+        : DEFAULT_META_PIXEL_ID
+          ? "hardcoded"
+          : "missing",
   };
 }

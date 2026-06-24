@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Send, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { fbqTrack } from "@/lib/meta-pixel";
 
 export function ContactForm() {
   const { lang } = useLanguage();
@@ -33,6 +34,8 @@ export function ContactForm() {
       });
       if (!res.ok) throw new Error("send failed");
       setDone(true);
+      // Fire Meta Pixel Lead event on successful quote request submission
+      fbqTrack("Lead");
       toast.success(
         t(
           lang,

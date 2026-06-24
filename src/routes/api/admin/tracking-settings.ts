@@ -3,10 +3,14 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import {
   GOOGLE_ANALYTICS_ID_KEY,
+  META_PIXEL_ID_KEY,
   isValidGoogleAnalyticsId,
+  isValidMetaPixelId,
   loadGoogleAnalyticsSettings,
+  loadMetaPixelSettings,
   loadRuntimeSettings,
   normalizeGoogleAnalyticsId,
+  normalizeMetaPixelId,
   saveRuntimeSettings,
   type RuntimeSetting,
 } from "@/lib/admin-runtime-settings.server";
@@ -14,6 +18,7 @@ import {
 const SaveSchema = z.object({
   action: z.literal("save").optional().default("save"),
   googleAnalyticsId: z.string().max(100).optional().default(""),
+  metaPixelId: z.string().max(30).optional().default(""),
 });
 
 function jsonError(message: string, status: number, details?: unknown) {
@@ -53,20 +58,29 @@ async function requireAdmin(request: Request) {
 }
 
 async function trackingSettingsPayload() {
-  const runtimeSettings = await loadRuntimeSettings([GOOGLE_ANALYTICS_ID_KEY]);
-  const mergedSettings = await loadGoogleAnalyticsSettings();
-  const runtimeId = normalizeGoogleAnalyticsId(
+  // ─── Google Analytics ──────────────────────────────────────
+  const runtimeSettings = await loadRuntimeSettings([GOOGLE_ANALYTICS_ID_KEY, META_PIXEL_ID_KEY]);
+  const mergedGaSettings = await loadGoogleAnalyticsSettings();
+  const runtimeGaId = normalizeGoogleAnalyticsId(
     runtimeSettings.get(GOOGLE_ANALYTICS_ID_KEY)?.value ?? "",
   );
-  const envId = normalizeGoogleAnalyticsId(process.env.GOOGLE_ANALYTICS_ID ?? "");
-  const googleAnalyticsId = runtimeId || envId;
+  const envGaId = normalizeGoogleAnalyticsId(process.env.GOOGLE_ANALYTICS_ID ?? "");
+  const googleAnalyticsId = runtimeGaId || envGaId;
+
+  // ─── Meta Pixel ────────────────────────────────────────────
+  const mergedPixelSettings = await loadMetaPixelSettings();
 
   return {
     ok: true,
-    source: mergedSettings.source,
+    // Google Analytics
+    source: mergedGaSettings.source,
     configured: Boolean(googleAnalyticsId),
     googleAnalyticsId,
-    idSource: runtimeId ? "runtime" : envId ? "env" : "missing",
+    idSource: runtimeGaId ? "runtime" : envGaId ? "env" : "missing",
+    // Meta Pixel
+    metaPixelId: mergedPixelSettings.metaPixelId,
+    pixelConfigured: Boolean(mergedPixelSettings.metaPixelId),
+    pixelIdSource: mergedPixelSettings.source,
   };
 }
 
@@ -95,15 +109,30 @@ export const Route = createFileRoute("/api/admin/tracking-settings")({
           return jsonError("Invalid tracking settings payload", 400, parsed.error.flatten());
         }
 
-        const nextId = normalizeGoogleAnalyticsId(parsed.data.googleAnalyticsId);
-        if (nextId && !isValidGoogleAnalyticsId(nextId)) {
+        // Validate Google Analytics ID
+        const nextGaId = normalizeGoogleAnalyticsId(parsed.data.googleAnalyticsId);
+        if (nextGaId && !isValidGoogleAnalyticsId(nextGaId)) {
           return jsonError("Google Analytics ID must use the format G-XXXX.", 400);
+        }
+
+        // Validate Meta Pixel ID
+        const nextPixelId = normalizeMetaPixelId(parsed.data.metaPixelId);
+        if (nextPixelId && !isValidMetaPixelId(nextPixelId)) {
+          return jsonError(
+            "Meta Pixel ID must be a numeric string (10-20 digits), e.g. 1578638136531199.",
+            400,
+          );
         }
 
         const rows: RuntimeSetting[] = [
           {
             key: GOOGLE_ANALYTICS_ID_KEY,
-            value: nextId,
+            value: nextGaId,
+            is_secret: false,
+          },
+          {
+            key: META_PIXEL_ID_KEY,
+            value: nextPixelId,
             is_secret: false,
           },
         ];
