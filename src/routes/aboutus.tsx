@@ -10,8 +10,6 @@ import partnerNewline from "@/assets/about/partner-3.png";
 import partnerYealink from "@/assets/about/partner-4.png";
 import partnerVissonic from "@/assets/about/partner-5.png";
 import partnerPoly from "@/assets/about/partner-6.png";
-import partnerAvlink from "@/assets/about/partner-7.png";
-import partnerEnewave from "@/assets/about/partner-8.png";
 import industryEducation from "@/assets/about/industries/education.jpg";
 import industryHotel from "@/assets/about/industries/hotel-events.jpg";
 import industryOffice from "@/assets/about/industries/office-business.jpg";
@@ -98,18 +96,6 @@ const partners = [
     img: partnerPoly,
     tag: "รวมอุปกรณ์ชุดประชุมคุณภาพ",
     tagEn: "Quality Conference Equipment",
-  },
-  {
-    name: "AVLink",
-    img: partnerAvlink,
-    tag: "The Highest Quality AV Solutions",
-    tagEn: "The Highest Quality AV Solutions",
-  },
-  {
-    name: "Enewave",
-    img: partnerEnewave,
-    tag: "Enewave ครบเครื่องเรื่องเสียง",
-    tagEn: "Complete Audio Solutions",
   },
 ];
 
