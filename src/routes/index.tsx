@@ -10,11 +10,12 @@ import { Reveal } from "@/components/site/Reveal";
 import { HeroVideo } from "@/components/site/HeroVideo";
 import { IndustriesShowcase } from "@/components/site/IndustriesShowcase";
 import { Marquee } from "@/components/site/Marquee";
-import { CountUp } from "@/components/site/CountUp";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { brandLogos, brandAccent } from "@/data/brand-logos";
 import ledLineup2026 from "@/assets/about/led-lineup-2026.jpg";
-import processWorkflowPremium from "@/assets/process-workflow-premium.png";
+import homeStatsShowcase from "@/assets/home/home-stats-showcase.png";
+import homeWhyShowcase from "@/assets/home/home-why-showcase.png";
+import homeProcessShowcase from "@/assets/home/home-process-showcase.png";
 import { articles } from "@/data/articles";
 import { articleImages } from "@/data/article-images";
 import { useSiteContent } from "@/lib/content/use-site-content";
@@ -28,10 +29,7 @@ import {
   PanelsTopLeft,
   LifeBuoy,
   BriefcaseBusiness,
-  Sparkles,
-  Check,
   PlayCircle,
-  BookOpen,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -294,85 +292,43 @@ function HomePage() {
       {/* INDUSTRIES */}
       <IndustriesShowcase industries={industries} section={industryShowcase} />
 
-      {/* STATS — asymmetric bento, hero metric + 4 sidekicks */}
-      <section className="relative overflow-hidden bg-navy text-white py-16 sm:py-24">
-        <div className="absolute inset-0 opacity-[0.08] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:28px_28px]" />
-        <div className="absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-accent/25 blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-cyan/20 blur-3xl" />
+      {/* STATS - image showcase */}
+      <section className="relative overflow-hidden border-y border-border/70 bg-white py-10 sm:py-14 md:py-16">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,white_0%,#f8fbff_100%)]" />
         <div className="relative mx-auto max-w-7xl px-4 md:px-6">
-          <div className="grid gap-3 sm:gap-5 lg:grid-cols-12">
-            <Reveal className="lg:col-span-7">
-              <div className="glass rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 h-full flex flex-col justify-between bg-gradient-to-br from-white/10 to-white/[0.02] hover-tilt">
-                <div className="inline-flex items-center gap-2 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-cyan/90 mb-4 sm:mb-6">
-                  <span className="h-1.5 w-1.5 rounded-full bg-cyan animate-pulse" />{" "}
-                  {t(lang, "ผลงานที่ผ่านมา", "Track Record")}
-                </div>
-                <div>
-                  <div className="text-[64px] sm:text-[88px] md:text-[140px] leading-[0.85] font-black tracking-tighter">
-                    <CountUp
-                      to={500}
-                      className="bg-gradient-to-br from-white via-white to-cyan/80 bg-clip-text text-transparent"
-                      suffix="+"
-                      suffixClassName="text-gold-gradient"
-                    />
-                  </div>
-                  <div className="mt-3 sm:mt-4 text-sm sm:text-base md:text-xl text-white/85 font-medium max-w-md">
-                    {t(
-                      lang,
-                      "โปรเจ็คติดตั้งสำเร็จทั่วประเทศ — องค์กร โรงเรียน โรงแรม หน่วยงานรัฐ",
-                      "Successful installations nationwide — enterprises, schools, hotels, government",
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-            <div className="lg:col-span-5 grid grid-cols-2 gap-3 sm:gap-5">
-              {[
-                {
-                  n: 20,
-                  suffix: "+",
-                  label: t(lang, "แบรนด์ระดับโลก", "World-class brands"),
-                  tone: "from-accent/25 to-transparent",
-                },
-                {
-                  n: 15,
-                  suffix: "+",
-                  label: t(lang, "ปีประสบการณ์", "Years of experience"),
-                  tone: "from-cyan/20 to-transparent",
-                },
-                {
-                  n: 98,
-                  suffix: "%",
-                  label: t(lang, "ความพึงพอใจของลูกค้า", "Customer satisfaction"),
-                  tone: "from-accent/15 to-cyan/15",
-                },
-                {
-                  n: 24,
-                  suffix: "/7",
-                  label: t(lang, "บริการหลังการขาย", "After-sales support"),
-                  tone: "from-cyan/15 to-accent/10",
-                },
-              ].map((s, i) => (
-                <Reveal key={s.label} delay={i * 90}>
-                  <div
-                    className={`glass rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 h-full bg-gradient-to-br ${s.tone} hover-tilt`}
-                  >
-                    <div className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight">
-                      <CountUp
-                        to={s.n}
-                        className="text-white"
-                        suffix={s.suffix}
-                        suffixClassName="text-gold-gradient ml-0.5"
-                      />
-                    </div>
-                    <div className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-white/80 font-medium leading-snug">
-                      {s.label}
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
+          <div className="sr-only">
+            <h2>{t(lang, "ผลงานที่ผ่านมา", "Track Record")}</h2>
+            <p>
+              {t(
+                lang,
+                "โปรเจ็คติดตั้งสำเร็จทั่วประเทศ สำหรับองค์กร โรงเรียน โรงแรม และหน่วยงานรัฐ",
+                "Successful installations nationwide for enterprises, schools, hotels, and government teams",
+              )}
+            </p>
+            <ul>
+              <li>500+ {t(lang, "โปรเจ็คติดตั้งสำเร็จ", "successful projects")}</li>
+              <li>20+ {t(lang, "แบรนด์ระดับโลก", "world-class brands")}</li>
+              <li>15+ {t(lang, "ปีประสบการณ์", "years of experience")}</li>
+              <li>98% {t(lang, "ความพึงพอใจของลูกค้า", "customer satisfaction")}</li>
+              <li>24/7 {t(lang, "บริการหลังการขาย", "after-sales support")}</li>
+            </ul>
           </div>
+          <Reveal>
+            <img
+              src={homeStatsShowcase}
+              alt={t(
+                lang,
+                "อินโฟกราฟิกผลงานที่ผ่านมา 500+ โปรเจ็ค 20+ แบรนด์ 15+ ปีประสบการณ์ ความพึงพอใจ 98% และบริการหลังการขาย 24/7",
+                "Track record infographic showing 500+ projects, 20+ brands, 15+ years of experience, 98% satisfaction, and 24/7 support",
+              )}
+              loading="lazy"
+              decoding="async"
+              width={1792}
+              height={1024}
+              sizes="(max-width: 768px) 100vw, 1280px"
+              className="mx-auto block h-auto w-full rounded-[18px] object-contain shadow-[0_18px_42px_-34px_rgba(0,44,84,0.45)]"
+            />
+          </Reveal>
         </div>
       </section>
 
@@ -404,109 +360,49 @@ function HomePage() {
         </div>
       </Section>
 
-      {/* WHY */}
-      <section className="relative overflow-hidden border-y border-border/70 bg-[#f5f8fb] py-16 sm:py-24 md:py-28">
-        {/* ambient backdrop */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan/45 to-transparent" />
-        <div className="pointer-events-none absolute -left-36 top-12 h-[420px] w-[420px] rounded-full bg-cyan/18 blur-[110px]" />
-        <div className="pointer-events-none absolute -right-40 bottom-0 h-[360px] w-[360px] rounded-full bg-navy/8 blur-[110px]" />
-
+      {/* WHY - image showcase */}
+      <section className="relative overflow-hidden border-y border-border/70 bg-[#f5f8fb] py-10 sm:py-14 md:py-16">
         <div className="relative mx-auto max-w-7xl px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
-            <div className="rounded-2xl border border-white bg-white/78 p-5 shadow-[0_18px_44px_-34px_rgba(0,44,84,0.4)] backdrop-blur-sm sm:p-6 lg:sticky lg:top-24">
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan/30 bg-cyan/10 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
-                <Sparkles className="h-3.5 w-3.5" />
-                {t(lang, "ทำไมต้อง Matrix Intertrade", "Why Matrix Intertrade")}
-              </div>
-              <h2 className="text-3xl font-bold leading-[1.15] tracking-tight text-navy md:text-5xl">
-                {t(lang, "ทำไมองค์กรชั้นนำเลือก", "Why leading organizations choose")}
-                <br />
-                <span className="text-accent">Matrix Intertrade</span>
-              </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {t(
-                  lang,
-                  "6 เหตุผลสำคัญที่ทำให้องค์กรชั้นนำไว้วางใจให้เราดูแลระบบ AV",
-                  "Six reasons why leading organizations trust us with their AV systems",
-                )}
-              </p>
-              <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                <div className="rounded-xl border border-border bg-[#f8fbfd] px-4 py-3">
-                  <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
-                    Project-ready
-                  </div>
-                  <div className="mt-1 text-sm font-semibold text-navy">
-                    {t(
-                      lang,
-                      "ทีมขาย + วิศวกรร่วมออกแบบตั้งแต่ต้น",
-                      "Sales and engineering aligned from day one",
-                    )}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-border bg-[#f8fbfd] px-4 py-3">
-                  <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">
-                    Long-term care
-                  </div>
-                  <div className="mt-1 text-sm font-semibold text-navy">
-                    {t(
-                      lang,
-                      "ดูแลหลังส่งมอบ พร้อมแนะนำการใช้งานจริง",
-                      "After-handover support for real operation",
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
-              {why.map((w, i) => {
-                return (
-                  <Reveal key={w.title} delay={i * 70} variant="slide">
-                    <article className="group relative h-full rounded-2xl border border-border bg-white p-5 shadow-[0_16px_42px_-34px_rgba(0,44,84,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan/55 hover:shadow-[0_24px_56px_-34px_rgba(0,173,238,0.55)] sm:p-6">
-                      {/* hover sheen */}
-                      <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-cyan/45 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-                      <div className="relative flex h-full flex-col">
-                        {/* icon */}
-                        <div className="relative mb-4 sm:mb-5">
-                          <div className="relative inline-grid h-12 w-12 place-items-center rounded-xl border border-cyan/25 bg-cyan/10 text-accent transition-colors duration-300 group-hover:bg-accent group-hover:text-white">
-                            {/* inner highlight */}
-                            <span className="pointer-events-none absolute inset-x-0 top-0 h-1/2 rounded-t-xl bg-gradient-to-b from-white/25 to-transparent" />
-                            <w.icon className="relative h-5 w-5" strokeWidth={1.85} />
-                          </div>
-                        </div>
-
-                        <h3 className="text-base font-bold leading-snug tracking-tight text-navy sm:text-lg">
-                          {w.title}
-                        </h3>
-                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                          {w.desc}
-                        </p>
-
-                        {/* bottom accent */}
-                        <div className="mt-auto flex items-center gap-2 pt-5">
-                          <div className="h-px flex-1 bg-gradient-to-r from-accent/35 via-border to-transparent" />
-                          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                            0{i + 1}
-                          </span>
-                        </div>
-                      </div>
-                    </article>
-                  </Reveal>
-                );
-              })}
-            </div>
+          <div className="sr-only">
+            <h2>
+              {t(lang, "ทำไมองค์กรชั้นนำเลือก Matrix Intertrade", "Why leading organizations choose Matrix Intertrade")}
+            </h2>
+            <p>
+              {t(
+                lang,
+                "6 เหตุผลสำคัญที่ทำให้องค์กรชั้นนำไว้วางใจให้เราดูแลระบบ AV",
+                "Six reasons why leading organizations trust us with their AV systems",
+              )}
+            </p>
+            <ul>
+              {why.map((w) => (
+                <li key={w.title}>{w.title}: {w.desc}</li>
+              ))}
+            </ul>
           </div>
+          <Reveal>
+            <img
+              src={homeWhyShowcase}
+              alt={t(
+                lang,
+                "อินโฟกราฟิกเหตุผลที่องค์กรชั้นนำเลือก Matrix Intertrade พร้อมบริการให้คำปรึกษา ออกแบบระบบ สินค้าคุณภาพ รองรับทุกขนาด บริการหลังการขาย และประสบการณ์ด้าน AV",
+                "Infographic explaining why organizations choose Matrix Intertrade: consultation, site design, quality products, project scale, after-sales service, and AV experience",
+              )}
+              loading="lazy"
+              decoding="async"
+              width={1792}
+              height={1024}
+              sizes="(max-width: 768px) 100vw, 1280px"
+              className="mx-auto block h-auto w-full rounded-[18px] object-contain shadow-[0_18px_42px_-34px_rgba(0,44,84,0.35)]"
+            />
+          </Reveal>
         </div>
       </section>
 
-      {/* PROCESS — premium workflow image */}
-      <section className="relative overflow-hidden bg-[#07101b] py-6 sm:py-8 md:py-10 lg:py-12">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d7a94a]/70 to-transparent" />
-        <div className="pointer-events-none absolute -left-32 top-10 h-80 w-80 rounded-full bg-[#d7a94a]/10 blur-[110px]" />
-        <div className="pointer-events-none absolute -right-28 bottom-0 h-80 w-80 rounded-full bg-cyan/10 blur-[110px]" />
-
-        <div className="relative mx-auto max-w-[1540px] px-3 sm:px-4 md:px-6 lg:px-8">
+      {/* PROCESS - image showcase */}
+      <section className="relative overflow-hidden border-y border-border/70 bg-white py-10 sm:py-14 md:py-16">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)]" />
+        <div className="relative mx-auto max-w-7xl px-4 md:px-6">
           <div className="sr-only">
             <h2>
               {t(
@@ -515,39 +411,39 @@ function HomePage() {
                 "A process designed for project success",
               )}
             </h2>
+            <p>
+              {t(
+                lang,
+                "ทุกขั้นตอนถูกวางให้ตรวจสอบง่าย ตั้งแต่รับโจทย์ ออกแบบ ติดตั้ง ไปจนถึงดูแลหลังส่งมอบ",
+                "Every step is easy to track, from brief and design to installation and after-sales care.",
+              )}
+            </p>
             <ol>
               {steps.map((step) => (
-                <li key={step.n}>
-                  {step.n}. {step.title} — {step.desc}
-                </li>
+                <li key={step.n}>{step.n}. {step.title} - {step.desc}</li>
               ))}
             </ol>
           </div>
-
           <Reveal>
-            <div className="mx-auto w-full overflow-hidden rounded-lg bg-[#07101b] shadow-[0_24px_80px_-44px_rgba(215,169,74,0.55)] ring-1 ring-white/5 sm:rounded-xl lg:max-w-[1180px] lg:rounded-2xl xl:max-w-[1240px] 2xl:max-w-[1320px]">
-              <div className="relative w-full">
-                <img
-                  src={processWorkflowPremium}
-                  alt={t(
-                    lang,
-                    "อินโฟกราฟิกขั้นตอนการทำงาน 5 ขั้นตอน ตั้งแต่รับโจทย์ สำรวจ ออกแบบ เสนอราคา ติดตั้ง ทดสอบ ส่งมอบ และดูแลหลังการขาย",
-                    "Five-step workflow infographic from survey and solution design to quotation, installation, handover, and after-sales support",
-                  )}
-                  loading="lazy"
-                  decoding="async"
-                  width={1500}
-                  height={600}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 96vw, 1500px"
-                  className="block h-auto w-full select-none object-contain"
-                />
-              </div>
-            </div>
+            <img
+              src={homeProcessShowcase}
+              alt={t(
+                lang,
+                "อินโฟกราฟิกขั้นตอนการทำงาน ตั้งแต่รับโจทย์และสำรวจ ออกแบบ Solution เสนอราคา ติดตั้งและทดสอบระบบ ไปจนถึงส่งมอบและดูแลหลังการขาย",
+                "Workflow infographic from brief and survey to solution design, quotation, installation, testing, handover, and after-sales support",
+              )}
+              loading="lazy"
+              decoding="async"
+              width={2048}
+              height={921}
+              sizes="(max-width: 768px) 100vw, 1280px"
+              className="mx-auto block h-auto w-full rounded-[18px] object-contain shadow-[0_18px_42px_-34px_rgba(0,44,84,0.35)]"
+            />
           </Reveal>
         </div>
       </section>
 
-      {/* ARTICLES — lazy-loaded (article-contents.ts is 587KB) */}
+      {/* ARTICLES - lazy-loaded (article-contents.ts is 587KB) */}
       <Suspense fallback={
         <section className="relative overflow-hidden bg-[#f4f8fb] py-16 sm:py-24">
           <div className="mx-auto max-w-7xl px-4 md:px-6 text-center">

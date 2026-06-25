@@ -144,10 +144,10 @@ exports.brands = [
 exports.solutions = [
     {
         slug: "led-display",
-        title: "LED Display",
+        title: "จอ LED",
         titleEn: "LED Display",
         icon: "Monitor",
-        desc: "จอ LED Indoor / Outdoor / All-in-One สำหรับองค์กร ห้องประชุม และงานอีเวนต์",
+        desc: "จอ LED / LED Display Indoor, Outdoor และ All-in-One สำหรับองค์กร ห้องประชุม และงานอีเวนต์",
         descEn: "Indoor / Outdoor / All-in-One LED Displays for enterprises, meeting rooms, and events",
     },
     {

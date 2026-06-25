@@ -31,42 +31,49 @@ export const Route = createFileRoute("/blog/$slug")({
     }
     return { article, category: content.category, relatedArticles: content.relatedArticles };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.article.title} — Matrix Intertrade` },
-      { name: "description", content: loaderData?.article.excerpt },
-      { property: "og:type", content: "article" },
-      { property: "og:title", content: loaderData?.article.title },
-      { property: "og:description", content: loaderData?.article.excerpt },
-      { property: "og:url", content: `/blog/${loaderData?.article.slug}` },
-    ],
-    links: [
-      {
-        rel: "canonical",
-        href: `/blog/${loaderData?.article.slug}`,
-      },
-    ],
-    scripts: loaderData?.article
-      ? [
-          {
-            type: "application/ld+json",
-            children: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Article",
-              headline: loaderData.article.title,
-              description: loaderData.article.excerpt,
-              datePublished: loaderData.article.date,
-              author: { "@type": "Organization", name: "Matrix Intertrade" },
-              publisher: {
-                "@type": "Organization",
-                name: "Matrix Intertrade",
-              },
-              mainEntityOfPage: `https://www.matrixintertrade.com/blog/${loaderData.article.slug}`,
-            }),
-          },
-        ]
-      : [],
-  }),
+  head: ({ loaderData, params }) => {
+    const article = loaderData?.article;
+    const title = article ? `${article.title} — Matrix Intertrade` : "ไม่พบบทความ — Matrix Intertrade";
+    const description = article?.excerpt ?? "บทความนี้อาจถูกย้ายหรือไม่มีในระบบแล้ว";
+    const slug = article?.slug ?? params.slug;
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: `/blog/${slug}` },
+      ],
+      links: [
+        {
+          rel: "canonical",
+          href: `/blog/${slug}`,
+        },
+      ],
+      scripts: article
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Article",
+                headline: article.title,
+                description: article.excerpt,
+                datePublished: article.date,
+                author: { "@type": "Organization", name: "Matrix Intertrade" },
+                publisher: {
+                  "@type": "Organization",
+                  name: "Matrix Intertrade",
+                },
+                mainEntityOfPage: `https://www.matrixintertrade.com/blog/${article.slug}`,
+              }),
+            },
+          ]
+        : [],
+    };
+  },
   component: BlogDetail,
   notFoundComponent: () => <div className="p-20 text-center">ไม่พบบทความ</div>,
   errorComponent: () => <div className="p-20 text-center">เกิดข้อผิดพลาด</div>,

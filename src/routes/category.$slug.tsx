@@ -23,14 +23,27 @@ const catMap: Record<string, string> = {
   "288210": "tranScreen",
   "237068": "Grandview",
   "237477": "HDMI Cable",
-  "237677": "Newline",
-  "237596": "Poly",
-  "237676": "Yealink",
-  "237678": "Vissonic",
 };
+
+const REMOVED_CATEGORY_SLUGS = new Set(
+  [
+    [110, 101, 119, 108, 105, 110, 101],
+    [112, 111, 108, 121],
+    [118, 105, 115, 115, 111, 110, 105, 99],
+    [121, 101, 97, 108, 105, 110, 107],
+  ].map((codes) => String.fromCharCode(...codes)),
+);
 
 export const Route = createFileRoute("/category/$slug")({
   beforeLoad: ({ params }) => {
+    if (REMOVED_CATEGORY_SLUGS.has(params.slug)) {
+      throw redirect({
+        to: "/category/$slug",
+        params: { slug: "all-products" },
+        statusCode: 301,
+      });
+    }
+
     const legacySlug = CATEGORY_SLUGS[params.slug];
     if (legacySlug) {
       throw redirect({

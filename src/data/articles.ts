@@ -62,9 +62,7 @@ const titles = [
   "จอ LED All-in-one ครองตลาดห้องประชุม ยุค LCD กำลังจะล้าสมัย?",
   "What Is AVoverIP",
   "Smart Hospital",
-  "5 เทคโนโลยีสุดล้ำ เปลี่ยนห้องประชุมธรรมดาให้กลายเป็นห้องประชุมยุคใหม่",
-  "5 เหตุผลว่าทำไมจอ Newline Q series เหมาะกับโรงเรียนของคุณ!",
-  "Matrix Intertrade ประสบความสำเร็จอย่างยิ่งใหญ่กับงาน Smart Solutions & Smart AV Technologies For Smart Southern People",
+  "5 เทคโนโลยีสุดล้ำ เปลี่ยนห้องประชุมธรรมดาให้กลายเป็นห้องประชุมยุคใหม่",  "Matrix Intertrade ประสบความสำเร็จอย่างยิ่งใหญ่กับงาน Smart Solutions & Smart AV Technologies For Smart Southern People",
   "HDBaseT คืออะไร? เทคโนโลยีนี้ทำงานอย่างไร?",
 ];
 
@@ -74,8 +72,7 @@ function categorize(t: string): string {
   if (
     s.includes("classroom") ||
     s.includes("ห้องเรียน") ||
-    s.includes("โรงเรียน") ||
-    s.includes("newline")
+    s.includes("โรงเรียน") 
   )
     return "smart-classroom";
   if (s.includes("interactive") || s.includes("persona") || s.includes("whiteboard"))
@@ -108,18 +105,25 @@ function categorize(t: string): string {
   return "led-display";
 }
 
-export const articles: Article[] = titles.map((title, i) => {
-  const id = i + 1;
-  return {
-    id,
-    title,
-    slug: `article-${id}`,
-    category: categorize(title),
-    excerpt: title.slice(0, 110) + (title.length > 110 ? "…" : ""),
-    date: `2025-${String(((i * 3) % 12) + 1).padStart(2, "0")}-${String(((i * 7) % 27) + 1).padStart(2, "0")}`,
-    readMin: 4 + (i % 6),
-  };
-});
+const removedBrandArticleIds = new Set([46, 47, 48, 49]);
+const removedBrandArticleTitles = /Smart Solutions/i;
+
+export const articles: Article[] = titles
+  .map((title, i) => ({ title, id: i + 1 }))
+  .filter(({ title, id }) =>
+    !removedBrandArticleIds.has(id) && !removedBrandArticleTitles.test(title),
+  )
+  .map(({ title, id }) => {
+    return {
+      id,
+      title,
+      slug: `article-${id}`,
+      category: categorize(title),
+      excerpt: title.slice(0, 110) + (title.length > 110 ? "โ€ฆ" : ""),
+      date: `2025-${String((((id - 1) * 3) % 12) + 1).padStart(2, "0")}-${String((((id - 1) * 7) % 27) + 1).padStart(2, "0")}`,
+      readMin: 4 + ((id - 1) % 6),
+    };
+  });
 
 export function articlesByCategory(slug: string) {
   return articles.filter((a) => a.category === slug);

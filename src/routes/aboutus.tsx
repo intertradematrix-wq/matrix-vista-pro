@@ -6,10 +6,6 @@ import ledLineup2026 from "@/assets/about/led-lineup-2026.jpg";
 import premiumSolutions2026 from "@/assets/about/premium-solutions-2026.jpg";
 import partnerKramer from "@/assets/about/partner-1.png";
 import partnerGrandview from "@/assets/about/partner-2.png";
-import partnerNewline from "@/assets/about/partner-3.png";
-import partnerYealink from "@/assets/about/partner-4.png";
-import partnerVissonic from "@/assets/about/partner-5.png";
-import partnerPoly from "@/assets/about/partner-6.png";
 import industryEducation from "@/assets/about/industries/education.jpg";
 import industryHotel from "@/assets/about/industries/hotel-events.jpg";
 import industryOffice from "@/assets/about/industries/office-business.jpg";
@@ -73,30 +69,6 @@ const partners = [
     tag: "จอรับภาพ คุณภาพเหนือราคา",
     tagEn: "High-quality Projection Screens",
   },
-  {
-    name: "Newline",
-    img: partnerNewline,
-    tag: "จอทัชสกรีนอัจฉริยะ คุณภาพสูง",
-    tagEn: "High-quality Interactive Displays",
-  },
-  {
-    name: "Yealink",
-    img: partnerYealink,
-    tag: "ชุดประชุมคุณภาพ ราคาประหยัด",
-    tagEn: "Cost-effective Meeting Solutions",
-  },
-  {
-    name: "Vissonic",
-    img: partnerVissonic,
-    tag: "ระบบประชุมระดับมืออาชีพ",
-    tagEn: "Professional Conference Systems",
-  },
-  {
-    name: "Poly",
-    img: partnerPoly,
-    tag: "รวมอุปกรณ์ชุดประชุมคุณภาพ",
-    tagEn: "Quality Conference Equipment",
-  },
 ];
 
 const industries = [
@@ -127,9 +99,9 @@ const industries = [
     title: "สำนักงานและองค์กรธุรกิจ",
     titleEn: "Offices & Corporate",
     subtitle: "Corporate & Government",
-    desc: "สำหรับองค์กรธุรกิจ หน่วยงานราชการ และรัฐวิสาหกิจ — Remarkable Screen จอภาพยุคใหม่แบบทูอินวัน เขียน-ฉายภาพได้บนจอเดียว จับคู่กับโปรเจคเตอร์อินเตอร์แอ๊คทีฟ พร้อม newline Flex, Q/Q+/Z Series และ Kramer",
+    desc: "สำหรับองค์กรธุรกิจ หน่วยงานราชการ และรัฐวิสาหกิจ — Remarkable Screen จอภาพยุคใหม่แบบทูอินวัน เขียน-ฉายภาพได้บนจอเดียว จับคู่กับโปรเจคเตอร์อินเตอร์แอ๊คทีฟ พร้อมระบบภาพและเสียงที่ออกแบบให้เหมาะกับการใช้งานจริง",
     descEn:
-      "For corporate organizations, government agencies, and state enterprises — Remarkable Screens, two-in-one modern displays for writing and projecting, paired with interactive projectors, along with newline Flex, Q/Q+/Z Series, and Kramer.",
+      "For corporate organizations, government agencies, and state enterprises — Remarkable Screens, two-in-one modern displays for writing and projecting, paired with interactive projectors, with AV systems designed around real workflows.",
     img: industryOffice,
     href: "/industry/corporate",
   },
@@ -138,9 +110,9 @@ const industries = [
     title: "ระบบวิดีโอคอนเฟอเร้นซ์ เพื่อทุกหน่วยงาน",
     titleEn: "Video Conference Systems",
     subtitle: "Video Conference",
-    desc: "ระบบประชุมทางไกลครบวงจร Newline Q+ / Q / Z Series, Collaboration Devices และอุปกรณ์ Yealink, Poly สำหรับห้องประชุมทุกขนาด ตอบโจทย์การทำงานแบบ Hybrid Workplace ในยุคดิจิตอล",
+    desc: "ระบบประชุมทางไกลครบวงจร จอแสดงผล กล้อง ไมโครโฟน และระบบควบคุม สำหรับห้องประชุมทุกขนาด ตอบโจทย์การทำงานแบบ Hybrid Workplace ในยุคดิจิตอล",
     descEn:
-      "Comprehensive teleconference systems: Newline Q+/Q/Z Series, Collaboration Devices, and Yealink, Poly equipment for meeting rooms of all sizes, answering the needs of Hybrid Workplaces in the digital era.",
+      "Comprehensive teleconference systems with displays, cameras, microphones, and control equipment for meeting rooms of all sizes, answering the needs of Hybrid Workplaces in the digital era.",
     img: industryVC,
     href: "/industry/video-conference",
   },

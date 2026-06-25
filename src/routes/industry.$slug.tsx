@@ -299,7 +299,7 @@ function EducationContent() {
                 variant="outline"
                 className="border-white/40 text-white hover:bg-white/10"
               >
-                <Link to="/category/$slug" params={{ slug: "newline" }}>
+                <Link to="/interactive-display">
                   ดูสินค้าทั้งหมด
                 </Link>
               </Button>
@@ -452,25 +452,7 @@ const CORP_PRODUCTS: BiProduct[] = [
     img: "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg",
     href: "/category/grandview",
   },
-  {
-    title: "newline Flex",
-    descTH:
-      "จอ Interactive Display แบบยืดหยุ่น พร้อมระบบสัมผัสและเขียนความคิดเห็นได้บนสไลด์ เหมาะสำหรับห้องประชุมและห้องอบรมยุคใหม่ในองค์กร",
-    descEN:
-      "Flexible interactive display with touch and annotation — ideal for modern corporate meeting and training rooms.",
-    img: "/legacy-imports/f7c323982191-interactive_display12.png",
-    href: "/interactive-display",
-  },
-  {
-    title: "newline Q, Q+, Z Series",
-    descTH:
-      "จอทัชสกรีนอัจฉริยะระดับมืออาชีพ สำหรับห้องประชุมทุกขนาด รองรับการประชุมออนไลน์ การนำเสนอแบบไร้สาย และการ Collaborate แบบเรียลไทม์",
-    descEN:
-      "Professional smart touchscreens for every meeting room size — built for online meetings, wireless presentation and real-time collaboration.",
-    img: "/legacy-imports/652ee847c907-th_kta_pro_full_-231_.png",
-    href: "/interactive-display",
-  },
-  {
+      {
     title: "KRAMER",
     descTH:
       "อุปกรณ์ระบบ AV ครบวงจร สำหรับการนำเสนอภาพ เสียง และการแลกเปลี่ยนความเห็นในห้องประชุมยุคดิจิตอล 4.0",
@@ -567,12 +549,12 @@ function CorporateContent() {
             />
             <LazyImage
               src="/legacy-imports/f7c323982191-interactive_display12.png"
-              alt="newline Flex"
+              alt="Interactive Display Flex"
               className="aspect-square w-full object-cover rounded-2xl shadow-card"
             />
             <LazyImage
               src="/legacy-imports/652ee847c907-th_kta_pro_full_-231_.png"
-              alt="newline Q Series"
+              alt="Interactive Display Q Series"
               className="aspect-square w-full object-cover rounded-2xl shadow-card"
             />
           </div>
@@ -630,32 +612,6 @@ function CorporateContent() {
 
 const VC_PRODUCTS: BiProduct[] = [
   {
-    title: "Q+ Series — Newline",
-    descTH:
-      "จอภาพ Interactive Digital รองรับระบบสัมผัส รุ่นสูงสุดของ Newline สำหรับห้องประชุมระดับมืออาชีพ",
-    descEN: "Top-tier Newline Interactive Digital touchscreen for professional meeting rooms.",
-    img: "/legacy-imports/f7c323982191-interactive_display12.png",
-    href: "/interactive-display",
-  },
-  {
-    title: "Q Series — Newline",
-    descTH:
-      "จอภาพ Interactive Digital รองรับระบบสัมผัส รุ่นมาตรฐาน เหมาะสำหรับห้องประชุมและห้องเรียนทุกขนาด",
-    descEN:
-      "Standard Newline Interactive Digital touchscreen — ideal for meeting rooms and classrooms of any size.",
-    img: "/legacy-imports/652ee847c907-th_kta_pro_full_-231_.png",
-    href: "/interactive-display",
-  },
-  {
-    title: "Z Series — Newline",
-    descTH:
-      "จอภาพ Interactive Digital รองรับระบบสัมผัส ดีไซน์ทันสมัย ตอบโจทย์การประชุมและการนำเสนอแบบไร้สาย",
-    descEN:
-      "Newline Interactive Digital touchscreen with modern design — built for wireless meetings and presentations.",
-    img: "/legacy-imports/55c7fda91436-wireless_presentation1.png",
-    href: "/interactive-display",
-  },
-  {
     title: "Collaboration Devices",
     descTH:
       "ชุดอุปกรณ์วิดีโอคอนเฟอเร้นซ์ครบชุด สำหรับการประชุมทางไกล รองรับการเชื่อมต่อกับแพลตฟอร์มประชุมยอดนิยม",
@@ -710,7 +666,7 @@ function VideoConferenceContent() {
         <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-[1fr_1.1fr] gap-10 items-center">
           <LazyImage
             src="/legacy-imports/f7c323982191-interactive_display12.png"
-            alt="newline Interactive Display"
+            alt="Interactive Display Interactive Display"
             className="aspect-[4/3] w-full object-cover rounded-3xl shadow-elev"
           />
           <div>
@@ -724,8 +680,8 @@ function VideoConferenceContent() {
             <h2 className="mt-4 text-2xl md:text-3xl font-bold text-primary tracking-tight">
               {t(
                 lang,
-                "newline จออินเตอร์แอคทีฟ — มากกว่าจอ TV ทั่วไป",
-                "newline Interactive Display — far more than a TV",
+                "Interactive Display จออินเตอร์แอคทีฟ — มากกว่าจอ TV ทั่วไป",
+                "Interactive Display Interactive Display — far more than a TV",
               )}
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">

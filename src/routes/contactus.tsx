@@ -1,19 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { ContactForm } from "@/components/site/ContactForm";
-import { Button } from "@/components/ui/button";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import {
   Mail,
   MapPin,
   Phone,
   MessageCircle,
-  Navigation,
-  Clock,
-  Car,
   ChevronRight,
 } from "lucide-react";
 import heroContact from "@/assets/hero-contactus.jpg";
+import headOfficeWarehouseCard from "@/assets/contact/head-office-warehouse-card.png";
 import { Reveal, RevealStagger } from "@/components/site/Reveal";
 
 const MAP_EMBED_URL =
@@ -167,83 +164,46 @@ function ContactPage() {
 
           <div className="grid lg:grid-cols-[1fr_1.6fr] gap-6 items-stretch">
             {/* Info panel */}
-            <div className="relative rounded-3xl overflow-hidden bg-gradient-hero text-white p-7 md:p-8 shadow-elev ring-1 ring-white/10 flex flex-col">
-              <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:28px_28px] pointer-events-none" />
-              <div className="absolute -top-20 -right-20 h-56 w-56 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
-
-              <div className="relative">
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 ring-1 ring-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-widest backdrop-blur">
-                  <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-                  Head Office &amp; Warehouse
-                </div>
-                <h3 className="mt-4 text-2xl md:text-3xl font-bold leading-tight drop-shadow">
-                  Matrix Intertrade
-                  <br />
-                  Co., Ltd.
-                </h3>
-                <p className="mt-3 text-sm text-white/85 leading-relaxed">
+            <div className="relative overflow-hidden rounded-[28px] bg-black shadow-[0_28px_70px_-34px_rgba(0,0,0,0.75)] ring-1 ring-[#f5c542]/45">
+              <img
+                src={headOfficeWarehouseCard}
+                alt={t(
+                  lang,
+                  "ข้อมูล Head Office & Warehouse ของ Matrix Intertrade Co., Ltd. พร้อมที่อยู่ เวลาทำการ เบอร์โทร และที่จอดรถ",
+                  "Head Office and Warehouse information for Matrix Intertrade Co., Ltd. with address, business hours, phone, and parking details",
+                )}
+                loading="lazy"
+                decoding="async"
+                width={1122}
+                height={1401}
+                sizes="(max-width: 1024px) 100vw, 420px"
+                className="block h-auto w-full select-none object-contain"
+              />
+              <div className="sr-only">
+                <h3>Matrix Intertrade Co., Ltd.</h3>
+                <p>
                   {t(
                     lang,
-                    "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง",
-                    "111/51 Moo 8, Bang Krang, Mueang",
+                    "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000 ประเทศไทย",
+                    "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000, Thailand",
                   )}
-                  <br />
-                  {t(lang, "จ.นนทบุรี 11000 ประเทศไทย", "Nonthaburi 11000, Thailand")}
                 </p>
+                <p>{t(lang, "เวลาทำการ จันทร์-ศุกร์ 08:30-17:30 น.", "Business hours Monday-Friday 08:30-17:30")}</p>
+                <p>{t(lang, "โทรนัดหมาย 02-129-6193", "Appointments 02-129-6193")}</p>
+                <p>{t(lang, "มีที่จอดรถภายในบริษัท", "Parking available on-site")}</p>
               </div>
-
-              <div className="relative mt-6 space-y-3">
-                {[
-                  {
-                    Icon: Clock,
-                    label: t(lang, "เวลาทำการ", "Business Hours"),
-                    d: t(lang, "จันทร์–ศุกร์ 08:30–17:30 น.", "Mon–Fri 08:30–17:30"),
-                  },
-                  { Icon: Phone, label: t(lang, "โทรนัดหมาย", "Appointments"), d: "02-129-6193" },
-                  {
-                    Icon: Car,
-                    label: t(lang, "ที่จอดรถ", "Parking"),
-                    d: t(lang, "มีที่จอดรถภายในบริษัท", "Parking available on-site"),
-                  },
-                ].map(({ Icon, label, d }) => (
-                  <div
-                    key={label}
-                    className="flex items-start gap-3 rounded-xl bg-white/10 ring-1 ring-white/15 backdrop-blur px-4 py-3"
-                  >
-                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/15 ring-1 ring-white/20">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-white/70">
-                        {label}
-                      </div>
-                      <div className="text-sm font-semibold mt-0.5">{d}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="relative mt-6 flex flex-col sm:flex-row gap-3">
-                <Button
-                  asChild
-                  className="bg-gradient-accent text-white shadow-glow hover:opacity-95"
-                >
-                  <a href={DIRECTIONS_URL} target="_blank" rel="noopener noreferrer">
-                    <Navigation className="h-4 w-4" />
-                    {t(lang, "นำทาง Google Maps", "Google Maps Directions")}
-                  </a>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-white/30 bg-white/5 text-white hover:bg-white/15 hover:text-white"
-                >
-                  <a href="tel:021296193">
-                    <Phone className="h-4 w-4" />
-                    {t(lang, "โทรสอบถาม", "Call Us")}
-                  </a>
-                </Button>
-              </div>
+              <a
+                href={DIRECTIONS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t(lang, "นำทาง Google Maps", "Google Maps Directions")}
+                className="absolute bottom-[6.2%] left-[5.8%] h-[8.5%] w-[44.8%] rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5c542]"
+              />
+              <a
+                href="tel:021296193"
+                aria-label={t(lang, "โทรสอบถาม 02-129-6193", "Call 02-129-6193")}
+                className="absolute bottom-[6.2%] right-[5.8%] h-[8.5%] w-[40.5%] rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff3333]"
+              />
             </div>
 
             {/* Map */}

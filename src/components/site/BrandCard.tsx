@@ -13,10 +13,6 @@ const nameToCatId: Record<string, string> = {
   tranScreen: "288210",
   Grandview: "237068",
   "HDMI Cable": "237477",
-  Newline: "237677",
-  Poly: "237596",
-  Yealink: "237676",
-  Vissonic: "237678",
 };
 
 export function BrandCard({
