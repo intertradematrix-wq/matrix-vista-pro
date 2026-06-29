@@ -450,8 +450,13 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     description: "Brand landing cards, logos and color accents",
     key: "slug",
     title: "name",
-    subtitle: (item) => `${text(item.category)} · ${text(item.slug)}`,
-    image: (item) => text(item.logo_url) || text(item.image_url),
+    subtitle: (item) => `${text(item.category)} \u00b7 ${text(item.slug)}`,
+    image: (item) =>
+      text(item.logo_url) ||
+      text(item.image_url) ||
+      brandLogos[text(item.slug)] ||
+      brandImages[text(item.slug)] ||
+      null,
     href: (item) => `/brands/${text(item.slug)}`,
     fields: [
       { key: "slug", label: "Slug", placeholder: "brand-name", helperText: slugHelperText },
