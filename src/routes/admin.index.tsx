@@ -1406,7 +1406,12 @@ function AdminPage() {
                         [activeKind]: newId,
                       }));
                       const newDraft: Draft = {
-                        [config.key]: activeKind === "products" ? newId : "",
+                        [config.key]:
+                          activeKind === "products"
+                            ? newId
+                            : activeKind === "brandIntros"
+                              ? Math.floor(100000 + Math.random() * 900000).toString()
+                              : "",
                       };
                       activeFields.forEach((f) => {
                         if (f.key !== config.key) newDraft[f.key] = "";
