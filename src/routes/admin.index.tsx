@@ -452,10 +452,10 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     title: "name",
     subtitle: (item) => `${text(item.category)} \u00b7 ${text(item.slug)}`,
     image: (item) =>
-      text(item.logo_url) ||
       text(item.image_url) ||
-      brandLogos[text(item.slug)] ||
       brandImages[text(item.slug)] ||
+      text(item.logo_url) ||
+      brandLogos[text(item.slug)] ||
       null,
     href: (item) => `/brands/${text(item.slug)}`,
     fields: [
