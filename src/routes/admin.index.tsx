@@ -514,7 +514,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     description: "Category intro text, highlights and best-for lists",
     key: "category_id",
     title: "tagline",
-    subtitle: (item) => `${text(item.brand_slug)} · ${text(item.category_id)}`,
+    subtitle: (item) => `${text(item.brand_slug)} \u00b7 ${text(item.category_id)}`,
+    image: (item) => text(item.image_url),
     href: (item) => `/category/${text(item.category_id)}`,
     fields: [
       {
@@ -525,11 +526,17 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       },
       { key: "brand_slug", label: "Brand Slug" },
       { key: "tagline", label: "Tagline" },
-      { key: "description", label: "Description", type: "textarea", rows: 5 },
-      { key: "highlights", label: "Highlights JSON", type: "json", rows: 8, group: "advanced" },
-      { key: "best_for", label: "Best For JSON", type: "json", rows: 8, group: "advanced" },
+      { key: "description", label: "Description", type: "textarea" as FieldType, rows: 5 },
+      {
+        key: "image_url",
+        label: "\u0e23\u0e39\u0e1b\u0e20\u0e32\u0e1e\u0e1b\u0e23\u0e30\u0e01\u0e2d\u0e1a",
+        type: "image" as FieldType,
+        helperText: "\u0e23\u0e39\u0e1b\u0e20\u0e32\u0e1e\u0e17\u0e35\u0e48\u0e08\u0e30\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e19\u0e2b\u0e19\u0e49\u0e32 Brand Intro \u2014 \u0e2a\u0e32\u0e21\u0e32\u0e23\u0e16\u0e2d\u0e31\u0e1b\u0e42\u0e2b\u0e25\u0e14\u0e2b\u0e23\u0e37\u0e2d\u0e27\u0e32\u0e07 URL \u0e44\u0e14\u0e49",
+      },
+      { key: "highlights", label: "Highlights JSON", type: "json" as FieldType, rows: 8, group: "advanced" },
+      { key: "best_for", label: "Best For JSON", type: "json" as FieldType, rows: 8, group: "advanced" },
       { key: "origin", label: "Origin" },
-      { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
+      { key: "payload", label: "Payload JSON", type: "json" as FieldType, rows: 8, group: "advanced" },
     ],
   },
   solutions: {
@@ -2754,6 +2761,7 @@ function ContentPreview({
             </>
           )}
           {kind === "industries" && <IndustryShowcaseCardPreview item={item} />}
+          {kind === "brandIntros" && <BrandIntroPreview item={item} />}
 
           {/* Body content preview for articles and products */}
           {(kind === "articles" || kind === "products") &&
@@ -3127,6 +3135,119 @@ function IndustryShowcaseCardPreview({ item }: { item: ContentItem }) {
               </span>
             </div>
             <div className="mt-2 h-[2px] w-8 rounded-full bg-accent" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BrandIntroPreview({ item }: { item: ContentItem }) {
+  const name = text(item.brand_slug) || text(item.category_id) || "Brand";
+  const tagline = text(item.tagline) || "";
+  const description = text(item.description) || "";
+  const origin = text(item.origin);
+  const imageUrl = text(item.image_url);
+
+  // Parse highlights
+  let highlights: string[] = [];
+  try {
+    const raw = item.highlights;
+    if (Array.isArray(raw)) highlights = raw as string[];
+    else if (typeof raw === "string" && raw.trim()) highlights = JSON.parse(raw);
+  } catch {}
+
+  // Parse bestFor
+  let bestFor: string[] = [];
+  try {
+    const raw = item.best_for;
+    if (Array.isArray(raw)) bestFor = raw as string[];
+    else if (typeof raw === "string" && raw.trim()) bestFor = JSON.parse(raw);
+  } catch {}
+
+  return (
+    <div className="rounded-xl border border-accent/20 bg-white p-4">
+      <div className="mb-3">
+        <div className="text-sm font-semibold text-primary">Category page — Brand Intro banner</div>
+        <div className="text-xs text-muted-foreground">Shown at the top of /category/{text(item.category_id) || "slug"}</div>
+      </div>
+      <div className="overflow-hidden rounded-2xl border border-border bg-white">
+        <div className="grid gap-6 p-5 lg:grid-cols-[1.1fr_1fr]">
+          {/* Left: info */}
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-accent">
+              ✦ รู้จักแบรนด์
+            </div>
+            <h3 className="text-lg font-bold leading-snug text-primary">
+              {name} {tagline && `— ${tagline}`}
+            </h3>
+            {description && (
+              <p className="line-clamp-4 text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                {description}
+              </p>
+            )}
+            {origin && (
+              <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                <span>📍</span> Origin: {origin}
+              </div>
+            )}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {highlights.length > 0 && (
+                <div>
+                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">จุดเด่น</div>
+                  <ul className="space-y-1">
+                    {highlights.slice(0, 4).map((h, i) => (
+                      <li key={i} className="flex items-start gap-1.5 text-[10px] text-foreground/85">
+                        <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-accent/15 text-accent text-[8px]">✓</span>
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {bestFor.length > 0 && (
+                <div>
+                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">เหมาะกับ</div>
+                  <ul className="space-y-1">
+                    {bestFor.slice(0, 4).map((b, i) => (
+                      <li key={i} className="flex items-center gap-1.5 text-[10px] text-foreground/80">
+                        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <div className="flex gap-2 pt-1">
+              <div className="rounded-lg bg-primary px-3 py-1.5 text-[10px] font-semibold text-white">ขอใบเสนอราคา →</div>
+              <div className="rounded-lg border border-border px-3 py-1.5 text-[10px] font-semibold text-primary">ข้อมูลแบรนด์</div>
+            </div>
+          </div>
+
+          {/* Right: image */}
+          <div className="relative aspect-[5/4] overflow-hidden rounded-2xl bg-gradient-to-br from-slate-200 to-slate-300 shadow-md">
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={name}
+                className="absolute inset-0 h-full w-full object-cover"
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+              />
+            ) : (
+              <div className="grid h-full place-items-center text-xs text-muted-foreground">
+                <div className="text-center">
+                  <div className="text-2xl mb-1">🖼️</div>
+                  ยังไม่มีรูปภาพ<br />
+                  <span className="text-[10px]">อัปโหลดในช่อง "รูปภาพประกอบ"</span>
+                </div>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+            <div className="absolute bottom-3 left-3 right-3 text-white">
+              <div className="text-[9px] font-bold uppercase tracking-widest opacity-90">Authorized Distributor</div>
+              <div className="text-base font-black drop-shadow">{name}</div>
+            </div>
           </div>
         </div>
       </div>
