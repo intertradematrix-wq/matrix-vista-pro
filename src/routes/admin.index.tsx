@@ -515,7 +515,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     key: "category_id",
     title: "tagline",
     subtitle: (item) => `${text(item.brand_slug)} \u00b7 ${text(item.category_id)}`,
-    image: (item) => text(item.image_url),
+    image: (item) => text(item.image_url) || brandImages[text(item.brand_slug)] || null,
     href: (item) => `/category/${text(item.category_id)}`,
     fields: [
       {
@@ -3147,7 +3147,7 @@ function BrandIntroPreview({ item }: { item: ContentItem }) {
   const tagline = text(item.tagline) || "";
   const description = text(item.description) || "";
   const origin = text(item.origin);
-  const imageUrl = text(item.image_url);
+  const imageUrl = text(item.image_url) || brandImages[text(item.brand_slug)];
 
   // Parse highlights
   let highlights: string[] = [];
