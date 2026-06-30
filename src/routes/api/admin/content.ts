@@ -3,14 +3,13 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Database } from "@/integrations/supabase/types";
-import { slugifyText } from "@/lib/seo-slugs";
+import { slugifyText, CATEGORY_IDS_BY_SLUG } from "@/lib/seo-slugs";
 
 type ContentKind =
   | "products"
   | "articles"
   | "articleCategories"
   | "brands"
-  | "brandIntros"
   | "solutions"
   | "industries"
   | "siteSections"
@@ -215,6 +214,13 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "og_image_url",
       "seo_canonical_url",
       "seo_no_index",
+      "category_id",
+      "tagline",
+      "intro_description",
+      "intro_image_url",
+      "highlights",
+      "best_for",
+      "origin"
     ],
     requiredFields: ["slug", "name", "category", "description"],
     nullableFields: [
@@ -228,43 +234,16 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "og_description",
       "og_image_url",
       "seo_canonical_url",
+      "intro_description",
+      "intro_image_url",
+      "origin"
     ],
     booleanFields: ["seo_no_index"],
-    jsonFields: { accent: "object", payload: "object" },
+    jsonFields: { accent: "object", payload: "object", highlights: "array", best_for: "array" },
     slugFields: ["slug"],
     uniqueFields: ["slug"],
   },
-  brandIntros: {
-    table: "content_brand_category_intros",
-    key: "category_id",
-    select:
-      "category_id,brand_slug,tagline,description,image_url,highlights,best_for,origin,payload,updated_at",
-    order: "category_id",
-    fields: [
-      "category_id",
-      "brand_slug",
-      "tagline",
-      "description",
-      "image_url",
-      "highlights",
-      "best_for",
-      "origin",
-      "payload",
-    ],
-    requiredFields: ["category_id", "brand_slug", "tagline", "description"],
-    nullableFields: ["origin", "image_url"],
-    jsonFields: { highlights: "array", best_for: "array", payload: "object" },
-    slugFields: ["category_id", "brand_slug"],
-    uniqueFields: ["category_id"],
-    foreignKeys: [
-      {
-        field: "brand_slug",
-        table: "content_brands",
-        key: "slug",
-        label: "Brand",
-      },
-    ],
-  },
+
   solutions: {
     table: "content_solutions",
     key: "slug",
@@ -867,6 +846,31 @@ export const Route = createFileRoute("/api/admin/content")({
         }
         if (Object.keys(loadWarnings).length > 0) payload.loadWarnings = loadWarnings;
 
+        // Fetch brand intros manually and merge them into brands
+        if (payload.brands) {
+          const { data: brandIntrosData } = await supabaseAdmin
+            .from("content_brand_category_intros")
+            .select("category_id,brand_slug,tagline,description,image_url,highlights,best_for,origin");
+            
+          const brands = payload.brands as Record<string, unknown>[];
+          const intros = brandIntrosData || [];
+          
+          payload.brands = brands.map(brand => {
+            const intro = intros.find(i => i.brand_slug === brand.slug);
+            return {
+              ...brand,
+              category_id: intro?.category_id || "",
+              tagline: intro?.tagline || "",
+              intro_description: intro?.description || "",
+              intro_image_url: intro?.image_url || "",
+              highlights: intro?.highlights || [],
+              best_for: intro?.best_for || [],
+              origin: intro?.origin || ""
+            };
+          });
+        }
+
+
         return Response.json(payload);
       },
       POST: async ({ request }) => {
@@ -1018,6 +1022,49 @@ export const Route = createFileRoute("/api/admin/content")({
             }
             return Response.json({ ok: true, kind: parsed.data.kind, item: result.data });
           });
+        }
+
+        // Custom intercept for "brands" to save into both tables
+        if (parsed.data.kind === "brands") {
+          const brandSlug = id || values.slug as string;
+          const introValues = {
+            category_id: values.category_id || CATEGORY_IDS_BY_SLUG[brandSlug] || "",
+            brand_slug: brandSlug,
+            tagline: values.tagline || "",
+            description: values.intro_description || "",
+            image_url: values.intro_image_url || "",
+            highlights: values.highlights || [],
+            best_for: values.best_for || [],
+            origin: values.origin || ""
+          };
+          
+          delete values.category_id;
+          delete values.tagline;
+          delete values.intro_description;
+          delete values.intro_image_url;
+          delete values.highlights;
+          delete values.best_for;
+          delete values.origin;
+          
+          const result = await executeWrite(config, action, id, values);
+          if (result.error) return jsonError(`Failed to ${action} ${parsed.data.kind}`, 500, result.error);
+          
+          if (introValues.category_id) {
+            await supabaseAdmin.from("content_brand_category_intros").upsert(introValues);
+          }
+          
+          const combinedData = {
+            ...result.data,
+            category_id: introValues.category_id,
+            tagline: introValues.tagline,
+            intro_description: introValues.description,
+            intro_image_url: introValues.image_url,
+            highlights: introValues.highlights,
+            best_for: introValues.best_for,
+            origin: introValues.origin
+          };
+          
+          return Response.json({ ok: true, kind: parsed.data.kind, item: combinedData });
         }
 
         const result = await executeWrite(config, action, id, values);

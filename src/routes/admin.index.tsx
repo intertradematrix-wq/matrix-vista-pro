@@ -68,7 +68,6 @@ type ContentKind =
   | "articles"
   | "articleCategories"
   | "brands"
-  | "brandIntros"
   | "solutions"
   | "industries"
   | "siteSections"
@@ -502,6 +501,29 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "color", label: "Color" },
       { key: "image_url", label: "Image URL", type: "image" },
       { key: "logo_url", label: "Logo URL", type: "image" },
+      {
+        key: "category_id",
+        label: "รหัสหมวดหมู่แบรนด์ (Category ID)",
+        group: "category_page",
+        helperText: "ถ้าเว้นว่าง ระบบจะดึงให้อัตโนมัติตามที่มีในระบบ",
+      },
+      { key: "tagline", label: "สโลแกนหมวดหมู่ (Tagline)", group: "category_page" },
+      {
+        key: "intro_description",
+        label: "รายละเอียดหน้าหมวดหมู่",
+        type: "textarea",
+        rows: 5,
+        group: "category_page",
+      },
+      {
+        key: "intro_image_url",
+        label: "รูปภาพหน้าหมวดหมู่",
+        type: "image",
+        group: "category_page",
+      },
+      { key: "origin", label: "Origin (แหล่งกำเนิด)", group: "category_page" },
+      { key: "highlights", label: "Highlights JSON", type: "json", rows: 8, group: "category_page" },
+      { key: "best_for", label: "Best For JSON", type: "json", rows: 8, group: "category_page" },
       { key: "accent", label: "Accent JSON", type: "json", rows: 8, group: "advanced" },
       { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
       {
@@ -550,36 +572,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
     ],
   },
-  brandIntros: {
-    label: "Brand Intros",
-    description: "Category intro text, highlights and best-for lists",
-    key: "category_id",
-    title: "tagline",
-    subtitle: (item) => `${text(item.brand_slug)} \u00b7 ${text(item.category_id)}`,
-    image: (item) => text(item.image_url) || brandImages[text(item.brand_slug)] || null,
-    href: (item) => `/category/${text(item.category_id)}`,
-    fields: [
-      {
-        key: "category_id",
-        label: "URL Slug / Category ID",
-        placeholder: "brand-category",
-        helperText: slugHelperText,
-      },
-      { key: "brand_slug", label: "Brand Slug" },
-      { key: "tagline", label: "Tagline" },
-      { key: "description", label: "Description", type: "textarea" as FieldType, rows: 5 },
-      {
-        key: "image_url",
-        label: "\u0e23\u0e39\u0e1b\u0e20\u0e32\u0e1e\u0e1b\u0e23\u0e30\u0e01\u0e2d\u0e1a",
-        type: "image" as FieldType,
-        helperText: "\u0e23\u0e39\u0e1b\u0e20\u0e32\u0e1e\u0e17\u0e35\u0e48\u0e08\u0e30\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e19\u0e2b\u0e19\u0e49\u0e32 Brand Intro \u2014 \u0e2a\u0e32\u0e21\u0e32\u0e23\u0e16\u0e2d\u0e31\u0e1b\u0e42\u0e2b\u0e25\u0e14\u0e2b\u0e23\u0e37\u0e2d\u0e27\u0e32\u0e07 URL \u0e44\u0e14\u0e49",
-      },
-      { key: "highlights", label: "Highlights JSON", type: "json" as FieldType, rows: 8, group: "advanced" },
-      { key: "best_for", label: "Best For JSON", type: "json" as FieldType, rows: 8, group: "advanced" },
-      { key: "origin", label: "Origin" },
-      { key: "payload", label: "Payload JSON", type: "json" as FieldType, rows: 8, group: "advanced" },
-    ],
-  },
+
   solutions: {
     label: "Solutions",
     description: "Solution cards and navigation entries",
