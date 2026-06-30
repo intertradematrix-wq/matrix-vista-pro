@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   ExternalLink,
+  Eye,
   ImageIcon,
   Loader2,
   Lock,
@@ -302,6 +303,17 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         type: "toggle" as FieldType,
         group: "seo",
       },
+      {
+        key: "status",
+        label: "สถานะการเผยแพร่",
+        type: "select" as FieldType,
+        group: "publishing",
+        helperText: "ฉบับร่าง = บันทึกแต่ไม่แสดงบนเว็บไซต์ / เผยแพร่แล้ว = แสดงบนเว็บไซต์",
+        getOptions: () => [
+          { value: "draft", label: "📝 ฉบับร่าง (Draft)" },
+          { value: "published", label: "🌐 เผยแพร่แล้ว (Published)" },
+        ],
+      },
     ],
   },
   articles: {
@@ -428,6 +440,17 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         helperText: "ถ้าไม่กรอก จะใช้รูปปกแทน",
       },
       { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
+      {
+        key: "status",
+        label: "สถานะการเผยแพร่",
+        type: "select",
+        group: "publishing",
+        helperText: "ฉบับร่าง = บันทึกแต่ไม่แสดงบนเว็บไซต์ / เผยแพร่แล้ว = แสดงบนเว็บไซต์",
+        getOptions: () => [
+          { value: "draft", label: "📝 ฉบับร่าง (Draft)" },
+          { value: "published", label: "🌐 เผยแพร่แล้ว (Published)" },
+        ],
+      },
     ],
   },
   articleCategories: {
@@ -1058,7 +1081,7 @@ function AdminPage() {
     setAdminEmail(null);
   }
 
-  async function saveCurrentItem() {
+  async function saveCurrentItem(statusOverride?: "draft" | "published") {
     if (!sessionToken || !selectedItem) return;
     setSaveState("saving");
     setStatus("");
@@ -1066,6 +1089,9 @@ function AdminPage() {
     let values: Record<string, unknown>;
     try {
       values = fromDraft(draft, activeFields);
+      if (statusOverride && (activeKind === "articles" || activeKind === "products")) {
+        values.status = statusOverride;
+      }
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Invalid form value");
       setSaveState("error");
@@ -1113,12 +1139,19 @@ function AdminPage() {
       setSelectedIds((current) => ({ ...current, [activeKind]: text(saved[config.key]) }));
       setIsCreating(false);
       setSaveState("saved");
+      if (statusOverride && (activeKind === "articles" || activeKind === "products")) {
+        setDraft((prev) => ({ ...prev, status: statusOverride }));
+      }
       toast.success(
-        activeKind === "articles"
-          ? "บันทึกบทความสำเร็จ!"
-          : activeKind === "products"
-            ? "บันทึกสินค้าสำเร็จ!"
-            : "Saved successfully!",
+        statusOverride === "draft"
+          ? "บันทึกฉบับร่างสำเร็จ!"
+          : statusOverride === "published"
+            ? "เผยแพร่สำเร็จ!"
+            : activeKind === "articles"
+              ? "บันทึกบทความสำเร็จ!"
+              : activeKind === "products"
+                ? "บันทึกสินค้าสำเร็จ!"
+                : "Saved successfully!",
       );
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : `Cannot save ${config.label}`;
@@ -1444,6 +1477,8 @@ function AdminPage() {
                   allContent={content}
                   saveState={saveState}
                   onSave={saveCurrentItem}
+                  onSaveAsDraft={() => saveCurrentItem("draft")}
+                  onPublish={() => saveCurrentItem("published")}
                   isDirty={isDirty || isCreating}
                   onDiscard={discardDraft}
                   isCreating={isCreating}
@@ -2074,6 +2109,13 @@ function ContentList({
                 <div className="mt-1 truncate text-xs text-muted-foreground">
                   {config.subtitle(item)}
                 </div>
+                {(kind === "articles" || kind === "products") && (
+                  <div className="mt-2">
+                    <Badge variant={String(item.status) === "draft" ? "secondary" : "default"} className={`text-[10px] px-1.5 py-0 font-medium ${String(item.status) === "draft" ? "bg-amber-100 text-amber-700 hover:bg-amber-100" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"}`}>
+                      {String(item.status) === "draft" ? "📝 ฉบับร่าง" : "🌐 เผยแพร่แล้ว"}
+                    </Badge>
+                  </div>
+                )}
               </div>
             </button>
           );
@@ -2689,6 +2731,8 @@ function ContentPreview({
   allContent: Partial<Record<ContentKind, ContentItem[]>>;
   saveState: SaveState;
   onSave: () => void;
+  onSaveAsDraft?: () => void;
+  onPublish?: () => void;
   isDirty?: boolean;
   onDiscard?: () => void;
   isCreating?: boolean;
@@ -2714,7 +2758,14 @@ function ContentPreview({
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <CardTitle>Preview</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                Preview
+                {(kind === "articles" || kind === "products") && (
+                  <Badge variant={String(item.status) === "draft" ? "secondary" : "default"} className={String(item.status) === "draft" ? "bg-amber-100 text-amber-700 hover:bg-amber-100" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"}>
+                    {String(item.status) === "draft" ? "📝 ฉบับร่าง" : "🌐 เผยแพร่แล้ว"}
+                  </Badge>
+                )}
+              </CardTitle>
               <CardDescription>{config.label}</CardDescription>
             </div>
             {href && (
@@ -2806,33 +2857,55 @@ function ContentPreview({
                   : "Unsaved changes"}
               </div>
             )}
-            <Button
-              className="w-full"
-              onClick={onSave}
-              disabled={saveState === "saving" || (saveState !== "error" && !isDirty)}
-            >
-              {saveState === "saving" ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              {saveState === "saved" && !isDirty
-                ? kind === "articles" || kind === "products"
-                  ? "บันทึกแล้ว"
-                  : "Saved"
-                : isCreating
-                  ? kind === "articles"
-                    ? "สร้างบทความ"
-                    : kind === "products"
-                      ? "เพิ่มสินค้า"
-                      : "Create Item"
-                  : kind === "articles" || kind === "products"
-                    ? "บันทึก"
+            {kind === "articles" || kind === "products" ? (
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={onSaveAsDraft}
+                  disabled={saveState === "saving" || (saveState !== "error" && !isDirty && String(item.status) === "draft")}
+                >
+                  {saveState === "saving" ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="mr-2 h-4 w-4" />
+                  )}
+                  บันทึกฉบับร่าง
+                </Button>
+                <Button
+                  className="w-full bg-gradient-accent text-white border-0 hover:brightness-110 shadow-[0_4px_14px_0_oklch(var(--accent)/0.3)]"
+                  onClick={onPublish}
+                  disabled={saveState === "saving" || (saveState !== "error" && !isDirty && String(item.status) !== "draft")}
+                >
+                  {saveState === "saving" ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Globe className="mr-2 h-4 w-4" />
+                  )}
+                  เผยแพร่
+                </Button>
+              </div>
+            ) : (
+              <Button
+                className="w-full"
+                onClick={onSave}
+                disabled={saveState === "saving" || (saveState !== "error" && !isDirty)}
+              >
+                {saveState === "saving" ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="mr-2 h-4 w-4" />
+                )}
+                {saveState === "saved" && !isDirty
+                  ? "Saved"
+                  : isCreating
+                    ? "Create Item"
                     : "Save to Supabase"}
-              <kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center gap-1 rounded border border-primary-foreground/20 bg-primary-foreground/10 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-                Ctrl+S
-              </kbd>
-            </Button>
+                <kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center gap-1 rounded border border-primary-foreground/20 bg-primary-foreground/10 px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                  Ctrl+S
+                </kbd>
+              </Button>
+            )}
             {isDirty && onDiscard && (
               <Button
                 variant="outline"

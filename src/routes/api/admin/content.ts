@@ -64,7 +64,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     table: "content_products",
     key: "product_id",
     select:
-      "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
+      "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,status,updated_at",
     order: "product_id",
     orderAscending: false,
     fields: [
@@ -87,6 +87,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "og_image_url",
       "seo_canonical_url",
       "seo_no_index",
+      "status",
     ],
     requiredFields: ["name", "slug", "brand"],
     nullableFields: [
@@ -104,6 +105,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "og_description",
       "og_image_url",
       "seo_canonical_url",
+      "status",
     ],
     booleanFields: ["seo_no_index"],
     jsonFields: { payload: "object" },
@@ -122,7 +124,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     table: "content_articles",
     key: "slug",
     select:
-      "slug,article_id,title,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_no_index,updated_at",
+      "slug,article_id,title,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_no_index,status,updated_at",
     order: "article_id",
     orderAscending: false,
     fields: [
@@ -146,6 +148,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "og_image_url",
       "seo_no_index",
       "is_featured",
+      "status",
     ],
     requiredFields: ["slug", "title", "category", "excerpt"],
     nullableFields: [
@@ -160,6 +163,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "og_title",
       "og_description",
       "og_image_url",
+      "status",
     ],
     numericFields: ["article_id", "read_min"],
     booleanFields: ["seo_no_index", "is_featured"],

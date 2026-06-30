@@ -73,8 +73,9 @@ export async function loadArticleListContent(): Promise<ArticleListContent> {
       contentClient
         .from("content_articles")
         .select(
-          "article_id,title,slug,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,is_featured",
+          "article_id,title,slug,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,is_featured,status",
         )
+        .or("status.is.null,status.neq.draft")
         .order("published_date", { ascending: false }),
     ]);
 

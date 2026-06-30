@@ -89,8 +89,9 @@ export async function loadProductListContent(): Promise<ProductListContent> {
     const { data, error } = await contentClient
       .from("content_products")
       .select(
-        "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html",
-      );
+        "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,status",
+      )
+      .or("status.is.null,status.neq.draft");
 
     if (error) throw error;
 
