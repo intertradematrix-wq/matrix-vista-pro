@@ -2265,7 +2265,7 @@ function ContentEditor({
   const publishingFields = config.fields.filter((f) => f.group === "publishing");
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden border-border/60 shadow-sm">
+    <Card className="flex flex-col border-border/60 shadow-sm">
       <CardHeader className="border-b border-border/40 bg-muted/20 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center justify-between">
           <div>
@@ -2292,7 +2292,7 @@ function ContentEditor({
           {isProduct && <SeoScoreBadge score={computeProductSeoScore(draft)} />}
         </div>
       </CardHeader>
-      <CardContent className="flex-1 overflow-y-auto p-0">
+      <CardContent className="flex-1 p-0">
         {publishingFields.length > 0 ? (
           <Tabs defaultValue="content" className="flex h-full flex-col">
             <div className="sticky top-0 z-10 border-b border-border bg-card px-4 sm:px-6">
@@ -3476,7 +3476,7 @@ function RichTextField({
       <span>{label}</span>
       <div className="rounded-xl border border-border bg-card shadow-sm focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/20 transition-all">
         {!readOnly && (
-          <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 border-b border-border bg-muted/95 backdrop-blur p-1.5 rounded-t-xl">
+          <div className="sticky top-0 z-20 flex flex-wrap items-center gap-1 border-b border-border bg-muted/95 backdrop-blur p-1.5 rounded-t-xl">
             {/* Undo / Redo */ }
             <Button
               type="button"
