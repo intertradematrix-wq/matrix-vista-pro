@@ -73,13 +73,15 @@ function CategoryPage() {
   const { lang } = useLanguage();
   const { slug } = Route.useParams();
   const id = CATEGORY_IDS_BY_SLUG[slug] ?? slug;
-  const name = catMap[id]
+  const defaultName = catMap[id]
     ? id === "0"
       ? t(lang, "สินค้าทั้งหมด", "All Products")
       : catMap[id]
     : t(lang, "หมวดสินค้า", "Category");
   const [productContent, setProductContent] = useState(() => fallbackProductsByCategoryId(id));
   const [intro, setIntro] = useState<SiteBrandIntro | undefined>(() => brandIntrosByCategoryId[id]);
+
+  const name = intro?.name ?? defaultName;
   
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBrand, setSelectedBrand] = useState<string>("all");

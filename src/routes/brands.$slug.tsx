@@ -109,8 +109,8 @@ function BrandPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link to="/category/$slug" params={{ slug: "all-products" }}>
-                  {t(lang, "ดูสินค้าทั้งหมด", "View All Products")}
+                <Link to="/category/$slug" params={{ slug: brand.slug }}>
+                  {t(lang, `ดูสินค้า ${brand.name} ทั้งหมด`, `View All ${brand.name} Products`)}
                 </Link>
               </Button>
             </div>

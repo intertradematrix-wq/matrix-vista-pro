@@ -28,9 +28,7 @@ export function BrandCard({
   const logo = logoUrl || brandLogos[slug];
 
   const categoryId = CATEGORY_IDS_BY_SLUG[slug];
-  const targetUrl = categoryId
-    ? `/category/${CATEGORY_SLUGS[categoryId] ?? categoryId}`
-    : `/brands/${slug}`;
+  const targetUrl = `/category/${categoryId && CATEGORY_SLUGS[categoryId] ? CATEGORY_SLUGS[categoryId] : slug}`;
 
   return (
     <Link

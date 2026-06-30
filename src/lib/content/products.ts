@@ -116,7 +116,10 @@ export async function loadProductsByCategoryContent(
   const products =
     categoryId === "0" || !categoryId
       ? listContent.products
-      : listContent.products.filter((product) => product.brandCategoryId === categoryId);
+      : listContent.products.filter(
+          (product) =>
+            product.brandCategoryId === categoryId || product.brandSlug === categorySlugOrId
+        );
 
   return {
     ...listContent,
