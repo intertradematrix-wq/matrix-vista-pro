@@ -2720,6 +2720,8 @@ function ContentPreview({
   allContent,
   saveState,
   onSave,
+  onSaveAsDraft,
+  onPublish,
   isDirty,
   onDiscard,
   isCreating,
