@@ -145,13 +145,11 @@
   }
   html {
     max-width: 100%;
-    overflow-x: clip;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
   }
   body {
     max-width: 100%;
-    overflow-x: clip;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -193,12 +191,7 @@
     max-width: 100%;
   }
 
-  @supports not (overflow: clip) {
-    html,
-    body {
-      overflow-x: hidden;
-    }
-  }
+
   ::selection {
     background: oklch(0.6 0.2 248 / 0.25);
   }
