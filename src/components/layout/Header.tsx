@@ -11,6 +11,7 @@ import { articleImages } from "@/data/article-images";
 import { brandImages } from "@/data/brand-images";
 import { solutionImages } from "@/data/solution-images";
 import type { NavItem } from "@/data/site";
+import { CATEGORY_IDS_BY_SLUG, CATEGORY_SLUGS } from "@/lib/seo-slugs";
 import heroProductLine from "@/assets/hero-productline.jpg";
 import educationImage from "@/assets/about/industries/education.jpg";
 import hotelImage from "@/assets/about/industries/hotel-events.jpg";
@@ -53,7 +54,34 @@ export function Header() {
   const [hover, setHover] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const { location } = useRouterState();
-  const { nav: navItems } = useSiteContent();
+  const { nav: originalNavItems, brands } = useSiteContent();
+
+  const navItems = originalNavItems.map((item) => {
+    if (item.label === "สินค้า" || item.href === "/category/all-products") {
+      const dynamicSubmenu = [
+        ...brands.map((b) => {
+          const categoryId = CATEGORY_IDS_BY_SLUG[b.slug];
+          const targetUrl = categoryId
+            ? `/category/${CATEGORY_SLUGS[categoryId] ?? categoryId}`
+            : `/brands/${b.slug}`;
+
+          return {
+            label: b.name,
+            href: targetUrl,
+            image: b.imageUrl || brandImages[b.slug],
+            desc: b.desc,
+          };
+        }),
+        {
+          label: "Product Line",
+          href: "/product-line",
+          image: heroProductLine,
+        },
+      ];
+      return { ...item, submenu: dynamicSubmenu };
+    }
+    return item;
+  });
 
   useEffect(() => {
     setOpenMobile(false);
