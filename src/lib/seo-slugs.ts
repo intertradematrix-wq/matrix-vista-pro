@@ -8,9 +8,10 @@ export const CATEGORY_SLUGS: Record<string, string> = {
   "237477": "hdmi-cable",
 };
 
-export const CATEGORY_IDS_BY_SLUG = Object.fromEntries(
-  Object.entries(CATEGORY_SLUGS).map(([id, slug]) => [slug, id]),
-) as Record<string, string>;
+export const CATEGORY_IDS_BY_SLUG = {
+  ...Object.fromEntries(Object.entries(CATEGORY_SLUGS).map(([id, slug]) => [slug, id])),
+  kramerav: "235610",
+} as Record<string, string>;
 
 export const CATEGORY_NAMES_BY_SLUG: Record<string, string> = {
   "all-products": "All Products",

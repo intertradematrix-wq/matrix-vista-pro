@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { CTASection } from "@/components/site/CTASection";
 import { BrandCard } from "@/components/site/BrandCard";
-import { brands } from "@/data/site";
+import { useSiteContent } from "@/lib/content/use-site-content";
 import heroProductLine from "@/assets/hero-productline.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/product-line")({
 
 function ProductLinePage() {
   const { lang } = useLanguage();
+  const { brands } = useSiteContent();
   return (
     <>
       <PageHeader

@@ -5,16 +5,6 @@ import { brandLogos } from "@/data/brand-logos";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { CATEGORY_IDS_BY_SLUG, CATEGORY_SLUGS } from "@/lib/seo-slugs";
 
-const nameToCatId: Record<string, string> = {
-  Unilumin: "288194",
-  KramerAV: "235610",
-  Kramer: "235610",
-  Persona: "288209",
-  tranScreen: "288210",
-  Grandview: "237068",
-  "HDMI Cable": "237477",
-};
-
 export function BrandCard({
   slug,
   name,
@@ -37,7 +27,7 @@ export function BrandCard({
   const img = imageUrl || brandImages[slug];
   const logo = logoUrl || brandLogos[slug];
 
-  const categoryId = nameToCatId[name] || nameToCatId[slug] || CATEGORY_IDS_BY_SLUG[slug];
+  const categoryId = CATEGORY_IDS_BY_SLUG[slug];
   const targetUrl = categoryId
     ? `/category/${CATEGORY_SLUGS[categoryId] ?? categoryId}`
     : `/brands/${slug}`;

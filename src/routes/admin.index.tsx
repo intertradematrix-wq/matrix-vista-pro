@@ -55,6 +55,7 @@ import { articleImages } from "@/data/article-images";
 import { brandImages } from "@/data/brand-images";
 import { brandLogos } from "@/data/brand-logos";
 import { solutionImages } from "@/data/solution-images";
+import { CATEGORY_IDS_BY_SLUG } from "@/lib/seo-slugs";
 import imgEducation from "@/assets/article-smart-classroom.jpg";
 import imgHotel from "@/assets/hero-av.jpg";
 import imgCorporate from "@/assets/article-meeting-room.jpg";
@@ -210,16 +211,28 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         type: "richtext" as FieldType,
       },
       {
-        key: "brand",
-        label: "แบรนด์",
+        key: "brand_slug",
+        label: "แบรนด์ (เลือกจากระบบ)",
+        type: "select" as FieldType,
         group: "publishing",
-        placeholder: "เช่น: MAXHUB, Vivitek, BenQ",
-        helperText: "ชื่อแบรนด์ที่จะแสดงบนหน้าสินค้า",
+        helperText: "เลือกแบรนด์ที่มีในระบบ",
         getOptions: (allContent) => {
           const brands = allContent?.brands || [];
-          const uniqueNames = Array.from(new Set(brands.map((b) => text(b.name)))).filter(Boolean);
-          return uniqueNames.map((name) => ({ value: name, label: name }));
+          return brands.map((b) => ({ value: text(b.slug), label: text(b.name) || text(b.slug) }));
         },
+      },
+      {
+        key: "brand",
+        label: "แบรนด์ (ข้อความ)",
+        group: "publishing",
+        placeholder: "เช่น: MAXHUB, Vivitek, BenQ",
+        helperText: "จะถูกดึงอัตโนมัติเมื่อเลือกแบรนด์ หรือแก้ไขเองได้",
+      },
+      {
+        key: "brand_category_id",
+        label: "รหัสหมวดหมู่แบรนด์",
+        group: "publishing",
+        helperText: "รหัสหมวดหมู่ (ดึงให้อัตโนมัติเมื่อเลือกแบรนด์)",
       },
 
       {
@@ -2298,6 +2311,24 @@ function ContentEditor({
 
     return () => clearTimeout(timer);
   }, [isProduct, isCreating, draft.name, draft.brand, sessionToken, setDraft]);
+
+  // Auto-fill brand name and category id when brand_slug changes (products)
+  useEffect(() => {
+    if (!isProduct) return;
+    const brandSlug = draft.brand_slug;
+    if (!brandSlug) return;
+    
+    // Find brand from allContent
+    const brand = allContent?.brands?.find(b => text(b.slug) === brandSlug);
+    if (!brand) return;
+    
+    const brandName = text(brand.name) || brandSlug;
+    const catId = CATEGORY_IDS_BY_SLUG[brandSlug] || "";
+    
+    if (draft.brand !== brandName || draft.brand_category_id !== catId) {
+      setDraft({ ...draft, brand: brandName, brand_category_id: catId } as Draft);
+    }
+  }, [isProduct, draft.brand_slug, allContent?.brands, setDraft]);
 
   const regularFields = config.fields.filter(
     (f) => f.group !== "seo" && f.group !== "advanced" && f.group !== "publishing",
