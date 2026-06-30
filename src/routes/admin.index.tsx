@@ -2490,7 +2490,7 @@ function ContentEditor({
     if (!brand) return;
     
     const brandName = text(brand.name) || brandSlug;
-    const catId = CATEGORY_IDS_BY_SLUG[brandSlug] || "";
+    const catId = CATEGORY_IDS_BY_SLUG[brandSlug] || brandSlug;
     
     if (draft.brand !== brandName || draft.brand_category_id !== catId) {
       setDraft({ ...draft, brand: brandName, brand_category_id: catId } as Draft);
