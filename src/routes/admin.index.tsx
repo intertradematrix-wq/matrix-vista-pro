@@ -3650,7 +3650,7 @@ function RichTextField({
             />
           </div>
         )}
-        <div className="min-h-[600px] p-3 prose prose-sm max-w-none text-foreground/90 focus:outline-none md:min-h-[75vh]">
+        <div className="min-h-[400px] max-h-[600px] md:max-h-[70vh] overflow-y-auto p-3 prose prose-sm max-w-none text-foreground/90 focus:outline-none custom-scrollbar">
           <EditorContent editor={editor} />
         </div>
         {/* Word count footer */}
