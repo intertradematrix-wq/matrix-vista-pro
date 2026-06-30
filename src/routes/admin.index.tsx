@@ -1355,7 +1355,7 @@ function AdminPage() {
       >
         <div className="flex flex-col gap-3">
           <TabsList className="h-auto flex-wrap justify-start">
-            {CONTENT_KINDS.map((kind) => (
+            {CONTENT_KINDS.filter((k) => k !== "siteSections" && k !== "navItems").map((kind) => (
               <TabsTrigger key={kind} value={kind}>
                 {CONTENT_CONFIG[kind].label} ({content[kind]?.length ?? 0})
               </TabsTrigger>
