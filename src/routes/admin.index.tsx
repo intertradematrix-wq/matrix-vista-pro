@@ -1381,7 +1381,7 @@ function AdminPage() {
         </div>
 
         <TabsContent value={activeKind} className="mt-5">
-          <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
+          <div className="grid gap-4 lg:grid-cols-[280px_1fr] xl:gap-6 xl:grid-cols-[300px_1fr]">
             <ContentList
               kind={activeKind}
               config={config}
@@ -1467,7 +1467,7 @@ function AdminPage() {
 function AdminShell({ children, status }: { children?: ReactNode; status?: string }) {
   return (
     <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,hsl(var(--accent)/0.16),transparent_34rem),linear-gradient(180deg,#fff,hsl(var(--secondary)/0.55))] px-4 py-8 md:px-8">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto w-full max-w-[1600px]">
         {status && (
           <div className="mb-5 rounded-xl border border-border bg-white px-4 py-3 text-sm text-muted-foreground shadow-sm">
             {status}
@@ -3372,6 +3372,85 @@ function RichTextField({
   onChange: (value: string) => void;
   readOnly?: boolean;
 }) {
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploading(true);
+
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
+      if (!token) throw new Error("Not logged in. Please refresh.");
+
+      // Convert image to WebP format to save Egress bandwidth
+      let uploadFile = file;
+      if (
+        file.type.startsWith("image/") &&
+        file.type !== "image/webp" &&
+        file.type !== "image/gif" &&
+        file.type !== "image/svg+xml"
+      ) {
+        uploadFile = await new Promise<File>((resolve) => {
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return resolve(file);
+            ctx.drawImage(img, 0, 0);
+            canvas.toBlob(
+              (blob) => {
+                if (!blob) return resolve(file);
+                const baseName = file.name.substring(0, file.name.lastIndexOf(".")) || file.name;
+                resolve(new File([blob], `${baseName}.webp`, { type: "image/webp" }));
+              },
+              "image/webp",
+              0.85,
+            );
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(file);
+          };
+          img.src = url;
+        });
+      }
+
+      const formData = new FormData();
+      formData.append("file", uploadFile);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error || `Upload failed with status ${res.status}`);
+      }
+
+      const { url } = await res.json();
+      if (editor) {
+        editor.chain().focus().setImage({ src: url }).run();
+      }
+    } catch (err) {
+      console.error("Upload failed", err);
+      alert(`Upload failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const editor = useEditor({
     extensions: [StarterKit, LinkExtension.configure({ openOnClick: false }), ImageExtension],
     content: value,
@@ -3395,10 +3474,10 @@ function RichTextField({
   return (
     <div className="grid gap-1.5 text-sm font-medium text-primary">
       <span>{label}</span>
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/20 transition-all">
+      <div className="rounded-xl border border-border bg-card shadow-sm focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/20 transition-all">
         {!readOnly && (
-          <div className="flex flex-wrap items-center gap-1 border-b border-border bg-muted/40 p-1.5">
-            {/* Undo / Redo */}
+          <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 border-b border-border bg-muted/95 backdrop-blur p-1.5 rounded-t-xl">
+            {/* Undo / Redo */ }
             <Button
               type="button"
               variant="ghost"
@@ -3553,22 +3632,25 @@ function RichTextField({
               type="button"
               variant="ghost"
               size="sm"
+              disabled={uploading}
               onClick={() => {
-                const url = window.prompt(
-                  "URL รูปภาพ (สามารถอัปโหลดจากแท็บอื่นแล้ววาง URL ที่นี่):",
-                );
-                if (url) {
-                  editor.chain().focus().setImage({ src: url }).run();
-                }
+                fileInputRef.current?.click();
               }}
               className="h-8 w-8 p-0"
-              title="แทรกรูปภาพ"
+              title="แทรกรูปภาพ (Upload & Compress)"
             >
-              <ImageIcon className="h-4 w-4" />
+              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
             </Button>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleUpload}
+            />
           </div>
         )}
-        <div className="min-h-[480px] p-3 prose prose-sm max-w-none text-foreground/90 focus:outline-none md:min-h-[640px]">
+        <div className="min-h-[600px] p-3 prose prose-sm max-w-none text-foreground/90 focus:outline-none md:min-h-[75vh]">
           <EditorContent editor={editor} />
         </div>
         {/* Word count footer */}
