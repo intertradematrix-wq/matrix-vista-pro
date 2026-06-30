@@ -495,8 +495,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     href: (item) => `/brands/${text(item.slug)}`,
     fields: [
       { key: "slug", label: "Slug", placeholder: "brand-name", helperText: slugHelperText },
-      { key: "name", label: "Name" },
-      { key: "category", label: "Category" },
+      { key: "name", label: "Name (ชื่อแบรนด์)", placeholder: "เช่น Fabulux, Kramer", helperText: "ชื่อแบรนด์ที่จะแสดงเป็นหัวข้อหลัก" },
+      { key: "category", label: "Category (ประเภทสินค้า)", placeholder: "เช่น LED Display, Projector Screen", helperText: "ประเภทสินค้าหลักของแบรนด์นี้ (คำสั้นๆ)" },
       { key: "description", label: "Description", type: "textarea", rows: 5 },
       { key: "color", label: "Color" },
       { key: "image_url", label: "Image URL", type: "image" },
