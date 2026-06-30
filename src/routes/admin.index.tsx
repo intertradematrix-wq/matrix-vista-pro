@@ -162,7 +162,7 @@ const slugHelperText =
 
 const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   products: {
-    label: "Products",
+    label: "All Products",
     description: "จัดการสินค้า รูปภาพ รายละเอียด และข้อมูลแบรนด์",
     key: "product_id",
     title: "name",
@@ -1355,7 +1355,7 @@ function AdminPage() {
       >
         <div className="flex flex-col gap-3">
           <TabsList className="h-auto flex-wrap justify-start">
-            {CONTENT_KINDS.filter(k => k !== "products").map((kind) => (
+            {CONTENT_KINDS.map((kind) => (
               <TabsTrigger key={kind} value={kind}>
                 {CONTENT_CONFIG[kind].label} ({content[kind]?.length ?? 0})
               </TabsTrigger>
