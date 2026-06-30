@@ -72,11 +72,6 @@ export function Header() {
             desc: b.desc,
           };
         }),
-        {
-          label: "Product Line",
-          href: "/product-line",
-          image: heroProductLine,
-        },
       ];
       return { ...item, submenu: dynamicSubmenu };
     }
