@@ -1355,7 +1355,7 @@ function AdminPage() {
       >
         <div className="flex flex-col gap-3">
           <TabsList className="h-auto flex-wrap justify-start">
-            {CONTENT_KINDS.map((kind) => (
+            {CONTENT_KINDS.filter(k => k !== "products").map((kind) => (
               <TabsTrigger key={kind} value={kind}>
                 {CONTENT_CONFIG[kind].label} ({content[kind]?.length ?? 0})
               </TabsTrigger>
@@ -1475,6 +1475,7 @@ function AdminPage() {
                   isCreating={isCreating}
                   allContent={content}
                   sessionToken={sessionToken}
+                  onRefresh={() => { if (sessionToken) void loadAdminContent(sessionToken); }}
                 />
                 <ContentPreview
                   kind={activeKind}
@@ -2176,6 +2177,177 @@ function SeoScoreBadge({ score }: { score: "green" | "yellow" | "red" }) {
   );
 }
 
+function BrandProductsTab({
+  brandSlug,
+  allContent,
+  sessionToken,
+  onProductSaved,
+}: {
+  brandSlug: string;
+  allContent?: Partial<Record<ContentKind, ContentItem[]>>;
+  sessionToken?: string | null;
+  onProductSaved: () => void;
+}) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [productDraft, setProductDraft] = useState<Draft>({});
+  const [saveStatus, setSaveStatus] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const products = useMemo(() => {
+    return (allContent?.products || []).filter((p) => text(p.brand_slug) === brandSlug);
+  }, [allContent?.products, brandSlug]);
+
+  const handleOpenNew = () => {
+    setEditingProductId(null);
+    setProductDraft({ brand_slug: brandSlug });
+    setSaveStatus("");
+    setModalOpen(true);
+  };
+
+  const handleOpenEdit = (p: ContentItem) => {
+    setEditingProductId(text(p.product_id));
+    setProductDraft(toDraft(p, CONTENT_CONFIG.products.fields));
+    setSaveStatus("");
+    setModalOpen(true);
+  };
+
+  const handleSaveProduct = async () => {
+    if (!sessionToken) return;
+    setIsSaving(true);
+    setSaveStatus("");
+    try {
+      const values = fromDraft(productDraft, CONTENT_CONFIG.products.fields);
+      values.brand_slug = brandSlug;
+
+      const payload = {
+        kind: "products",
+        id: editingProductId || "",
+        action: editingProductId ? "update" : "create",
+        values,
+      };
+      const response = await fetch("/api/admin/content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Save failed");
+      
+      setSaveStatus("Saved successfully!");
+      onProductSaved();
+      setTimeout(() => setModalOpen(false), 1000);
+    } catch (e) {
+      setSaveStatus(e instanceof Error ? e.message : "Error saving product");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4 pt-4">
+      <div className="flex items-center justify-between px-4 sm:px-6">
+        <h3 className="text-sm font-semibold">สินค้าในแบรนด์นี้ ({products.length})</h3>
+        <Button size="sm" onClick={handleOpenNew} className="gap-2 h-8">
+          <Plus className="h-4 w-4" /> เพิ่มสินค้าใหม่
+        </Button>
+      </div>
+
+      <div className="px-4 sm:px-6 pb-6">
+        <div className="rounded-md border bg-white overflow-hidden">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-muted/50 text-muted-foreground">
+              <tr>
+                <th className="px-4 py-2 font-medium">Image</th>
+                <th className="px-4 py-2 font-medium">ID</th>
+                <th className="px-4 py-2 font-medium">Name</th>
+                <th className="px-4 py-2 font-medium">Status</th>
+                <th className="px-4 py-2 font-medium text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {products.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                    ไม่มีสินค้าในแบรนด์นี้
+                  </td>
+                </tr>
+              ) : (
+                products.map((p) => (
+                  <tr key={text(p.product_id)} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => handleOpenEdit(p)}>
+                    <td className="px-4 py-2">
+                      {p.image_url ? (
+                        <img src={text(p.image_url)} alt="" className="w-10 h-10 object-cover rounded shadow-sm border" />
+                      ) : (
+                        <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-[10px] border">No img</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-2 font-medium text-xs whitespace-nowrap">{text(p.product_id)}</td>
+                    <td className="px-4 py-2">{text(p.name)}</td>
+                    <td className="px-4 py-2">
+                      <Badge variant={p.status === "published" ? "default" : "secondary"} className="text-[10px]">
+                        {p.status === "published" ? "Published" : "Draft"}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-2 text-right">
+                      <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={(e) => { e.stopPropagation(); handleOpenEdit(p); }}>
+                        Edit
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-background rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b">
+              <h2 className="text-lg font-semibold">{editingProductId ? "แก้ไขสินค้า" : "เพิ่มสินค้าใหม่"}</h2>
+              <button onClick={() => setModalOpen(false)} className="text-muted-foreground hover:text-foreground">
+                <Minus className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 bg-muted/10">
+              <ContentEditor
+                kind="products"
+                config={CONTENT_CONFIG.products}
+                draft={productDraft}
+                setDraft={setProductDraft}
+                isCreating={!editingProductId}
+                sessionToken={sessionToken}
+                allContent={allContent}
+              />
+            </div>
+
+            <div className="flex items-center justify-between px-6 py-4 border-t bg-card rounded-b-xl">
+              <div className={`text-sm font-medium ${saveStatus.includes("success") ? "text-green-600" : "text-red-500"}`}>
+                {saveStatus}
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setModalOpen(false)}>
+                  ยกเลิก
+                </Button>
+                <Button onClick={handleSaveProduct} disabled={isSaving}>
+                  {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isSaving ? "กำลังบันทึก..." : "บันทึกสินค้า"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ContentEditor({
   kind,
   config,
@@ -2184,6 +2356,7 @@ function ContentEditor({
   isCreating,
   sessionToken,
   allContent,
+  onRefresh,
 }: {
   kind: ContentKind;
   config: ContentConfig;
@@ -2192,6 +2365,7 @@ function ContentEditor({
   isCreating?: boolean;
   sessionToken?: string | null;
   allContent?: Partial<Record<ContentKind, ContentItem[]>>;
+  onRefresh?: () => void;
 }) {
   const [seoOpen, setSeoOpen] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
@@ -2369,6 +2543,14 @@ function ContentEditor({
                 <TabsTrigger value="publishing" className="text-xs sm:text-sm">
                   {isProduct ? "ข้อมูลแบรนด์" : "การเผยแพร่"}
                 </TabsTrigger>
+                {kind === "brands" && !isCreating && (
+                  <TabsTrigger value="products" className="text-xs sm:text-sm text-blue-600 data-[state=active]:text-blue-700 data-[state=active]:bg-blue-50">
+                    สินค้าในแบรนด์นี้
+                    <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-blue-100 text-[9px] font-medium text-blue-700">
+                      {allContent?.products?.filter(p => text(p.brand_slug) === draft.slug).length || 0}
+                    </span>
+                  </TabsTrigger>
+                )}
                 <TabsTrigger value="seo" className="text-xs sm:text-sm">
                   การตั้งค่า SEO
                   {seoFields.length > 0 && (
@@ -2412,6 +2594,18 @@ function ContentEditor({
               </div>
               {seoFields.map((field) => renderField(field, draft, update, isCreating, allContent))}
             </TabsContent>
+            {kind === "brands" && !isCreating && (
+              <TabsContent value="products" className="m-0 p-0 focus-visible:ring-0 bg-accent/[0.02]">
+                <BrandProductsTab
+                  brandSlug={draft.slug as string}
+                  allContent={allContent}
+                  sessionToken={sessionToken}
+                  onProductSaved={() => {
+                    if (onRefresh) onRefresh();
+                  }}
+                />
+              </TabsContent>
+            )}
           </Tabs>
         ) : (
           <div className="grid gap-5 p-4 sm:p-6">
