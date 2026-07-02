@@ -159,49 +159,6 @@ function AboutPage() {
         />
       </section>
 
-      <div className="bg-navy py-12 border-b border-white/5">
-        <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="flex items-center gap-4 justify-center md:justify-start">
-              <div className="grid h-14 w-14 place-items-center rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-400">
-                <Target className="h-6 w-6" />
-              </div>
-              <div className="text-white font-bold leading-tight">
-                โซลูชั่นครบวงจร<br/>
-                <span className="text-slate-400 font-normal text-sm">ตอบโจทย์ทุกการใช้งาน</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 justify-center md:justify-start">
-              <div className="grid h-14 w-14 place-items-center rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-400">
-                <Heart className="h-6 w-6" />
-              </div>
-              <div className="text-white font-bold leading-tight">
-                ทีมงานผู้เชี่ยวชาญ<br/>
-                <span className="text-slate-400 font-normal text-sm">ดูแลทุกขั้นตอน</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 justify-center md:justify-start">
-              <div className="grid h-14 w-14 place-items-center rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-400">
-                <Eye className="h-6 w-6" />
-              </div>
-              <div className="text-white font-bold leading-tight">
-                มาตรฐานการติดตั้ง<br/>
-                <span className="text-slate-400 font-normal text-sm">ระดับมืออาชีพ</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-navy pt-16">
-        <div className="mx-auto max-w-4xl px-4 md:px-6 text-center mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold text-white leading-snug">
-            <span className="text-sky-400 block mb-2">{lang === 'th' ? 'ไม่ว่าคุณต้องการโซลูชั่นแบบไหน เราพร้อมจัดให้' : 'No matter what solution you need, we are ready to provide it'}</span>
-            <span>{lang === 'th' ? 'เพราะเราคือผู้เชี่ยวชาญด้านโซลูชั่นภาพและเสียงสำหรับองค์กรโดยเฉพาะ' : 'Because we are audiovisual solution experts specifically for organizations.'}</span>
-          </h2>
-        </div>
-      </div>
-
       {/* Story */}
       <section className="bg-navy pb-16 md:pb-24">
         <div className="mx-auto max-w-4xl px-4 md:px-6">
