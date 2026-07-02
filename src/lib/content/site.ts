@@ -793,6 +793,7 @@ export async function loadSiteContent(): Promise<SiteContent> {
       siteSectionsResult,
       articleCategoriesResult,
       brandIntrosResult,
+      aboutUsResult,
     ] = await Promise.all([
       contentClient
         .from("content_nav_items")
@@ -816,6 +817,11 @@ export async function loadSiteContent(): Promise<SiteContent> {
         .from("content_brand_category_intros")
         .select("category_id,brand_slug,tagline,description,highlights,best_for,origin,payload")
         .order("category_id", { ascending: true }),
+      contentClient
+        .from("content_about_us")
+        .select("*")
+        .eq("id", "about_us")
+        .single(),
     ]);
 
     const firstError =
@@ -825,7 +831,8 @@ export async function loadSiteContent(): Promise<SiteContent> {
       industriesResult.error ??
       siteSectionsResult.error ??
       articleCategoriesResult.error ??
-      brandIntrosResult.error;
+      brandIntrosResult.error ??
+      (aboutUsResult.error && !["PGRST116", "42P01", "42P07"].includes(aboutUsResult.error.code) ? aboutUsResult.error : null);
     if (firstError) throw firstError;
 
     const brands = mapBrands(brandsResult.data as BrandRow[] | null);
@@ -842,6 +849,7 @@ export async function loadSiteContent(): Promise<SiteContent> {
         brandIntrosResult.data as BrandIntroRow[] | null,
         brands,
       ),
+      aboutUs: aboutUsResult.data ? mapAboutUs(aboutUsResult.data as AboutUsRow) : fallbackAboutUs,
       source: "supabase",
     };
   } catch (error) {
