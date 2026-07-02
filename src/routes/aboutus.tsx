@@ -12,7 +12,7 @@ import industryOffice from "@/assets/about/industries/office-business.jpg";
 import industryVC from "@/assets/about/industries/video-conference.jpg";
 import { Button } from "@/components/ui/button";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
-import { useSiteContent } from "@/components/site/SiteContentProvider";
+import { useSiteContent } from "@/lib/content/use-site-content";
 import {
   Target,
   Eye,
@@ -121,12 +121,19 @@ const industries = [
 
 function AboutPage() {
   const { lang } = useLanguage();
+  const { aboutUs } = useSiteContent();
+
+  if (!aboutUs) return null;
+
+  const rawStats = aboutUs.statsPayload;
+  const statsList = Array.isArray(rawStats) && rawStats.length > 0 ? rawStats : stats;
+
   return (
     <>
       <PageHeader
         eyebrow="About Us"
         title={t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
-        desc={t(
+        desc={aboutUs.introDescTh ? t(lang, aboutUs.introDescTh, aboutUs.introDescEn) : t(
           lang,
           "ผู้นำเข้าและจัดจำหน่ายระบบภาพแบรนด์ชั้นนำของโลก ด้วยประสบการณ์ทีมงานมากกว่า 20 ปี คัดสรรเฉพาะผลิตภัณฑ์คุณภาพสูงที่เชื่อถือได้ระดับแนวหน้าของโลก",
           "Importer and distributor of world-leading AV brands with over 20 years of experience. We select only the highest quality and most reliable products globally.",
@@ -157,36 +164,9 @@ function AboutPage() {
               {t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
             </h2>
             <div className="mt-5 space-y-4 text-muted-foreground leading-relaxed">
-              <p>
-                <strong className="text-foreground">
-                  {t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
-                </strong>{" "}
-                {t(
-                  lang,
-                  "เป็นผู้จัดจำหน่ายผลิตภัณฑ์ที่ใช้ในสำนักงานเพื่อเสริมประสิทธิภาพของการทำงานในหลากหลายรูปแบบ อาทิ จอรับภาพโปรเจคเตอร์ขนาดต่าง ๆ, จอ LED, กระดานอัจฉริยะ, อุปกรณ์ต่อเชื่อมระบบภาพ และการแสดงผลระบบภาพที่ทันสมัย ตอบโจทย์ยุคดิจิตอลทุกความต้องการ",
-                  "is a distributor of office products designed to enhance operational efficiency in various forms, such as projection screens of all sizes, LED displays, interactive whiteboards, AV connectivity equipment, and modern visual displays, meeting every digital era requirement.",
-                )}
-              </p>
-              <p>
-                {t(
-                  lang,
-                  "ด้วยวิสัยทัศน์ที่เล็งเห็นว่า เครื่องมือและอุปกรณ์สำนักงานที่ดีและมีเสถียรภาพสูงเท่านั้น ที่จะตอบโจทย์การลงทุนที่คุ้มค่า และจะเพิ่มประสิทธิภาพการทำงานขององค์กรในโลกเทคโนโลยียุคปัจจุบันได้อย่างแท้จริง",
-                  "With the vision that only good and highly stable office tools and equipment will provide a worthwhile investment and truly increase organizational efficiency in today's technological world.",
-                )}
-              </p>
-              <p>
-                {t(
-                  lang,
-                  "ผลิตภัณฑ์คุณภาพต่ำที่ดูเหมือนจะประหยัดในตอนต้น แต่กลับสร้างปัญหาในการใช้งานและบั่นทอนประสิทธิภาพในการทำงาน จากประสบการณ์อันยาวนานมากกว่า",
-                  "Low-quality products that seem economical initially often create operational problems and undermine work efficiency. With over",
-                )}{" "}
-                <strong className="text-foreground">{t(lang, "20 ปี", "20 years")}</strong>{" "}
-                {t(
-                  lang,
-                  "ของทีมงานเมทริกซ์ฯ ผลิตภัณฑ์ที่เราคัดสรรมาบริการท่าน ล้วนเป็นผลิตภัณฑ์ที่มีคุณภาพสูง เป็นที่เชื่อถือระดับแนวหน้าของโลกทั้งสิ้น",
-                  "of experience, Matrix’s team ensures that the products we select for you are of high quality and recognized as world-leaders.",
-                )}
-              </p>
+              {aboutUs.storyP1Th && <p>{t(lang, aboutUs.storyP1Th, aboutUs.storyP1En)}</p>}
+              {aboutUs.storyP2Th && <p>{t(lang, aboutUs.storyP2Th, aboutUs.storyP2En)}</p>}
+              {aboutUs.storyP3Th && <p>{t(lang, aboutUs.storyP3Th, aboutUs.storyP3En)}</p>}
             </div>
             <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
               {statsList.map((s: any) => (
@@ -370,7 +350,7 @@ function AboutPage() {
               Company Info
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              {t(lang, "บริษัท แมทริกซ์ อินเตอร์เทรด จำกัด", "Matrix Intertrade Co., Ltd.")}
+              {t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
             </h2>
             <p className="mt-4 text-muted-foreground">
               {t(
