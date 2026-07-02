@@ -326,59 +326,6 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Our Partners */}
-      <section className="py-16 md:py-24">
-        <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="text-center mb-12">
-            <div className="inline-block rounded-full bg-accent/10 text-accent px-3 py-1 text-[11px] font-bold uppercase tracking-widest mb-4">
-              Our Partners
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              {t(lang, "แบรนด์ชั้นนำที่เราเป็นตัวแทนจำหน่าย", "Leading Brands We Represent")}
-            </h2>
-            <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-              {t(
-                lang,
-                "คัดสรรเฉพาะแบรนด์ที่ได้รับการยอมรับระดับโลก พร้อมการรับประกันและบริการหลังการขายในประเทศ",
-                "We select only globally recognized brands with domestic warranties and after-sales support.",
-              )}
-            </p>
-          </div>
-
-          {/* Featured LED Lineup 2026 */}
-          <div className="mb-12 rounded-3xl overflow-hidden shadow-elev ring-1 ring-border bg-navy">
-            <img
-              src={ledLineup2026}
-              alt="Matrix Intertrade New Lineup 2026 — The Leading Choice of LED Display Solutions: Unilumin, Absen, INFiLED, LEDMAN, Daktronics, Fabulux LED"
-              loading="lazy"
-              className="w-full h-auto object-contain"
-            />
-          </div>
-
-          <div className="grid gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-            {partners.map((p) => (
-              <div
-                key={p.name}
-                className="group rounded-2xl border border-border bg-card p-5 shadow-card hover:shadow-elev hover:border-accent/40 transition-all text-center"
-              >
-                <div className="aspect-square grid place-items-center bg-white rounded-xl overflow-hidden p-3 mb-3">
-                  <img
-                    src={p.img}
-                    alt={`${p.name} partner brand of Matrix Intertrade`}
-                    loading="lazy"
-                    className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="font-bold text-primary text-sm">{p.name}</div>
-                <div className="text-[11px] text-muted-foreground mt-1 leading-snug">
-                  {t(lang, p.tag, p.tagEn)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Company info */}
       <section className="bg-gradient-subtle py-16 md:py-24">
         <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-[1.2fr_1fr] gap-10">
