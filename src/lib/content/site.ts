@@ -63,6 +63,33 @@ export type SiteBrandIntro = BrandIntro & {
   payload?: Record<string, unknown> | null;
 };
 
+export type SiteAboutUs = {
+  introTitleTh: string;
+  introTitleEn: string;
+  introDescTh: string;
+  introDescEn: string;
+  storyP1Th: string;
+  storyP1En: string;
+  storyP2Th: string;
+  storyP2En: string;
+  storyP3Th: string;
+  storyP3En: string;
+  missionTh: string;
+  missionEn: string;
+  visionTh: string;
+  visionEn: string;
+  valuesTh: string;
+  valuesEn: string;
+  addressTh: string;
+  addressEn: string;
+  phone: string;
+  email: string;
+  website: string;
+  facebook: string;
+  mapUrl: string;
+  statsPayload: any;
+};
+
 export type SiteContent = {
   nav: NavItem[];
   brands: SiteBrand[];
@@ -71,6 +98,7 @@ export type SiteContent = {
   industryShowcase: SiteShowcaseSection;
   articleCategories: SiteArticleCategory[];
   brandIntrosByCategoryId: Record<string, SiteBrandIntro>;
+  aboutUs: SiteAboutUs | null;
   source: "files" | "supabase";
 };
 
@@ -149,6 +177,34 @@ type SiteSectionRow = {
   is_enabled: boolean | null;
 };
 
+type AboutUsRow = {
+  id: string;
+  intro_title_th: string | null;
+  intro_title_en: string | null;
+  intro_desc_th: string | null;
+  intro_desc_en: string | null;
+  story_p1_th: string | null;
+  story_p1_en: string | null;
+  story_p2_th: string | null;
+  story_p2_en: string | null;
+  story_p3_th: string | null;
+  story_p3_en: string | null;
+  mission_th: string | null;
+  mission_en: string | null;
+  vision_th: string | null;
+  vision_en: string | null;
+  values_th: string | null;
+  values_en: string | null;
+  address_th: string | null;
+  address_en: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  facebook: string | null;
+  map_url: string | null;
+  stats_payload: any;
+};
+
 type ArticleCategoryRow = {
   slug: string;
   label: string;
@@ -165,6 +221,7 @@ type ContentDatabase = {
       content_site_sections: { Row: SiteSectionRow };
       content_article_categories: { Row: ArticleCategoryRow };
       content_brand_category_intros: { Row: BrandIntroRow };
+      content_about_us: { Row: AboutUsRow };
     };
   };
 };
@@ -415,9 +472,9 @@ function mergeSubmenu(fallbackItems: NavItem["submenu"], dbItems: NonNullable<Na
   const merged = (fallbackItems ?? []).map((fallbackItem) => ({
     ...fallbackItem,
     href: normalizeNavHref(fallbackItem.href),
-    ...(dbByHref.get(normalizeNavHref(fallbackItem.href)) ?? {}),
-    image: dbByHref.get(normalizeNavHref(fallbackItem.href))?.image || fallbackItem.image,
-    desc: dbByHref.get(normalizeNavHref(fallbackItem.href))?.desc || fallbackItem.desc,
+    ...((dbByHref.get(normalizeNavHref(fallbackItem.href)) as any) || {}),
+    image: (dbByHref.get(normalizeNavHref(fallbackItem.href)) as any)?.image || fallbackItem.image,
+    desc: (dbByHref.get(normalizeNavHref(fallbackItem.href)) as any)?.desc || fallbackItem.desc,
   }));
   const fallbackHrefs = new Set((fallbackItems ?? []).map((item) => normalizeNavHref(item.href)));
   return [...merged, ...normalizedDbItems.filter((item) => !fallbackHrefs.has(item.href))];
@@ -775,4 +832,33 @@ export async function loadBrandIntroContent(
 ): Promise<SiteBrandIntro | undefined> {
   const content = await loadSiteContent();
   return content.brandIntrosByCategoryId[categoryId];
+}
+
+function mapAboutUs(row: AboutUsRow): SiteAboutUs {
+  return {
+    introTitleTh: row.intro_title_th ?? "",
+    introTitleEn: row.intro_title_en ?? "",
+    introDescTh: row.intro_desc_th ?? "",
+    introDescEn: row.intro_desc_en ?? "",
+    storyP1Th: row.story_p1_th ?? "",
+    storyP1En: row.story_p1_en ?? "",
+    storyP2Th: row.story_p2_th ?? "",
+    storyP2En: row.story_p2_en ?? "",
+    storyP3Th: row.story_p3_th ?? "",
+    storyP3En: row.story_p3_en ?? "",
+    missionTh: row.mission_th ?? "",
+    missionEn: row.mission_en ?? "",
+    visionTh: row.vision_th ?? "",
+    visionEn: row.vision_en ?? "",
+    valuesTh: row.values_th ?? "",
+    valuesEn: row.values_en ?? "",
+    addressTh: row.address_th ?? "",
+    addressEn: row.address_en ?? "",
+    phone: row.phone ?? "",
+    email: row.email ?? "",
+    website: row.website ?? "",
+    facebook: row.facebook ?? "",
+    mapUrl: row.map_url ?? "",
+    statsPayload: row.stats_payload,
+  };
 }

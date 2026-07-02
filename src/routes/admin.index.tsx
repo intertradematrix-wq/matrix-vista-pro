@@ -72,7 +72,8 @@ type ContentKind =
   | "industries"
   | "siteSections"
   | "navItems"
-  | "contactSubmissions";
+  | "contactSubmissions"
+  | "aboutUs";
 
 type AdminTab = ContentKind | "lineSettings" | "trackingSettings";
 
@@ -827,6 +828,43 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
     ],
   },
+  aboutUs: {
+    label: "เกี่ยวกับเรา (About)",
+    description: "จัดการข้อมูลบริษัท สถิติ และวิสัยทัศน์",
+    key: "id",
+    title: "intro_title_th",
+    fields: [
+      { key: "id", label: "ID", readOnly: true },
+      { key: "intro_title_th", label: "Intro Title (TH)" },
+      { key: "intro_title_en", label: "Intro Title (EN)" },
+      { key: "intro_desc_th", label: "Intro Desc (TH)", type: "textarea", rows: 3 },
+      { key: "intro_desc_en", label: "Intro Desc (EN)", type: "textarea", rows: 3 },
+      
+      { key: "story_p1_th", label: "Story P1 (TH)", type: "textarea", rows: 5 },
+      { key: "story_p1_en", label: "Story P1 (EN)", type: "textarea", rows: 5 },
+      { key: "story_p2_th", label: "Story P2 (TH)", type: "textarea", rows: 5 },
+      { key: "story_p2_en", label: "Story P2 (EN)", type: "textarea", rows: 5 },
+      { key: "story_p3_th", label: "Story P3 (TH)", type: "textarea", rows: 5 },
+      { key: "story_p3_en", label: "Story P3 (EN)", type: "textarea", rows: 5 },
+      
+      { key: "mission_th", label: "Mission (TH)", type: "textarea", rows: 3 },
+      { key: "mission_en", label: "Mission (EN)", type: "textarea", rows: 3 },
+      { key: "vision_th", label: "Vision (TH)", type: "textarea", rows: 3 },
+      { key: "vision_en", label: "Vision (EN)", type: "textarea", rows: 3 },
+      { key: "values_th", label: "Values (TH)", type: "textarea", rows: 3 },
+      { key: "values_en", label: "Values (EN)", type: "textarea", rows: 3 },
+      
+      { key: "address_th", label: "Address (TH)", type: "textarea", rows: 2 },
+      { key: "address_en", label: "Address (EN)", type: "textarea", rows: 2 },
+      { key: "phone", label: "Phone" },
+      { key: "email", label: "Email" },
+      { key: "website", label: "Website" },
+      { key: "facebook", label: "Facebook" },
+      { key: "map_url", label: "Google Map URL", type: "textarea", rows: 3 },
+      
+      { key: "stats_payload", label: "Stats (JSON)", type: "json", rows: 8, group: "advanced" },
+    ],
+  },
   navItems: {
     label: "Navigation",
     description: "Header mega-menu links, descriptions and images",
@@ -1378,7 +1416,7 @@ function AdminPage() {
                     ? "Manage Google Analytics and Meta Pixel tracking for the public website."
                     : config.description}
               </p>
-              {!isSettingsTab && activeKind === "siteSections" && (
+              {!isSettingsTab && (activeKind === "siteSections" || activeKind === "aboutUs") && (
                 <div className="flex max-w-3xl flex-col gap-3 rounded-xl border border-accent/20 bg-white px-4 py-3 text-sm text-muted-foreground shadow-sm md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="font-semibold text-primary">
@@ -1440,7 +1478,7 @@ function AdminPage() {
                 setSaveState("idle");
               }}
               onAddNew={
-                activeKind === "contactSubmissions" || activeKind === "siteSections"
+                activeKind === "contactSubmissions" || activeKind === "siteSections" || activeKind === "aboutUs"
                   ? undefined
                   : () => {
                       setIsCreating(true);
@@ -1489,7 +1527,7 @@ function AdminPage() {
                   isDirty={isDirty || isCreating}
                   onDiscard={discardDraft}
                   isCreating={isCreating}
-                  onDelete={activeKind === "siteSections" ? undefined : deleteCurrentItem}
+                  onDelete={(activeKind === "siteSections" || activeKind === "aboutUs") ? undefined : deleteCurrentItem}
                 />
               </div>
             )}

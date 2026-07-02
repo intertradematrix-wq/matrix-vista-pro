@@ -12,6 +12,7 @@ import industryOffice from "@/assets/about/industries/office-business.jpg";
 import industryVC from "@/assets/about/industries/video-conference.jpg";
 import { Button } from "@/components/ui/button";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { useSiteContent } from "@/components/site/SiteContentProvider";
 import {
   Target,
   Eye,
@@ -124,7 +125,7 @@ function AboutPage() {
     <>
       <PageHeader
         eyebrow="About Us"
-        title={t(lang, "เกี่ยวกับบริษัท Matrix Intertrade", "About Matrix Intertrade")}
+        title={t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
         desc={t(
           lang,
           "ผู้นำเข้าและจัดจำหน่ายระบบภาพแบรนด์ชั้นนำของโลก ด้วยประสบการณ์ทีมงานมากกว่า 20 ปี คัดสรรเฉพาะผลิตภัณฑ์คุณภาพสูงที่เชื่อถือได้ระดับแนวหน้าของโลก",
@@ -153,12 +154,12 @@ function AboutPage() {
               Our Story
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              {t(lang, "เกี่ยวกับบริษัท Matrix Intertrade", "About Matrix Intertrade")}
+              {t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
             </h2>
             <div className="mt-5 space-y-4 text-muted-foreground leading-relaxed">
               <p>
                 <strong className="text-foreground">
-                  {t(lang, "บริษัท แมทริกซ์ อินเตอร์เทรด จำกัด", "Matrix Intertrade Co., Ltd.")}
+                  {t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
                 </strong>{" "}
                 {t(
                   lang,
@@ -188,7 +189,7 @@ function AboutPage() {
               </p>
             </div>
             <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {stats.map((s) => (
+              {statsList.map((s: any) => (
                 <div
                   key={s.l}
                   className="rounded-xl border border-border bg-card p-4 text-center shadow-card"
@@ -422,7 +423,7 @@ function AboutPage() {
           <div className="rounded-3xl overflow-hidden shadow-elev ring-1 ring-border bg-card min-h-[420px]">
             <iframe
               title="Matrix Intertrade Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3873.5!2d100.45374869999999!3d13.843674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2sMatrix%20Intertrade%20Co.%2CLtd.!5e0!3m2!1sth!2sth!4v1780061893336!5m2!1sth!2sth"
+              src={aboutUs.mapUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3873.5!2d100.45374869999999!3d13.843674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2sMatrix%20Intertrade%20Co.%2CLtd.!5e0!3m2!1sth!2sth!4v1780061893336!5m2!1sth!2sth"}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen

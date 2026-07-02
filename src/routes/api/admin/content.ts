@@ -14,7 +14,8 @@ type ContentKind =
   | "industries"
   | "siteSections"
   | "navItems"
-  | "contactSubmissions";
+  | "contactSubmissions"
+  | "aboutUs";
 
 type ContentConfig = {
   table: string;
@@ -381,6 +382,40 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     booleanFields: ["is_enabled"],
     jsonFields: { payload: "object" },
     allowCreate: false,
+  },
+  aboutUs: {
+    table: "content_about_us",
+    key: "id",
+    select: "*",
+    order: "id",
+    allowCreate: false,
+    fields: [
+      "intro_title_th", "intro_title_en",
+      "intro_desc_th", "intro_desc_en",
+      "story_p1_th", "story_p1_en",
+      "story_p2_th", "story_p2_en",
+      "story_p3_th", "story_p3_en",
+      "mission_th", "mission_en",
+      "vision_th", "vision_en",
+      "values_th", "values_en",
+      "address_th", "address_en",
+      "phone", "email", "website", "facebook", "map_url",
+      "stats_payload"
+    ],
+    nullableFields: [
+      "intro_title_th", "intro_title_en",
+      "intro_desc_th", "intro_desc_en",
+      "story_p1_th", "story_p1_en",
+      "story_p2_th", "story_p2_en",
+      "story_p3_th", "story_p3_en",
+      "mission_th", "mission_en",
+      "vision_th", "vision_en",
+      "values_th", "values_en",
+      "address_th", "address_en",
+      "phone", "email", "website", "facebook", "map_url",
+      "stats_payload"
+    ],
+    jsonFields: { stats_payload: "array" },
   },
   navItems: {
     table: "content_nav_items",
