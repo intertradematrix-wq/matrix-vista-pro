@@ -234,6 +234,39 @@ type LocalizedFallback = {
 
 const contentClient = supabase as unknown as SupabaseClient<ContentDatabase>;
 
+
+const fallbackAboutUs: SiteAboutUs = {
+  introTitleTh: "บริษัท แมทริกซ์ อินเตอร์เทรด จำกัด",
+  introTitleEn: "Matrix Intertrade Co., Ltd.",
+  introDescTh: "ผู้นำเข้าและจัดจำหน่ายระบบภาพแบรนด์ชั้นนำของโลก ด้วยประสบการณ์ทีมงานมากกว่า 20 ปี คัดสรรเฉพาะผลิตภัณฑ์คุณภาพสูงที่เชื่อถือได้ระดับแนวหน้าของโลก",
+  introDescEn: "Importer and distributor of world-leading AV brands with over 20 years of experience. We select only the highest quality and most reliable products globally.",
+  storyP1Th: "เป็นผู้จัดจำหน่ายผลิตภัณฑ์ที่ใช้ในสำนักงานเพื่อเสริมประสิทธิภาพของการทำงานในหลากหลายรูปแบบ อาทิ จอรับภาพโปรเจคเตอร์ขนาดต่าง ๆ, จอ LED, กระดานอัจฉริยะ, อุปกรณ์ต่อเชื่อมระบบภาพ และการแสดงผลระบบภาพที่ทันสมัย ตอบโจทย์ยุคดิจิตอลทุกความต้องการ",
+  storyP1En: "is a distributor of office products designed to enhance operational efficiency in various forms, such as projection screens of all sizes, LED displays, interactive whiteboards, AV connectivity equipment, and modern visual displays, meeting every digital era requirement.",
+  storyP2Th: "ด้วยวิสัยทัศน์ที่เล็งเห็นว่า เครื่องมือและอุปกรณ์สำนักงานที่ดีและมีเสถียรภาพสูงเท่านั้น ที่จะตอบโจทย์การลงทุนที่คุ้มค่า และจะเพิ่มประสิทธิภาพการทำงานขององค์กรในโลกเทคโนโลยียุคปัจจุบันได้อย่างแท้จริง",
+  storyP2En: "With the vision that only good and highly stable office tools and equipment will provide a worthwhile investment and truly increase organizational efficiency in today's technological world.",
+  storyP3Th: "ผลิตภัณฑ์คุณภาพต่ำที่ดูเหมือนจะประหยัดในตอนต้น แต่กลับสร้างปัญหาในการใช้งานและบั่นทอนประสิทธิภาพในการทำงาน จากประสบการณ์อันยาวนานมากกว่า 20 ปี ของทีมงานเมทริกซ์ฯ ผลิตภัณฑ์ที่เราคัดสรรมาบริการท่าน ล้วนเป็นผลิตภัณฑ์ที่มีคุณภาพสูง เป็นที่เชื่อถือระดับแนวหน้าของโลกทั้งสิ้น",
+  storyP3En: "Low-quality products that seem economical initially often create operational problems and undermine work efficiency. With over 20 years of experience, Matrix’s team ensures that the products we select for you are of high quality and recognized as world-leaders.",
+  missionTh: "ส่งมอบโซลูชั่นภาพและเสียงที่ตอบโจทย์การใช้งานจริงและคุ้มค่าระยะยาวให้กับทุกองค์กร",
+  missionEn: "Deliver practical and cost-effective long-term audiovisual solutions for all organizations.",
+  visionTh: "เป็นพาร์ทเนอร์อันดับหนึ่งด้านระบบภาพของไทย ที่องค์กรชั้นนำไว้วางใจเลือกใช้",
+  visionEn: "To be Thailand's number one visual systems partner, trusted by leading organizations.",
+  valuesTh: "ความซื่อสัตย์ ความเชี่ยวชาญ และการดูแลลูกค้าตลอดอายุการใช้งานของผลิตภัณฑ์",
+  valuesEn: "Integrity, expertise, and customer care throughout the product lifecycle.",
+  addressTh: "111/51 หมู่ที่ 8 ตำบลบางกร่าง อ.เมือง จ.นนทบุรี 11000 ประเทศไทย",
+  addressEn: "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000, Thailand",
+  phone: "02-129-6193 / 092-932-8649",
+  email: "matrixintertrade2026@gmail.com",
+  website: "www.matrixintertrade.com",
+  facebook: "facebook.com/MatrixIntertrade",
+  mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3873.5!2d100.45374869999999!3d13.843674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2sMatrix%20Intertrade%20Co.%2CLtd.!5e0!3m2!1sth!2sth!4v1780061893336!5m2!1sth!2sth",
+  statsPayload: [
+    { v: "20+", l: "Years Experience" },
+    { v: "500+", l: "Projects Delivered" },
+    { v: "10+", l: "Global Brands" },
+    { v: "100%", l: "Support" }
+  ]
+};
+
 const fallbackIndustryShowcase: SiteShowcaseSection = {
   eyebrowTh: "กลุ่มลูกค้าและการใช้งาน",
   eyebrowEn: "Industry Use Cases",
