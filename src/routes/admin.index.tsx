@@ -4,10 +4,13 @@ import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   ExternalLink,
   Eye,
+  Heart,
   ImageIcon,
   Loader2,
   Lock,
   LogOut,
+  MapPin,
+  Mail,
   Save,
   Search,
   Bold,
@@ -21,7 +24,9 @@ import {
   Link as LinkIcon,
   ChevronDown,
   ChevronRight,
+  Phone,
   Globe,
+  Target,
   Share2,
   SearchCheck,
   EyeOff,
@@ -38,6 +43,7 @@ import {
   Circle,
   Send,
   Settings,
+  Facebook,
 } from "lucide-react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -54,6 +60,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { articleImages } from "@/data/article-images";
 import { brandImages } from "@/data/brand-images";
 import { brandLogos } from "@/data/brand-logos";
+import {
+  getIndustryDetailDefaults,
+  getSolutionDetailDefaults,
+} from "@/data/managed-content-defaults";
 import { solutionImages } from "@/data/solution-images";
 import { CATEGORY_IDS_BY_SLUG } from "@/lib/seo-slugs";
 import imgEducation from "@/assets/article-smart-classroom.jpg";
@@ -88,6 +98,54 @@ type FieldType =
   | "select";
 type ContentItem = Record<string, unknown>;
 type Draft = Record<string, string>;
+
+type SolutionDetailPayload = {
+  intro?: string;
+  introEn?: string;
+  bullets?: string[];
+  bulletsEn?: string[];
+  applications?: string[];
+  applicationsEn?: string[];
+  seoSections?: Array<{
+    heading: string;
+    headingEn?: string;
+    body: string;
+    bodyEn?: string;
+  }>;
+  relatedLinks?: Array<{
+    label: string;
+    labelEn?: string;
+    href: string;
+    description?: string;
+    descriptionEn?: string;
+  }>;
+  faqs?: Array<{
+    question: string;
+    questionEn?: string;
+    answer: string;
+    answerEn?: string;
+  }>;
+};
+
+type IndustryDetailPayload = {
+  banners?: string[];
+  highlight_1?: {
+    badge?: string;
+    imagePosition?: string;
+    title?: string;
+    desc?: string;
+    image?: string;
+    features?: string[];
+  };
+  productsTitle?: string;
+  productsDesc?: string;
+  products?: Array<{
+    title?: string;
+    desc?: string;
+    img?: string;
+    href?: string;
+  }>;
+};
 
 type FieldConfig = {
   key: string;
@@ -160,6 +218,19 @@ const industryShowcaseImages: Record<string, string> = {
 
 const slugHelperText =
   "Use lowercase English letters, numbers, and hyphens only. Do not include /.";
+
+type AboutStat = {
+  v: string;
+  l: string;
+  lEn?: string;
+};
+
+const ABOUT_STATS_FALLBACK: AboutStat[] = [
+  { v: "20+", l: "ปีประสบการณ์", lEn: "Years Experience" },
+  { v: "500+", l: "โปรเจ็คที่สำเร็จ", lEn: "Completed Projects" },
+  { v: "8+", l: "แบรนด์ระดับโลก", lEn: "Global Brands" },
+  { v: "100%", l: "บริการในประเทศ", lEn: "Local Service" },
+];
 
 const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   products: {
@@ -833,6 +904,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     description: "จัดการข้อมูลบริษัท สถิติ และวิสัยทัศน์",
     key: "id",
     title: "intro_title_th",
+    subtitle: (item) => text(item.id) || "about_us",
     fields: [
       { key: "id", label: "ID", readOnly: true },
       { key: "intro_title_th", label: "Intro Title (TH)" },
@@ -1495,6 +1567,16 @@ function AdminPage() {
                               ? Math.floor(100000 + Math.random() * 900000).toString()
                               : "",
                       };
+                      if (activeKind === "solutions") {
+                        newDraft.payload = stringifySolutionPayload(
+                          defaultSolutionPayload("", text(draft.slug), text(draft.description)),
+                        );
+                      }
+                      if (activeKind === "industries") {
+                        newDraft.payload = stringifyIndustryPayload(
+                          defaultIndustryPayload("", text(draft.title), text(draft.description)),
+                        );
+                      }
                       activeFields.forEach((f) => {
                         if (f.key !== config.key) newDraft[f.key] = "";
                       });
@@ -2152,7 +2234,7 @@ function ContentList({
                   {text(item[config.title]) || id}
                 </div>
                 <div className="mt-1 truncate text-xs text-muted-foreground">
-                  {config.subtitle(item)}
+                  {config.subtitle?.(item) || id}
                 </div>
                 {(kind === "articles" || kind === "products") && (
                   <div className="mt-2">
@@ -2691,7 +2773,28 @@ function ContentEditor({
           </div>
         )}
 
-        {/* Advanced section is always at the bottom, separate from tabs if tabs exist */}
+        
+        {kind === "solutions" && (
+          <SolutionPayloadEditor
+            slug={text(draft.slug)}
+            title={draft.title}
+            description={draft.description}
+            payloadStr={draft.payload}
+            onChange={(value) => update("payload", value)}
+          />
+        )}
+
+        {kind === "industries" && !isCreating && (
+          <IndustryPayloadEditor 
+            slug={text(draft.slug)}
+            title={draft.title}
+            description={draft.description}
+            payloadStr={draft.payload as string}
+            onChange={(val) => update("payload", val)}
+          />
+        )}
+
+{/* Advanced section is always at the bottom, separate from tabs if tabs exist */}
         {advancedFields.length > 0 && (
           <div className="border-t border-border bg-muted/10 p-4 sm:p-6">
             <div className="rounded-xl border border-border bg-white overflow-hidden">
@@ -2737,6 +2840,263 @@ function ContentEditor({
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function IndustryPayloadEditor({
+  slug,
+  title,
+  description,
+  payloadStr,
+  onChange,
+}: {
+  slug?: string;
+  title?: string;
+  description?: string;
+  payloadStr: string;
+  onChange: (val: string) => void;
+}) {
+  const [payload, setPayload] = useState<any>(() => {
+    try {
+      return parseIndustryPayload(payloadStr, slug, title, description);
+    } catch {
+      return parseIndustryPayload("", slug, title, description);
+    }
+  });
+
+  useEffect(() => {
+    setPayload(parseIndustryPayload(payloadStr, slug, title, description));
+  }, [payloadStr, slug, title, description]);
+
+  const updatePayload = (updater: (prev: any) => any) => {
+    setPayload((prev: any) => {
+      const next = updater(prev);
+      onChange(JSON.stringify(next, null, 2));
+      return next;
+    });
+  };
+
+  const updateProp = (prop: string, val: any) => {
+    updatePayload(p => ({ ...p, [prop]: val }));
+  };
+
+  const updateHighlight = (prop: string, val: any) => {
+    updatePayload(p => {
+      const hl = p.highlight_1 || {};
+      return { ...p, highlight_1: { ...hl, [prop]: val } };
+    });
+  };
+
+  const addBanner = () => {
+    updatePayload(p => ({ ...p, banners: [...(p.banners || []), ""] }));
+  };
+  const updateBanner = (idx: number, val: string) => {
+    updatePayload(p => {
+      const b = [...(p.banners || [])];
+      b[idx] = val;
+      return { ...p, banners: b };
+    });
+  };
+  const removeBanner = (idx: number) => {
+    updatePayload(p => {
+      const b = [...(p.banners || [])];
+      b.splice(idx, 1);
+      return { ...p, banners: b };
+    });
+  };
+
+  const addFeature = () => {
+    updatePayload(p => {
+      const hl = p.highlight_1 || {};
+      return { ...p, highlight_1: { ...hl, features: [...(hl.features || []), ""] } };
+    });
+  };
+  const updateFeature = (idx: number, val: string) => {
+    updatePayload(p => {
+      const hl = p.highlight_1 || {};
+      const f = [...(hl.features || [])];
+      f[idx] = val;
+      return { ...p, highlight_1: { ...hl, features: f } };
+    });
+  };
+  const removeFeature = (idx: number) => {
+    updatePayload(p => {
+      const hl = p.highlight_1 || {};
+      const f = [...(hl.features || [])];
+      f.splice(idx, 1);
+      return { ...p, highlight_1: { ...hl, features: f } };
+    });
+  };
+
+  const addProduct = () => {
+    updatePayload(p => ({
+      ...p,
+      products: [...(p.products || []), { title: "", desc: "", img: "", href: "/category/" }]
+    }));
+  };
+  const updateProductProp = (idx: number, prop: string, val: string) => {
+    updatePayload(p => {
+      const prods = [...(p.products || [])];
+      prods[idx] = { ...prods[idx], [prop]: val };
+      return { ...p, products: prods };
+    });
+  };
+  const removeProduct = (idx: number) => {
+    updatePayload(p => {
+      const prods = [...(p.products || [])];
+      prods.splice(idx, 1);
+      return { ...p, products: prods };
+    });
+  };
+
+  return (
+    <div className="grid gap-6 px-4 py-6 sm:px-6 border-t border-border bg-slate-50/50">
+      
+      {/* Banners */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <h4 className="font-semibold text-lg text-primary flex items-center gap-2">
+            ภาพแบนเนอร์ (Banners)
+          </h4>
+          <p className="text-sm text-muted-foreground mt-1">
+            ระบุ URL รูปภาพสำหรับแสดงผลเป็นแกลอรี่แบนเนอร์ด้านบน
+          </p>
+        </div>
+        <div className="grid gap-3">
+          {(payload.banners || []).map((url: string, i: number) => (
+            <div key={i} className="flex items-center gap-2">
+              <Input value={url} onChange={e => updateBanner(i, e.target.value)} placeholder="https://..." className="flex-1" />
+              {url && <img src={url} alt="" className="w-10 h-10 object-cover rounded border" />}
+              <button onClick={() => removeBanner(i)} className="p-2 text-red-500 hover:bg-red-50 rounded">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+        <Button onClick={addBanner} variant="outline" className="w-max bg-white"><Plus className="w-4 h-4 mr-2" />เพิ่มภาพแบนเนอร์</Button>
+      </div>
+      <hr />
+
+      {/* Highlight 1 */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <h4 className="font-semibold text-lg text-primary flex items-center gap-2">
+            จุดเด่นอุตสาหกรรม (Highlight)
+          </h4>
+          <p className="text-sm text-muted-foreground mt-1">
+            ข้อความอธิบายจุดเด่น พร้อมรูปภาพประกอบ (เปิดการแสดงผลเมื่อกรอกข้อมูล)
+          </p>
+        </div>
+        <div className="grid gap-4 p-4 border rounded-xl bg-white shadow-sm">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-[13px] font-semibold text-primary">ป้ายกำกับ (Badge)</label>
+              <Input value={payload.highlight_1?.badge || ""} onChange={e => updateHighlight("badge", e.target.value)} placeholder="เช่น Interactive Display" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[13px] font-semibold text-primary">ตำแหน่งรูปภาพ</label>
+              <select 
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={payload.highlight_1?.imagePosition || "left"} 
+                onChange={e => updateHighlight("imagePosition", e.target.value)}
+              >
+                <option value="left">ซ้าย (Left)</option>
+                <option value="right">ขวา (Right)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-semibold text-primary">หัวข้อหลัก (Title)</label>
+            <Input value={payload.highlight_1?.title || ""} onChange={e => updateHighlight("title", e.target.value)} placeholder="หัวข้อหลัก..." />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-semibold text-primary">คำอธิบาย (Description)</label>
+            <Textarea value={payload.highlight_1?.desc || ""} onChange={e => updateHighlight("desc", e.target.value)} rows={3} placeholder="คำอธิบาย..." />
+          </div>
+          
+          <div className="space-y-1.5">
+            <label className="text-[13px] font-semibold text-primary">URL รูปภาพประกอบ</label>
+            <div className="flex gap-2">
+              <Input value={payload.highlight_1?.image || ""} onChange={e => updateHighlight("image", e.target.value)} placeholder="https://..." />
+              {payload.highlight_1?.image && <img src={payload.highlight_1.image} alt="" className="w-10 h-10 object-cover rounded border" />}
+            </div>
+          </div>
+
+          <div className="space-y-3 mt-2">
+            <label className="text-[13px] font-semibold text-primary">รายการจุดเด่น (Features - ข้อความสั้นๆ)</label>
+            {(payload.highlight_1?.features || []).map((f: string, i: number) => (
+              <div key={i} className="flex items-center gap-2">
+                <Input value={f} onChange={e => updateFeature(i, e.target.value)} placeholder="จุดเด่น..." className="flex-1" />
+                <button onClick={() => removeFeature(i)} className="p-2 text-red-500 hover:bg-red-50 rounded">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            <Button onClick={addFeature} variant="outline" size="sm" className="bg-white"><Plus className="w-3 h-3 mr-2" />เพิ่มจุดเด่น</Button>
+          </div>
+        </div>
+      </div>
+      <hr />
+
+      {/* Products */}
+      <div className="flex flex-col gap-4">
+        <div>
+          <h4 className="font-semibold text-lg text-primary flex items-center gap-2">
+            รายการสินค้าที่แนะนำ (Products)
+          </h4>
+          <p className="text-sm text-muted-foreground mt-1">
+            เพิ่มข้อมูลสินค้าที่จะแสดงด้านล่างสุดของหน้า
+          </p>
+        </div>
+        
+        <div className="space-y-1.5 mb-2">
+          <label className="text-[13px] font-semibold text-primary">หัวข้อของส่วนสินค้า (ทางเลือก)</label>
+          <Input value={payload.productsTitle || ""} onChange={e => updateProp("productsTitle", e.target.value)} placeholder="ค่าเริ่มต้น: ผลิตภัณฑ์แนะนำ" />
+        </div>
+        
+        <div className="grid gap-4">
+          {(payload.products || []).map((prod: any, i: number) => (
+            <div key={i} className="flex flex-col gap-3 p-4 border rounded-xl bg-white relative shadow-sm">
+              <button 
+                onClick={() => removeProduct(i)}
+                className="absolute top-3 right-3 text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded-md transition-colors"
+                title="Remove"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-semibold text-primary">หัวข้อ / ชื่อสินค้า (Title)</label>
+                  <Input value={prod.title || ""} onChange={e => updateProductProp(i, "title", e.target.value)} placeholder="เช่น Grandview Screen" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[13px] font-semibold text-primary">ลิงก์ปลายทาง (URL)</label>
+                  <Input value={prod.href || ""} onChange={e => updateProductProp(i, "href", e.target.value)} placeholder="เช่น /category/grandview" />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[13px] font-semibold text-primary">URL ภาพสินค้า (Image)</label>
+                <div className="flex gap-2">
+                  <Input value={prod.img || ""} onChange={e => updateProductProp(i, "img", e.target.value)} placeholder="https://..." />
+                  {prod.img && (
+                    <img src={prod.img} alt="" className="w-10 h-10 object-cover rounded border" />
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[13px] font-semibold text-primary">คำอธิบาย</label>
+                <Textarea value={prod.desc || ""} onChange={e => updateProductProp(i, "desc", e.target.value)} rows={3} placeholder="คำอธิบาย..." />
+              </div>
+            </div>
+          ))}
+        </div>
+        <Button onClick={addProduct} variant="outline" className="w-max bg-white"><Plus className="w-4 h-4 mr-2" />เพิ่มแผงสินค้าใหม่</Button>
+      </div>
+    </div>
   );
 }
 
@@ -3037,49 +3397,63 @@ function ContentPreview({
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="overflow-hidden rounded-2xl border border-border bg-white">
-            <div className="relative aspect-[16/10] bg-secondary/60">
-              {image ? (
-                <img
-                  src={image}
-                  alt={title}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  onError={(event) => {
-                    const img = event.currentTarget;
-                    if (fallbackImage && img.dataset.fallbackApplied !== "true") {
-                      img.dataset.fallbackApplied = "true";
-                      img.src = fallbackImage;
-                      return;
-                    }
-                    img.style.display = "none";
-                  }}
-                />
-              ) : (
-                <div className="grid h-full place-items-center text-sm text-muted-foreground">
-                  No preview image
-                </div>
-              )}
+          {kind === "aboutUs" ? (
+            <AboutUsPreview item={item} />
+          ) : (
+            <div className="overflow-hidden rounded-2xl border border-border bg-white">
+              <div className="relative aspect-[16/10] bg-secondary/60">
+                {image ? (
+                  <img
+                    src={image}
+                    alt={title}
+                    className="absolute inset-0 h-full w-full object-cover"
+                    onError={(event) => {
+                      const img = event.currentTarget;
+                      if (fallbackImage && img.dataset.fallbackApplied !== "true") {
+                        img.dataset.fallbackApplied = "true";
+                        img.src = fallbackImage;
+                        return;
+                      }
+                      img.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <div className="grid h-full place-items-center text-sm text-muted-foreground">
+                    No preview image
+                  </div>
+                )}
+              </div>
+              <div className="space-y-3 p-5">
+                <Badge variant="secondary">{text(item[config.key])}</Badge>
+                <h2 className="text-2xl font-bold leading-tight text-primary">{title}</h2>
+                {description && (
+                  <p className="line-clamp-6 text-sm leading-relaxed text-muted-foreground">
+                    {description}
+                  </p>
+                )}
+                <PreviewFacts config={config} item={item} />
+              </div>
             </div>
-            <div className="space-y-3 p-5">
-              <Badge variant="secondary">{text(item[config.key])}</Badge>
-              <h2 className="text-2xl font-bold leading-tight text-primary">{title}</h2>
-              {description && (
-                <p className="line-clamp-6 text-sm leading-relaxed text-muted-foreground">
-                  {description}
-                </p>
-              )}
-              <PreviewFacts config={config} item={item} />
-            </div>
-          </div>
+          )}
 
-          {kind === "solutions" && <SolutionCardPreview item={item} href={href} />}
+          {kind === "solutions" && (
+            <div className="space-y-4">
+              <SolutionCardPreview item={item} href={href} />
+              <SolutionDetailPreview item={item} />
+            </div>
+          )}
           {kind === "siteSections" && (
             <>
               <SiteSectionHeaderPreview item={item} />
               <SiteSectionAdminNote />
             </>
           )}
-          {kind === "industries" && <IndustryShowcaseCardPreview item={item} />}
+          {kind === "industries" && (
+            <div className="space-y-4">
+              <IndustryShowcaseCardPreview item={item} />
+              <IndustryDetailPreview item={item} />
+            </div>
+          )}
           {kind === "brandIntros" && <BrandIntroPreview item={item} />}
 
           {/* Body content preview for articles and products */}
@@ -3318,13 +3692,182 @@ function PreviewFacts({ config, item }: { config: ContentConfig; item: ContentIt
   );
 }
 
+function normalizeAboutStat(raw: unknown): AboutStat | null {
+  if (!raw || typeof raw !== "object") return null;
+
+  const obj = raw as Record<string, unknown>;
+  const value = text(obj.v).trim();
+  const labelTh = text(obj.l).trim();
+  const labelEn = text(obj.lEn).trim();
+  if (!value || !labelTh) return null;
+
+  return {
+    v: value,
+    l: labelTh,
+    lEn: labelEn || undefined,
+  };
+}
+
+function parseAboutStats(raw: unknown): { stats: AboutStat[]; usedFallback: boolean } {
+  const fromArray = (arr: unknown[]): AboutStat[] =>
+    arr.map(normalizeAboutStat).filter(Boolean) as AboutStat[];
+
+  if (Array.isArray(raw)) {
+    const stats = fromArray(raw);
+    if (stats.length > 0) return { stats, usedFallback: false };
+    return { stats: ABOUT_STATS_FALLBACK, usedFallback: true };
+  }
+
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    if (!trimmed) return { stats: ABOUT_STATS_FALLBACK, usedFallback: true };
+    try {
+      return parseAboutStats(JSON.parse(trimmed));
+    } catch {
+      return { stats: ABOUT_STATS_FALLBACK, usedFallback: true };
+    }
+  }
+
+  if (raw && typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+    const candidate = obj.stats ?? obj.items ?? obj.data;
+    if (Array.isArray(candidate)) {
+      const stats = fromArray(candidate);
+      if (stats.length > 0) return { stats, usedFallback: false };
+    }
+  }
+
+  return { stats: ABOUT_STATS_FALLBACK, usedFallback: true };
+}
+
+function AboutUsPreview({ item }: { item: ContentItem }) {
+  const introTitle = text(item.intro_title_th).trim() || "เกี่ยวกับเรา";
+  const introDesc = text(item.intro_desc_th).trim();
+
+  const storyParagraphs = [
+    text(item.story_p1_th).trim(),
+    text(item.story_p2_th).trim(),
+    text(item.story_p3_th).trim(),
+  ].filter(Boolean);
+
+  const mission = text(item.mission_th).trim();
+  const vision = text(item.vision_th).trim();
+  const values = text(item.values_th).trim();
+
+  const address = text(item.address_th).trim();
+  const phone = text(item.phone).trim();
+  const email = text(item.email).trim();
+  const website = text(item.website).trim();
+  const facebook = text(item.facebook).trim();
+
+  const { stats, usedFallback } = parseAboutStats(item.stats_payload);
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-white">
+      <div className="border-b border-border bg-muted/30 px-5 py-3">
+        <div className="text-xs font-semibold text-muted-foreground">
+          ตัวอย่างหน้า About Us (TH)
+        </div>
+      </div>
+
+      <div className="max-h-[540px] space-y-4 overflow-auto bg-navy p-4">
+        <section className="rounded-2xl border border-slate-800 bg-[#080d1a] p-4">
+          <div className="inline-block rounded-full bg-sky-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-sky-400">
+            Our Story
+          </div>
+          <h3 className="mt-3 text-xl font-bold leading-tight text-white">{introTitle}</h3>
+          {introDesc && <p className="mt-2 text-sm text-slate-400">{introDesc}</p>}
+
+          <div className="mt-3 space-y-3 text-sm leading-relaxed text-slate-400">
+            {storyParagraphs.length > 0 ? (
+              storyParagraphs.map((paragraph, index) => (
+                <p key={`${paragraph}-${index}`}>{paragraph}</p>
+              ))
+            ) : (
+              <p className="italic text-slate-500">ยังไม่มีเนื้อหา Story</p>
+            )}
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {stats.map((stat, index) => (
+              <div
+                key={`${stat.l}-${index}`}
+                className="rounded-xl border border-slate-800 bg-[#0b1325] p-3 text-center"
+              >
+                <div className="text-xl font-black text-sky-500">{stat.v}</div>
+                <div className="mt-1 text-[11px] text-slate-400">{stat.l}</div>
+              </div>
+            ))}
+          </div>
+          {usedFallback && (
+            <div className="mt-2 text-[11px] text-amber-300">Stats ใช้ค่าเริ่มต้น (fallback)</div>
+          )}
+        </section>
+
+        <section className="grid gap-3 md:grid-cols-3">
+          {[
+            { title: "Mission", value: mission, Icon: Target },
+            { title: "Vision", value: vision, Icon: Eye },
+            { title: "Values", value: values, Icon: Heart },
+          ].map(({ title, value, Icon }) => (
+            <div
+              key={title}
+              className="rounded-2xl border border-slate-800 bg-[#080d1a] p-4 text-left"
+            >
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-sky-500 text-white">
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="mt-3 text-base font-bold text-white">{title}</div>
+              <p className="mt-1 text-sm leading-relaxed text-slate-400">{value || "-"}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="rounded-2xl border border-border bg-card p-4">
+          <div className="inline-block rounded-full bg-accent/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-accent">
+            Company Info
+          </div>
+          <h3 className="mt-3 text-lg font-bold text-primary">{introTitle}</h3>
+
+          <div className="mt-4 space-y-3">
+            {[
+              { title: "ที่อยู่", value: address, Icon: MapPin },
+              { title: "โทรศัพท์", value: phone, Icon: Phone },
+              { title: "อีเมล", value: email, Icon: Mail },
+              { title: "เว็บไซต์", value: website, Icon: Globe },
+              { title: "Facebook", value: facebook, Icon: Facebook },
+            ]
+              .filter((entry) => entry.value)
+              .map(({ title, value, Icon }) => (
+                <div
+                  key={title}
+                  className="flex items-start gap-3 rounded-xl border border-border bg-background p-3"
+                >
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-gradient-accent text-white">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      {title}
+                    </div>
+                    <div className="mt-0.5 text-sm font-semibold text-primary">{value}</div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
 function SolutionCardPreview({ item, href }: { item: ContentItem; href?: string | null }) {
   const slug = text(item.slug);
   const directImage = browserImageUrl(text(item.image_url));
   const fallbackImage = solutionImages[slug] || "";
   const image = directImage || fallbackImage;
   const title = text(item.title) || slug;
-  const description = text(item.description);
+  const description = solutionPreviewIntro(item);
   const icon = text(item.icon) || "-";
 
   return (
@@ -3375,6 +3918,278 @@ function SolutionCardPreview({ item, href }: { item: ContentItem; href?: string 
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
             )}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SolutionDetailPreview({ item }: { item: ContentItem }) {
+  const payload = solutionPayloadSummary(item);
+
+  return (
+    <div className="rounded-xl border border-accent/20 bg-white p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-primary">Solution detail preview</div>
+          <div className="text-xs leading-relaxed text-muted-foreground">
+            Mirrors the public page content driven by the structured payload.
+          </div>
+        </div>
+        <Badge variant="secondary">Payload</Badge>
+      </div>
+
+      {payload.intro && (
+        <p className="rounded-lg bg-muted/40 p-3 text-sm leading-relaxed text-muted-foreground">
+          {payload.intro}
+        </p>
+      )}
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-lg border border-border bg-white p-3">
+          <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Bullets
+          </div>
+          <div className="mt-2 text-sm font-semibold text-primary">{payload.bullets?.length ?? 0}</div>
+        </div>
+        <div className="rounded-lg border border-border bg-white p-3">
+          <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Applications
+          </div>
+          <div className="mt-2 text-sm font-semibold text-primary">{payload.applications?.length ?? 0}</div>
+        </div>
+        <div className="rounded-lg border border-border bg-white p-3">
+          <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            FAQs
+          </div>
+          <div className="mt-2 text-sm font-semibold text-primary">{payload.faqs?.length ?? 0}</div>
+        </div>
+        <div className="rounded-lg border border-border bg-white p-3">
+          <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Related Links
+          </div>
+          <div className="mt-2 text-sm font-semibold text-primary">{payload.relatedLinks?.length ?? 0}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IndustryDetailPreview({ item }: { item: ContentItem }) {
+  const payload = industryPayloadSummary(item);
+  const bannerCount = payload.banners?.length ?? 0;
+  const featureCount = payload.highlight_1?.features?.length ?? 0;
+  const productCount = payload.products?.length ?? 0;
+
+  return (
+    <div className="rounded-xl border border-accent/20 bg-white p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <div className="text-sm font-semibold text-primary">Industry detail preview</div>
+          <div className="text-xs leading-relaxed text-muted-foreground">
+            Summarizes the page content stored in the structured payload.
+          </div>
+        </div>
+        <Badge variant="secondary">Payload</Badge>
+      </div>
+
+      {payload.highlight_1?.title && (
+        <p className="rounded-lg bg-muted/40 p-3 text-sm leading-relaxed text-muted-foreground">
+          {payload.highlight_1.title}
+        </p>
+      )}
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-lg border border-border bg-white p-3">
+          <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Banners
+          </div>
+          <div className="mt-2 text-sm font-semibold text-primary">{bannerCount}</div>
+        </div>
+        <div className="rounded-lg border border-border bg-white p-3">
+          <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Highlight Features
+          </div>
+          <div className="mt-2 text-sm font-semibold text-primary">{featureCount}</div>
+        </div>
+        <div className="rounded-lg border border-border bg-white p-3">
+          <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Products
+          </div>
+          <div className="mt-2 text-sm font-semibold text-primary">{productCount}</div>
+        </div>
+        <div className="rounded-lg border border-border bg-white p-3">
+          <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+            Products Title
+          </div>
+          <div className="mt-2 text-sm font-semibold text-primary">
+            {payload.productsTitle || "-"}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SolutionPayloadEditor({
+  slug,
+  title,
+  description,
+  payloadStr,
+  onChange,
+}: {
+  slug?: string;
+  title?: string;
+  description?: string;
+  payloadStr?: string;
+  onChange: (value: string) => void;
+}) {
+  const payload = parseSolutionPayload(payloadStr, slug, title, description);
+
+  const updatePayload = (next: SolutionDetailPayload) => onChange(stringifySolutionPayload(next));
+
+  const updateList = (key: keyof SolutionDetailPayload, value: string) => {
+    const lines = fromLines(value);
+    updatePayload({ ...payload, [key]: lines } as SolutionDetailPayload);
+  };
+
+  const updateText = (key: keyof SolutionDetailPayload, value: string) => {
+    updatePayload({ ...payload, [key]: value } as SolutionDetailPayload);
+  };
+
+  return (
+    <div className="border-t border-border bg-muted/10 p-4 sm:p-6">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-base font-semibold text-primary">Solution Detail Payload</h3>
+          <p className="text-sm text-muted-foreground">
+            Structured fields for the public solution detail page. Lines become list items.
+          </p>
+        </div>
+        <Badge variant="secondary">Structured</Badge>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <TextField
+          label="Intro"
+          value={payload.intro ?? ""}
+          rows={4}
+          onChange={(value) => updateText("intro", value)}
+          placeholder="Short introduction shown on the page"
+        />
+        <TextField
+          label="Intro (EN)"
+          value={payload.introEn ?? ""}
+          rows={4}
+          onChange={(value) => updateText("introEn", value)}
+          placeholder="English version"
+        />
+
+        <TextField
+          label="Bullets"
+          value={toLines(payload.bullets)}
+          rows={6}
+          onChange={(value) => updateList("bullets", value)}
+          placeholder="One bullet per line"
+        />
+        <TextField
+          label="Bullets (EN)"
+          value={toLines(payload.bulletsEn)}
+          rows={6}
+          onChange={(value) => updateList("bulletsEn", value)}
+          placeholder="One bullet per line"
+        />
+
+        <TextField
+          label="Applications"
+          value={toLines(payload.applications)}
+          rows={5}
+          onChange={(value) => updateList("applications", value)}
+          placeholder="One application per line"
+        />
+        <TextField
+          label="Applications (EN)"
+          value={toLines(payload.applicationsEn)}
+          rows={5}
+          onChange={(value) => updateList("applicationsEn", value)}
+          placeholder="One application per line"
+        />
+
+        <TextField
+          label="SEO Sections"
+          value={(payload.seoSections ?? [])
+            .map((section) => [section.heading, section.headingEn ?? "", section.body, section.bodyEn ?? ""].join(" | "))
+            .join("\n")}
+          rows={6}
+          onChange={(value) => {
+            const nextSections = fromLines(value)
+              .map((line) => {
+                const [heading, headingEn, body, bodyEn] = line.split("|").map((segment) => segment.trim());
+                if (!heading || !body) return null;
+                return {
+                  heading,
+                  headingEn: headingEn || undefined,
+                  body,
+                  bodyEn: bodyEn || undefined,
+                };
+              })
+              .filter(Boolean) as NonNullable<SolutionDetailPayload["seoSections"]>;
+            updatePayload({ ...payload, seoSections: nextSections });
+          }}
+          placeholder="heading | headingEn | body | bodyEn"
+        />
+        <TextField
+          label="FAQs"
+          value={(payload.faqs ?? [])
+            .map((faq) => [faq.question, faq.questionEn ?? "", faq.answer, faq.answerEn ?? ""].join(" | "))
+            .join("\n")}
+          rows={6}
+          onChange={(value) => {
+            const nextFaqs = fromLines(value)
+              .map((line) => {
+                const [question, questionEn, answer, answerEn] = line.split("|").map((segment) => segment.trim());
+                if (!question || !answer) return null;
+                return {
+                  question,
+                  questionEn: questionEn || undefined,
+                  answer,
+                  answerEn: answerEn || undefined,
+                };
+              })
+              .filter(Boolean) as NonNullable<SolutionDetailPayload["faqs"]>;
+            updatePayload({ ...payload, faqs: nextFaqs });
+          }}
+          placeholder="question | questionEn | answer | answerEn"
+        />
+
+        <TextField
+          label="Related Links"
+          value={(payload.relatedLinks ?? [])
+            .map((link) => [link.label, link.labelEn ?? "", link.href, link.description ?? "", link.descriptionEn ?? ""].join(" | "))
+            .join("\n")}
+          rows={6}
+          onChange={(value) => {
+            const nextLinks = fromLines(value)
+              .map((line) => {
+                const [label, labelEn, href, description, descriptionEn] = line.split("|").map((segment) => segment.trim());
+                if (!label || !href) return null;
+                return {
+                  label,
+                  labelEn: labelEn || undefined,
+                  href,
+                  description: description || undefined,
+                  descriptionEn: descriptionEn || undefined,
+                };
+              })
+              .filter(Boolean) as NonNullable<SolutionDetailPayload["relatedLinks"]>;
+            updatePayload({ ...payload, relatedLinks: nextLinks });
+          }}
+          placeholder="label | labelEn | href | description | descriptionEn"
+        />
+
+        <div className="rounded-xl border border-border bg-white p-4 lg:col-span-2">
+          <p className="mb-2 text-sm font-semibold text-primary">Raw JSON Preview</p>
+          <Textarea value={stringifySolutionPayload(payload)} readOnly rows={10} className="font-mono text-xs" />
         </div>
       </div>
     </div>
@@ -4230,11 +5045,128 @@ function defaultJsonValue(key: string) {
   return {};
 }
 
+function defaultSolutionPayload(slug?: string, title?: string, description?: string): SolutionDetailPayload {
+  return getSolutionDetailDefaults(slug || "", title, description);
+}
+
+function defaultIndustryPayload(slug?: string, title?: string, description?: string): IndustryDetailPayload {
+  return getIndustryDetailDefaults(slug || "", title, description);
+}
+
+function parseIndustryPayload(
+  value: unknown,
+  slug?: string,
+  title?: string,
+  description?: string,
+): IndustryDetailPayload {
+  const fallback = defaultIndustryPayload(slug, title, description);
+  if (typeof value !== "string" || !value.trim()) return fallback;
+
+  try {
+    const parsed = JSON.parse(value);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return fallback;
+    return {
+      ...fallback,
+      ...(parsed as IndustryDetailPayload),
+      highlight_1: {
+        ...fallback.highlight_1,
+        ...((parsed as IndustryDetailPayload).highlight_1 ?? {}),
+      },
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+function stringifyIndustryPayload(payload: IndustryDetailPayload) {
+  return JSON.stringify(
+    {
+      banners: payload.banners ?? [],
+      highlight_1: {
+        badge: payload.highlight_1?.badge ?? "",
+        imagePosition: payload.highlight_1?.imagePosition ?? "left",
+        title: payload.highlight_1?.title ?? "",
+        desc: payload.highlight_1?.desc ?? "",
+        image: payload.highlight_1?.image ?? "",
+        features: payload.highlight_1?.features ?? [],
+      },
+      productsTitle: payload.productsTitle ?? "",
+      productsDesc: payload.productsDesc ?? "",
+      products: payload.products ?? [],
+    },
+    null,
+    2,
+  );
+}
+
+function industryPayloadSummary(item: ContentItem) {
+  return parseIndustryPayload(item.payload, text(item.slug), text(item.title), text(item.description));
+}
+
+function parseSolutionPayload(
+  value: unknown,
+  slug?: string,
+  title?: string,
+  description?: string,
+): SolutionDetailPayload {
+  const fallback = defaultSolutionPayload(slug, title, description);
+  if (typeof value !== "string" || !value.trim()) return fallback;
+
+  try {
+    const parsed = JSON.parse(value);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return fallback;
+    return {
+      ...fallback,
+      ...(parsed as SolutionDetailPayload),
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+function stringifySolutionPayload(payload: SolutionDetailPayload) {
+  return JSON.stringify(
+    {
+      intro: payload.intro ?? "",
+      introEn: payload.introEn ?? "",
+      bullets: payload.bullets ?? [],
+      bulletsEn: payload.bulletsEn ?? [],
+      applications: payload.applications ?? [],
+      applicationsEn: payload.applicationsEn ?? [],
+      seoSections: payload.seoSections ?? [],
+      relatedLinks: payload.relatedLinks ?? [],
+      faqs: payload.faqs ?? [],
+    },
+    null,
+    2,
+  );
+}
+
+function toLines(value: string[] | undefined) {
+  return (value ?? []).join("\n");
+}
+
+function fromLines(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
 function text(value: unknown) {
   if (value === null || value === undefined) return "";
   if (typeof value === "string") return value;
   if (typeof value === "number" || typeof value === "boolean") return String(value);
   return JSON.stringify(value);
+}
+
+function solutionPreviewIntro(item: ContentItem) {
+  const payload = parseSolutionPayload(item.payload, text(item.slug), text(item.title), text(item.description));
+  return payload.intro || text(item.description);
+}
+
+function solutionPayloadSummary(item: ContentItem) {
+  return parseSolutionPayload(item.payload, text(item.slug), text(item.title), text(item.description));
 }
 
 function browserImageUrl(value: unknown) {
@@ -4363,6 +5295,7 @@ function imageForHref(href: string, allContent: Partial<Record<ContentKind, Cont
 function previewDescription(kind: ContentKind, item: ContentItem) {
   if (kind === "products") return text(item.description_text);
   if (kind === "articles") return text(item.excerpt);
+  if (kind === "solutions") return solutionPreviewIntro(item);
   if (kind === "brandIntros") return text(item.description);
   if (kind === "navItems") return text(item.description);
   return text(item.description) || text(item.payload);

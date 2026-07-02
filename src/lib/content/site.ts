@@ -22,6 +22,44 @@ export type SiteBrand = (typeof fallbackBrands)[number] & {
 
 export type SiteSolution = (typeof fallbackSolutions)[number] & {
   imageUrl?: string | null;
+  payload?: Record<string, unknown> | null;
+};
+
+export type SolutionDetailSeoSection = {
+  heading: string;
+  headingEn?: string;
+  body: string;
+  bodyEn?: string;
+};
+
+export type SolutionDetailFaq = {
+  question: string;
+  questionEn?: string;
+  answer: string;
+  answerEn?: string;
+};
+
+export type SolutionDetailRelatedLink = {
+  label: string;
+  labelEn?: string;
+  href: string;
+  description?: string;
+  descriptionEn?: string;
+};
+
+export type SolutionDetailContent = {
+  slug: string;
+  title: string;
+  iconName: string;
+  intro: string;
+  introEn?: string;
+  bullets: string[];
+  bulletsEn?: string[];
+  applications: string[];
+  applicationsEn?: string[];
+  seoSections?: SolutionDetailSeoSection[];
+  relatedLinks?: SolutionDetailRelatedLink[];
+  faqs?: SolutionDetailFaq[];
 };
 
 export type SiteIndustry = (typeof fallbackIndustries)[number] & {
@@ -141,6 +179,7 @@ type SolutionRow = {
   icon: string | null;
   description: string | null;
   image_url: string | null;
+  payload: unknown;
 };
 
 type IndustryRow = {
@@ -383,6 +422,107 @@ function asStringArray(value: unknown): string[] {
     : [];
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function asSolutionSeoSections(value: unknown): SolutionDetailSeoSection[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+
+  const sections = value
+    .map((item) => {
+      const section = asRecord(item);
+      if (!section) return null;
+      const heading = typeof section.heading === "string" ? section.heading.trim() : "";
+      const body = typeof section.body === "string" ? section.body.trim() : "";
+      if (!heading || !body) return null;
+
+      const headingEn = typeof section.headingEn === "string" ? section.headingEn.trim() : undefined;
+      const bodyEn = typeof section.bodyEn === "string" ? section.bodyEn.trim() : undefined;
+
+      return { heading, headingEn, body, bodyEn };
+    })
+    .filter((item): item is SolutionDetailSeoSection => item !== null);
+
+  return sections.length ? sections : undefined;
+}
+
+function asSolutionFaqs(value: unknown): SolutionDetailFaq[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+
+  const faqs = value
+    .map((item) => {
+      const faq = asRecord(item);
+      if (!faq) return null;
+      const question = typeof faq.question === "string" ? faq.question.trim() : "";
+      const answer = typeof faq.answer === "string" ? faq.answer.trim() : "";
+      if (!question || !answer) return null;
+
+      const questionEn = typeof faq.questionEn === "string" ? faq.questionEn.trim() : undefined;
+      const answerEn = typeof faq.answerEn === "string" ? faq.answerEn.trim() : undefined;
+
+      return { question, questionEn, answer, answerEn };
+    })
+    .filter((item): item is SolutionDetailFaq => item !== null);
+
+  return faqs.length ? faqs : undefined;
+}
+
+function asSolutionRelatedLinks(value: unknown): SolutionDetailRelatedLink[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+
+  const links = value
+    .map((item) => {
+      const link = asRecord(item);
+      if (!link) return null;
+      const label = typeof link.label === "string" ? link.label.trim() : "";
+      const href = typeof link.href === "string" ? link.href.trim() : "";
+      if (!label || !href) return null;
+
+      const labelEn = typeof link.labelEn === "string" ? link.labelEn.trim() : undefined;
+      const description = typeof link.description === "string" ? link.description.trim() : undefined;
+      const descriptionEn =
+        typeof link.descriptionEn === "string" ? link.descriptionEn.trim() : undefined;
+
+      return { label, labelEn, href, description, descriptionEn };
+    })
+    .filter((item): item is SolutionDetailRelatedLink => item !== null);
+
+  return links.length ? links : undefined;
+}
+
+function normalizeSolutionDetailContent(
+  payload: unknown,
+  fallback: SolutionDetailContent,
+): SolutionDetailContent {
+  const record = asRecord(payload);
+  if (!record) return fallback;
+
+  return {
+    ...fallback,
+    intro:
+      typeof record.intro === "string" && record.intro.trim() ? record.intro.trim() : fallback.intro,
+    introEn:
+      typeof record.introEn === "string" && record.introEn.trim()
+        ? record.introEn.trim()
+        : fallback.introEn,
+    bullets: asStringArray(record.bullets).length ? asStringArray(record.bullets) : fallback.bullets,
+    bulletsEn:
+      asStringArray(record.bulletsEn).length ? asStringArray(record.bulletsEn) : fallback.bulletsEn,
+    applications: asStringArray(record.applications).length
+      ? asStringArray(record.applications)
+      : fallback.applications,
+    applicationsEn:
+      asStringArray(record.applicationsEn).length
+        ? asStringArray(record.applicationsEn)
+        : fallback.applicationsEn,
+    seoSections: asSolutionSeoSections(record.seoSections) ?? fallback.seoSections,
+    relatedLinks: asSolutionRelatedLinks(record.relatedLinks) ?? fallback.relatedLinks,
+    faqs: asSolutionFaqs(record.faqs) ?? fallback.faqs,
+  };
+}
+
 function asProductCategories(value: unknown): BrandIntro["productCategories"] {
   if (!value || typeof value !== "object" || !("productCategories" in value)) return undefined;
   const productCategories = (value as { productCategories?: unknown }).productCategories;
@@ -566,6 +706,7 @@ function mapSolutions(rows: SolutionRow[] | null | undefined): SiteSolution[] {
       desc: row.description || fallback.desc,
       descEn: (fallback as LocalizedFallback).descEn,
       imageUrl: imageUrlOrUndefined(row.image_url),
+      payload: asRecord(row.payload),
     };
   });
 
@@ -582,6 +723,7 @@ function mapSolutions(rows: SolutionRow[] | null | undefined): SiteSolution[] {
         desc: row.description ?? fallback?.desc ?? "",
         descEn: (fallback as LocalizedFallback | undefined)?.descEn,
         imageUrl: imageUrlOrUndefined(row.image_url),
+        payload: asRecord(row.payload),
       };
     });
   return [...mapped, ...additions];
@@ -805,7 +947,7 @@ export async function loadSiteContent(): Promise<SiteContent> {
         .order("slug", { ascending: true }),
       contentClient
         .from("content_solutions")
-        .select("slug,title,icon,description,image_url")
+        .select("slug,title,icon,description,image_url,payload")
         .order("slug", { ascending: true }),
       loadIndustryRows(),
       loadSiteSectionRows(),
@@ -873,6 +1015,21 @@ export async function loadBrandIntroContent(
 ): Promise<SiteBrandIntro | undefined> {
   const content = await loadSiteContent();
   return content.brandIntrosByCategoryId[categoryId];
+}
+
+export async function loadSolutionDetailContent(
+  slug: string,
+  fallback: SolutionDetailContent,
+): Promise<SolutionDetailContent> {
+  const content = await loadSiteContent();
+  const solution = content.solutions.find((item) => item.slug === slug);
+
+  return normalizeSolutionDetailContent(solution?.payload, {
+    ...fallback,
+    slug,
+    title: solution?.title || fallback.title,
+    iconName: solution?.icon || fallback.iconName,
+  });
 }
 
 function mapAboutUs(row: AboutUsRow): SiteAboutUs {

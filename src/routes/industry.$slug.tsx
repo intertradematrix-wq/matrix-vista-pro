@@ -756,3 +756,126 @@ function VideoConferenceContent() {
     </>
   );
 }
+
+function DynamicIndustryContent({ payload, slug }: { payload?: any, slug: string }) {
+  const { lang } = useLanguage();
+  if (!payload || Object.keys(payload).length === 0) return null;
+
+  return (
+    <>
+      {payload.banners && payload.banners.length > 0 && (
+        <section className="py-12 md:py-16 bg-muted/40">
+          <div className="mx-auto max-w-7xl px-4 md:px-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {payload.banners.map((src: string, i: number) => (
+                <LazyImage
+                  key={src}
+                  src={src}
+                  alt={"Banner " + (i + 1)}
+                  className={"aspect-[4/3] w-full object-cover rounded-2xl shadow-card " + (i === 0 && payload.banners.length > 3 ? "col-span-2 md:col-span-1" : "")}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {payload.highlight_1 && (
+        <section className="py-16 md:py-20">
+          <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-2 gap-10 items-center">
+            {payload.highlight_1.imagePosition === 'left' && payload.highlight_1.image && (
+              <LazyImage
+                src={payload.highlight_1.image}
+                alt={payload.highlight_1.title}
+                className="aspect-[4/3] w-full object-cover rounded-3xl shadow-elev"
+              />
+            )}
+            <div>
+              {payload.highlight_1.badge && (
+                <span className="inline-flex items-center rounded-full bg-accent/15 text-accent px-3 py-1 text-xs font-semibold">
+                  {payload.highlight_1.badge}
+                </span>
+              )}
+              <h2 className="mt-4 text-2xl md:text-3xl font-bold text-primary tracking-tight">
+                {payload.highlight_1.title}
+              </h2>
+              <p className="mt-4 text-muted-foreground leading-relaxed">
+                {payload.highlight_1.desc}
+              </p>
+              {payload.highlight_1.features && payload.highlight_1.features.length > 0 && (
+                <ul className="mt-6 space-y-3">
+                  {payload.highlight_1.features.map((f: string, i: number) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <div className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/15 text-accent mt-0.5">
+                        <Check className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-sm text-foreground/85 leading-relaxed">{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="mt-7 flex gap-3 flex-wrap">
+                <Button asChild className="bg-gradient-accent text-white shadow-glow">
+                  <Link to="/contactus">
+                    {t(lang, "ปรึกษาผู้เชี่ยวชาญ", "Talk to a specialist")} <ArrowRight className="ml-1 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            {payload.highlight_1.imagePosition !== 'left' && payload.highlight_1.image && (
+              <LazyImage
+                src={payload.highlight_1.image}
+                alt={payload.highlight_1.title}
+                className="aspect-[4/3] w-full object-cover rounded-3xl shadow-elev"
+              />
+            )}
+          </div>
+        </section>
+      )}
+
+      {payload.products && payload.products.length > 0 && (
+        <section className="py-16 md:py-20 bg-muted/20">
+          <div className="mx-auto max-w-7xl px-4 md:px-6">
+            <h3 className="text-center text-xl md:text-2xl font-bold text-primary tracking-tight">
+              {payload.productsTitle || t(lang, "ผลิตภัณฑ์แนะนำ", "Featured Products")}
+            </h3>
+            {payload.productsDesc && (
+              <p className="mt-3 text-center text-muted-foreground max-w-2xl mx-auto">
+                {payload.productsDesc}
+              </p>
+            )}
+            <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {payload.products.map((p: any, i: number) => (
+                <article
+                  key={i}
+                  className="group rounded-2xl overflow-hidden border border-border bg-card shadow-card hover:shadow-elev transition-all flex flex-col"
+                >
+                  <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <LazyImage
+                      src={p.img}
+                      alt={p.title}
+                      className="h-full w-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h4 className="text-lg font-bold text-primary">{p.title}</h4>
+                    <p className="mt-3 text-sm text-foreground/80 leading-relaxed flex-1">
+                      {p.desc}
+                    </p>
+                    {p.href && (
+                      <Button asChild variant="outline" size="sm" className="mt-5 self-start">
+                        <Link to={p.href}>
+                          {t(lang, "ดูเพิ่มเติม", "Read more")} <ArrowRight className="ml-1 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
+  );
+}

@@ -480,6 +480,7 @@ const UpdateSchema = z.object({
     "siteSections",
     "navItems",
     "contactSubmissions",
+    "aboutUs",
   ]),
   action: z.enum(["update", "create", "delete"]).optional().default("update"),
   id: z.string().min(1),
