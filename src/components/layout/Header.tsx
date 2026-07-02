@@ -54,7 +54,7 @@ export function Header() {
   const [hover, setHover] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const { location } = useRouterState();
-  const { nav: originalNavItems, brands } = useSiteContent();
+  const { nav: originalNavItems, brands, solutions } = useSiteContent();
 
   const navItems = originalNavItems.map((item) => {
     if (item.label === "สินค้า" || item.href === "/category/all-products") {
@@ -75,6 +75,19 @@ export function Header() {
       ];
       return { ...item, submenu: dynamicSubmenu };
     }
+    
+    if (item.label === "โซลูชันของเรา" || item.href === "/solutions") {
+      const dynamicSubmenu = [
+        ...solutions.map((s) => ({
+          label: s.title,
+          href: `/${s.slug}`,
+          image: s.imageUrl || solutionImages[s.slug],
+          desc: s.desc,
+        })),
+      ];
+      return { ...item, submenu: dynamicSubmenu };
+    }
+
     return item;
   });
 
