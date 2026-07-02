@@ -153,17 +153,60 @@ function AboutPage() {
         />
       </section>
 
+      <div className="bg-navy py-12 border-b border-white/5">
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="flex items-center gap-4 justify-center md:justify-start">
+              <div className="grid h-14 w-14 place-items-center rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-400">
+                <Target className="h-6 w-6" />
+              </div>
+              <div className="text-white font-bold leading-tight">
+                โซลูชั่นครบวงจร<br/>
+                <span className="text-slate-400 font-normal text-sm">ตอบโจทย์ทุกการใช้งาน</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 justify-center md:justify-start">
+              <div className="grid h-14 w-14 place-items-center rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-400">
+                <Heart className="h-6 w-6" />
+              </div>
+              <div className="text-white font-bold leading-tight">
+                ทีมงานผู้เชี่ยวชาญ<br/>
+                <span className="text-slate-400 font-normal text-sm">ดูแลทุกขั้นตอน</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 justify-center md:justify-start">
+              <div className="grid h-14 w-14 place-items-center rounded-full border border-sky-500/30 bg-sky-500/10 text-sky-400">
+                <Eye className="h-6 w-6" />
+              </div>
+              <div className="text-white font-bold leading-tight">
+                มาตรฐานการติดตั้ง<br/>
+                <span className="text-slate-400 font-normal text-sm">ระดับมืออาชีพ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-navy pt-16">
+        <div className="mx-auto max-w-4xl px-4 md:px-6 text-center mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-white leading-snug">
+            <span className="text-sky-400 block mb-2">{lang === 'th' ? 'ไม่ว่าคุณต้องการโซลูชั่นแบบไหน เราพร้อมจัดให้' : 'No matter what solution you need, we are ready to provide it'}</span>
+            <span>{lang === 'th' ? 'เพราะเราคือผู้เชี่ยวชาญด้านโซลูชั่นภาพและเสียงสำหรับองค์กรโดยเฉพาะ' : 'Because we are audiovisual solution experts specifically for organizations.'}</span>
+          </h2>
+        </div>
+      </div>
+
       {/* Story */}
-      <section className="py-16 md:py-24">
+      <section className="bg-navy pb-16 md:pb-24">
         <div className="mx-auto max-w-4xl px-4 md:px-6">
           <div>
-            <div className="inline-block rounded-full bg-accent/10 text-accent px-3 py-1 text-[11px] font-bold uppercase tracking-widest mb-4">
+            <div className="inline-block rounded-full bg-sky-500/10 text-sky-400 px-3 py-1 text-[11px] font-bold uppercase tracking-widest mb-4">
               Our Story
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
               {t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
             </h2>
-            <div className="mt-5 space-y-4 text-muted-foreground leading-relaxed">
+            <div className="mt-5 space-y-4 text-slate-400 leading-relaxed text-[15px]">
               {aboutUs.storyP1Th && <p>{t(lang, aboutUs.storyP1Th, aboutUs.storyP1En)}</p>}
               {aboutUs.storyP2Th && <p>{t(lang, aboutUs.storyP2Th, aboutUs.storyP2En)}</p>}
               {aboutUs.storyP3Th && <p>{t(lang, aboutUs.storyP3Th, aboutUs.storyP3En)}</p>}
@@ -172,12 +215,12 @@ function AboutPage() {
               {statsList.map((s: any) => (
                 <div
                   key={s.l}
-                  className="rounded-xl border border-border bg-card p-4 text-center shadow-card"
+                  className="rounded-xl border border-slate-800 bg-[#080d1a] p-4 text-center"
                 >
-                  <div className="text-2xl md:text-3xl font-black text-gradient-accent bg-gradient-accent bg-clip-text text-transparent">
+                  <div className="text-2xl md:text-3xl font-black text-sky-500">
                     {s.v}
                   </div>
-                  <div className="text-[11px] text-muted-foreground mt-1">
+                  <div className="text-[11px] text-slate-400 mt-1">
                     {t(lang, s.l, s.lEn)}
                   </div>
                 </div>
@@ -188,44 +231,32 @@ function AboutPage() {
       </section>
 
       {/* Mission / Vision / Values */}
-      <section className="bg-gradient-subtle py-16 md:py-24">
-        <div className="mx-auto max-w-7xl px-4 md:px-6">
+      <section className="bg-navy pb-24">
+        <div className="mx-auto max-w-5xl px-4 md:px-6">
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
                 Icon: Target,
                 t: "Mission",
-                d: t(
-                  lang,
-                  "ส่งมอบโซลูชั่นภาพและเสียงที่ตอบโจทย์การใช้งานจริงและคุ้มค่าระยะยาวให้กับทุกองค์กร",
-                  "Deliver practical and cost-effective long-term audiovisual solutions for all organizations.",
-                ),
+                d: t(lang, aboutUs.missionTh, aboutUs.missionEn),
               },
               {
                 Icon: Eye,
                 t: "Vision",
-                d: t(
-                  lang,
-                  "เป็นพาร์ทเนอร์อันดับหนึ่งด้านระบบภาพของไทย ที่องค์กรชั้นนำไว้วางใจเลือกใช้",
-                  "To be Thailand's number one visual systems partner, trusted by leading organizations.",
-                ),
+                d: t(lang, aboutUs.visionTh, aboutUs.visionEn),
               },
               {
                 Icon: Heart,
                 t: "Values",
-                d: t(
-                  lang,
-                  "ความซื่อสัตย์ ความเชี่ยวชาญ และการดูแลลูกค้าตลอดอายุการใช้งานของผลิตภัณฑ์",
-                  "Integrity, expertise, and customer care throughout the product lifecycle.",
-                ),
+                d: t(lang, aboutUs.valuesTh, aboutUs.valuesEn),
               },
             ].map(({ Icon, t: title, d }) => (
-              <div key={title} className="rounded-2xl border border-border bg-card p-7 shadow-card">
-                <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-accent text-white shadow-glow mb-5">
+              <div key={title} className="rounded-2xl border border-slate-800 bg-[#080d1a] p-7 text-left hover:border-sky-500/30 transition-colors">
+                <div className="grid h-12 w-12 place-items-center rounded-full bg-sky-500 text-white mb-5">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold text-primary mb-2">{title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{d}</p>
+                <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">{d}</p>
               </div>
             ))}
           </div>
