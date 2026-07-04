@@ -12,69 +12,78 @@ import {
 import heroContact from "@/assets/hero-contactus.jpg";
 import headOfficeWarehouseCard from "@/assets/contact/head-office-warehouse-card.png";
 import { Reveal, RevealStagger } from "@/components/site/Reveal";
+import {
+  fallbackContactPage,
+  loadSiteContent,
+  type SiteContactPage,
+} from "@/lib/content/site";
+import { useSiteContent } from "@/lib/content/use-site-content";
 
-const MAP_EMBED_URL =
-  "https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d208564.31411982139!2d100.08820455287514!3d13.754200668610048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2zTWF0cml4IEludGVydHJhZGUgQ28uLEx0ZC4gRmFjdG9yeSBGb3J3YXJkIDExMS81NiDguKvguKHguLnguYjguJfguLXguYggOCDguJUg4LiV4Liz4Lia4LilIOC4muC4suC4h-C4geC4o-C5iOC4suC4hyDguK0u4LmA4Lih4Li34Lit4LiHIOC4meC4meC4l-C4muC4uOC4o-C4tSAxMTAwMA!3m2!1d13.843674!2d100.45374869999999!4m5!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2zTWF0cml4IEludGVydHJhZGUgQ28uLEx0ZC4gRmFjdG9yeSBGb3J3YXJkIDExMS81NiDguKvguKHguLnguYjguJfguLXguYggOCDguJUg4LiV4Liz4Lia4LilIOC4muC4suC4h-C4geC4o-C5iOC4suC4hyDguK0u4LmA4Lih4Li34Lit4LiHIOC4meC4meC4l-C4muC4uOC4o-C4tSAxMTAwMA!3m2!1d13.843674!2d100.45374869999999!5e0!3m2!1sth!2sth!4v1780061893336!5m2!1sth!2sth";
-
-const DIRECTIONS_URL = "https://maps.app.goo.gl/1SFM9izkXdenp7LYA";
+type ContactLoaderData = {
+  contactPage: SiteContactPage;
+};
 
 export const Route = createFileRoute("/contactus")({
-  head: () => ({
-    meta: [
-      { title: "ติดต่อเรา — Matrix Intertrade" },
-      { name: "description", content: "ขอใบเสนอราคา หรือปรึกษาผู้เชี่ยวชาญด้าน AV Solutions ฟรี" },
-      { property: "og:title", content: "ติดต่อเรา — Matrix Intertrade" },
-      { property: "og:description", content: "ติดต่อทีมขายและฝ่ายเทคนิคของ Matrix Intertrade" },
-      { property: "og:url", content: "/contactus" },
-    ],
-    links: [{ rel: "canonical", href: "/contactus" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "LocalBusiness",
-          name: "Matrix Intertrade Co., Ltd.",
-          image: "https://matrix-vista-pro.lovable.app/og-image.jpg",
-          url: "https://matrix-vista-pro.lovable.app/contactus",
-          telephone: "+66-2-129-6193",
-          email: "matrixintertrade2026@gmail.com",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: "111/51 หมู่ที่ 8 ต.บางกร่าง",
-            addressLocality: "อ.เมือง",
-            addressRegion: "จ.นนทบุรี",
-            postalCode: "11000",
-            addressCountry: "TH",
-          },
-          openingHoursSpecification: [
-            {
-              "@type": "OpeningHoursSpecification",
-              dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-              opens: "08:30",
-              closes: "17:30",
+  loader: async () => {
+    const content = await loadSiteContent();
+    return { contactPage: content.contactPage };
+  },
+  head: (ctx: { loaderData?: ContactLoaderData }) => {
+    const contact = ctx.loaderData?.contactPage ?? fallbackContactPage;
+    return {
+      meta: [
+        { title: contact.metaTitleTh },
+        { name: "description", content: contact.metaDescriptionTh },
+        { property: "og:title", content: contact.metaTitleTh },
+        { property: "og:description", content: contact.metaDescriptionTh },
+        { property: "og:url", content: "/contactus" },
+      ],
+      links: [{ rel: "canonical", href: "/contactus" }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: "Matrix Intertrade Co., Ltd.",
+            image: "https://matrix-vista-pro.lovable.app/og-image.jpg",
+            url: "https://matrix-vista-pro.lovable.app/contactus",
+            telephone: contact.phone,
+            email: contact.email,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: contact.addressTh,
+              addressCountry: "TH",
             },
-          ],
-        }),
-      },
-    ],
-  }),
+            openingHoursSpecification: [
+              {
+                "@type": "OpeningHoursSpecification",
+                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                opens: "08:30",
+                closes: "17:30",
+              },
+            ],
+          }),
+        },
+      ],
+    };
+  },
   component: ContactPage,
 });
 
 function ContactPage() {
   const { lang } = useLanguage();
+  const { contactPage: initialContact } = Route.useLoaderData() as ContactLoaderData;
+  const { contactPage: hydratedContact } = useSiteContent();
+  const contact = hydratedContact ?? initialContact ?? fallbackContactPage;
+  const local = (th: string, en: string) => t(lang, th, en);
 
   return (
     <>
       <PageHeader
         eyebrow="Contact"
-        title={t(lang, "ติดต่อทีมผู้เชี่ยวชาญของเรา", "Contact Our Experts")}
-        desc={t(
-          lang,
-          "ขอใบเสนอราคา หรือนัดหมาย Site Survey ฟรี ทีมงานพร้อมตอบกลับภายใน 1 วันทำการ",
-          "Request a quote or schedule a free site survey. We reply within 1 business day.",
-        )}
+        title={local(contact.heroTitleTh, contact.heroTitleEn)}
+        desc={local(contact.heroDescriptionTh, contact.heroDescriptionEn)}
         breadcrumbs={[{ label: t(lang, "ติดต่อเรา", "Contact Us") }]}
         bgImage={heroContact}
         variant="light"
@@ -86,10 +95,10 @@ function ContactPage() {
             <Reveal delay={100}>
               <div className="space-y-2">
                 <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-                  {t(lang, "ติดต่อเรา พร้อมให้บริการ", "We're Here to Help")}
+                  {local(contact.sectionTitleTh, contact.sectionTitleEn)}
                 </h2>
                 <p className="text-muted-foreground text-lg">
-                  {t(lang, "ช่องทางการติดต่อ Matrix Intertrade", "Contact Channels")}
+                  {local(contact.sectionDescriptionTh, contact.sectionDescriptionEn)}
                 </p>
               </div>
             </Reveal>
@@ -99,23 +108,19 @@ function ContactPage() {
                 {
                   Icon: MapPin,
                   label: t(lang, "ที่อยู่", "Address"),
-                  d: t(
-                    lang,
-                    "บจก.แมทริกซ์ อินเตอร์เทรด 111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000",
-                    "Matrix Intertrade 111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000",
-                  ),
+                  d: local(contact.addressTh, contact.addressEn),
                 },
                 {
                   Icon: Phone,
                   label: t(lang, "โทรศัพท์", "Phone"),
-                  d: "02-129-6193 / 094-888-7041",
+                  d: contact.phone,
                 },
                 {
                   Icon: Mail,
                   label: t(lang, "อีเมล", "Email"),
-                  d: "matrixintertrade2026@gmail.com",
+                  d: contact.email,
                 },
-                { Icon: MessageCircle, label: "Line OA", d: "@MatrixIntertrade" },
+                { Icon: MessageCircle, label: "Line OA", d: contact.line },
               ].map(({ Icon, label, d }) => (
                 <div
                   key={label}
@@ -151,14 +156,10 @@ function ContactPage() {
               Find Us
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary tracking-tight">
-              {t(lang, "แผนที่บริษัท & เส้นทางเดินทาง", "Office Map & Directions")}
+              {local(contact.mapTitleTh, contact.mapTitleEn)}
             </h2>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-              {t(
-                lang,
-                "นัดหมายเข้าชม Showroom และคลังสินค้าของเราที่นนทบุรี ทีมงานพร้อมต้อนรับและสาธิตสินค้าจริง",
-                "Schedule a visit to our Showroom and Warehouse in Nonthaburi. Our team is ready to welcome you and provide live demonstrations.",
-              )}
+              {local(contact.mapDescriptionTh, contact.mapDescriptionEn)}
             </p>
           </div>
 
@@ -182,25 +183,21 @@ function ContactPage() {
               <div className="sr-only">
                 <h3>Matrix Intertrade Co., Ltd.</h3>
                 <p>
-                  {t(
-                    lang,
-                    "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000 ประเทศไทย",
-                    "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000, Thailand",
-                  )}
+                  {local(contact.addressTh, contact.addressEn)}
                 </p>
-                <p>{t(lang, "เวลาทำการ จันทร์-ศุกร์ 08:30-17:30 น.", "Business hours Monday-Friday 08:30-17:30")}</p>
-                <p>{t(lang, "โทรนัดหมาย 02-129-6193", "Appointments 02-129-6193")}</p>
-                <p>{t(lang, "มีที่จอดรถภายในบริษัท", "Parking available on-site")}</p>
+                <p>{local(contact.businessHoursTh, contact.businessHoursEn)}</p>
+                <p>{contact.phone}</p>
+                <p>{local(contact.parkingTh, contact.parkingEn)}</p>
               </div>
               <a
-                href={DIRECTIONS_URL}
+                href={contact.directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={t(lang, "นำทาง Google Maps", "Google Maps Directions")}
                 className="absolute bottom-[6.2%] left-[5.8%] h-[8.5%] w-[44.8%] rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5c542]"
               />
               <a
-                href="tel:021296193"
+                href={contact.phoneHref}
                 aria-label={t(lang, "โทรสอบถาม 02-129-6193", "Call 02-129-6193")}
                 className="absolute bottom-[6.2%] right-[5.8%] h-[8.5%] w-[40.5%] rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff3333]"
               />
@@ -210,7 +207,7 @@ function ContactPage() {
             <div className="relative rounded-3xl overflow-hidden shadow-elev ring-1 ring-border bg-card min-h-[420px] lg:min-h-[520px] group">
               <iframe
                 title="Matrix Intertrade Location Map"
-                src={MAP_EMBED_URL}
+                src={contact.mapEmbedUrl}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen

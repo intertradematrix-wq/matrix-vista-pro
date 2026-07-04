@@ -59,6 +59,8 @@ const INDUSTRY_BRAND_CARD_FIELDS = [
 const INDUSTRY_PRE_CARD_SELECT =
   "slug,title,icon,description,image_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at";
 
+const UPSERTABLE_SITE_SECTIONS = new Set(["contact_page", "footer_settings"]);
+
 const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   products: {
     table: "content_products",
@@ -747,6 +749,18 @@ async function executeWrite(
   return query.update(write.values).eq(config.key, id).select(write.select).single();
 }
 
+async function upsertSiteSection(config: ContentConfig, id: string, values: Record<string, unknown>) {
+  const write = await selectForWrite(config, {
+    is_enabled: true,
+    ...values,
+  });
+  return supabaseAdmin
+    .from(tableName(config))
+    .upsert({ [config.key]: id, ...write.values }, { onConflict: config.key })
+    .select(write.select)
+    .single();
+}
+
 async function requireAdmin(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -1009,6 +1023,18 @@ export const Route = createFileRoute("/api/admin/content")({
 
         const requiredError = validateRequiredFields(config, id, values, action);
         if (requiredError) return requiredError;
+
+        if (
+          parsed.data.kind === "siteSections" &&
+          UPSERTABLE_SITE_SECTIONS.has(id) &&
+          action !== "delete"
+        ) {
+          const result = await upsertSiteSection(config, id, values);
+          if (result.error) {
+            return jsonError(`Failed to save ${parsed.data.kind}`, 500, result.error);
+          }
+          return Response.json({ ok: true, kind: parsed.data.kind, item: result.data });
+        }
 
         if (action === "update") {
           const existsError = await ensureItemExists(config, id);

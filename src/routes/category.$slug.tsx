@@ -202,9 +202,9 @@ function CategoryPage() {
                 >
                   {t(lang, "ทั้งหมด", "All")}
                 </button>
-                {uniqueBrands.map((brand) => (
+                {uniqueBrands.map((brand, index) => (
                   <button
-                    key={brand}
+                    key={`${brand.toLowerCase()}-${index}`}
                     onClick={() => setSelectedBrand(brand)}
                     className={`shrink-0 rounded-lg px-4 py-1.5 text-sm font-semibold transition-all duration-300 ease-out ${
                       selectedBrand === brand

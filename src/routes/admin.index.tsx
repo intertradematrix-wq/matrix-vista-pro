@@ -66,6 +66,10 @@ import {
 } from "@/data/managed-content-defaults";
 import { solutionImages } from "@/data/solution-images";
 import { CATEGORY_IDS_BY_SLUG } from "@/lib/seo-slugs";
+import {
+  fallbackContactPage,
+  fallbackFooterSettings,
+} from "@/lib/content/site";
 import imgEducation from "@/assets/article-smart-classroom.jpg";
 import imgHotel from "@/assets/hero-av.jpg";
 import imgCorporate from "@/assets/article-meeting-room.jpg";
@@ -85,7 +89,12 @@ type ContentKind =
   | "contactSubmissions"
   | "aboutUs";
 
-type AdminTab = ContentKind | "lineSettings" | "trackingSettings";
+type AdminTab =
+  | ContentKind
+  | "contactPageSettings"
+  | "footerSettings"
+  | "lineSettings"
+  | "trackingSettings";
 
 type FieldType =
   | "text"
@@ -219,6 +228,75 @@ const industryShowcaseImages: Record<string, string> = {
 const slugHelperText =
   "Use lowercase English letters, numbers, and hyphens only. Do not include /.";
 
+type RuntimeSettingsField = {
+  key: string;
+  label: string;
+  type?: "text" | "textarea";
+  rows?: number;
+  placeholder?: string;
+};
+
+function isRuntimeSettingsTabValue(tab: AdminTab) {
+  return (
+    tab === "contactPageSettings" ||
+    tab === "footerSettings" ||
+    tab === "lineSettings" ||
+    tab === "trackingSettings"
+  );
+}
+
+const CONTACT_PAGE_SETTINGS_FIELDS: RuntimeSettingsField[] = [
+  { key: "heroTitleTh", label: "Hero Title (TH)" },
+  { key: "heroTitleEn", label: "Hero Title (EN)" },
+  { key: "heroDescriptionTh", label: "Hero Description (TH)", type: "textarea", rows: 3 },
+  { key: "heroDescriptionEn", label: "Hero Description (EN)", type: "textarea", rows: 3 },
+  { key: "sectionTitleTh", label: "Contact Section Title (TH)" },
+  { key: "sectionTitleEn", label: "Contact Section Title (EN)" },
+  { key: "sectionDescriptionTh", label: "Contact Section Description (TH)" },
+  { key: "sectionDescriptionEn", label: "Contact Section Description (EN)" },
+  { key: "addressTh", label: "Address (TH)", type: "textarea", rows: 3 },
+  { key: "addressEn", label: "Address (EN)", type: "textarea", rows: 3 },
+  { key: "phone", label: "Phone" },
+  { key: "email", label: "Email" },
+  { key: "line", label: "LINE" },
+  { key: "mapTitleTh", label: "Map Title (TH)" },
+  { key: "mapTitleEn", label: "Map Title (EN)" },
+  { key: "mapDescriptionTh", label: "Map Description (TH)", type: "textarea", rows: 3 },
+  { key: "mapDescriptionEn", label: "Map Description (EN)", type: "textarea", rows: 3 },
+  { key: "mapEmbedUrl", label: "Google Maps Embed URL", type: "textarea", rows: 4 },
+  { key: "directionsUrl", label: "Google Maps Directions URL" },
+  { key: "phoneHref", label: "Phone Link", placeholder: "tel:021296193" },
+  { key: "businessHoursTh", label: "Business Hours (TH)" },
+  { key: "businessHoursEn", label: "Business Hours (EN)" },
+  { key: "parkingTh", label: "Parking Note (TH)" },
+  { key: "parkingEn", label: "Parking Note (EN)" },
+  { key: "metaTitleTh", label: "SEO Title (TH)" },
+  { key: "metaTitleEn", label: "SEO Title (EN)" },
+  { key: "metaDescriptionTh", label: "SEO Description (TH)", type: "textarea", rows: 2 },
+  { key: "metaDescriptionEn", label: "SEO Description (EN)", type: "textarea", rows: 2 },
+];
+
+const FOOTER_SETTINGS_FIELDS: RuntimeSettingsField[] = [
+  { key: "ctaTitleTh", label: "CTA Title (TH)" },
+  { key: "ctaTitleEn", label: "CTA Title (EN)" },
+  { key: "ctaDescriptionTh", label: "CTA Description (TH)", type: "textarea", rows: 2 },
+  { key: "ctaDescriptionEn", label: "CTA Description (EN)", type: "textarea", rows: 2 },
+  { key: "companyDescriptionTh", label: "Company Description (TH)", type: "textarea", rows: 4 },
+  { key: "companyDescriptionEn", label: "Company Description (EN)", type: "textarea", rows: 4 },
+  { key: "addressTh", label: "Address (TH)", type: "textarea", rows: 2 },
+  { key: "addressEn", label: "Address (EN)", type: "textarea", rows: 2 },
+  { key: "phone", label: "Phone" },
+  { key: "email", label: "Email" },
+  { key: "line", label: "LINE" },
+  { key: "facebookUrl", label: "Facebook URL" },
+  { key: "youtubeUrl", label: "YouTube URL" },
+  { key: "tiktokUrl", label: "TikTok URL" },
+  { key: "newsletterDescriptionTh", label: "Newsletter Text (TH)", type: "textarea", rows: 2 },
+  { key: "newsletterDescriptionEn", label: "Newsletter Text (EN)", type: "textarea", rows: 2 },
+  { key: "newsletterPlaceholderTh", label: "Newsletter Placeholder (TH)" },
+  { key: "newsletterPlaceholderEn", label: "Newsletter Placeholder (EN)" },
+];
+
 type AboutStat = {
   v: string;
   l: string;
@@ -273,7 +351,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         label: "คำอธิบายสินค้า (ข้อความ)",
         type: "textarea" as FieldType,
         rows: 5,
-        helperText: "ข้อความสั้นๆ สำหรับแสดงในหน้ารวมสินค้า และผลการค้นหา Google",
+        helperText: "ข้อความสั้นๆ ที่แสดงใต้ชื่อสินค้าในหน้ารายละเอียดสินค้า ใช้ในหน้ารวมสินค้า และใช้เป็น SEO fallback",
         placeholder: "เขียนสรุปจุดเด่นของสินค้า 2-3 ประโยค",
       },
       {
@@ -709,29 +787,41 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     subtitle: (item) => text(item.slug),
     image: (item) =>
       text(item.showcase_image_url) ||
-      industryShowcaseImages[text(item.slug)] ||
-      text(item.image_url),
+      industryShowcaseImages[text(item.slug)],
     href: (item) => `/industry/${text(item.slug)}`,
     fields: [
       { key: "slug", label: "Slug", placeholder: "industry-name", helperText: slugHelperText },
-      { key: "title", label: "Title" },
-      { key: "icon", label: "Icon" },
-      { key: "description", label: "Description", type: "textarea", rows: 5 },
-      { key: "image_url", label: "Image URL", type: "image" },
+      {
+        key: "title",
+        label: "Title",
+        helperText: "Shown on /industry/{slug}, /aboutus industry cards, and public previews.",
+      },
+      {
+        key: "icon",
+        label: "Icon",
+        helperText: "Lucide icon name used by /, /brands, /aboutus and the industry page fallback.",
+      },
+      {
+        key: "description",
+        label: "Description",
+        type: "textarea",
+        rows: 5,
+        helperText: "Shown on /industry/{slug} hero and /aboutus industry cards.",
+      },
       {
         key: "showcase_image_url",
         label: "Showcase Card Image",
         type: "image",
         group: "brands_page",
         helperText:
-          "Image used by the vertical card on the homepage and /brands. Leave blank to use the original fallback image.",
+          "Image used by the vertical card on /, /brands and the industry cards on /aboutus. Leave blank to use fallback imagery.",
       },
       {
         key: "show_on_brands",
         label: "Show on homepage and /brands",
         type: "toggle",
         group: "brands_page",
-        helperText: "Turn off to hide this card from the shared showcase section.",
+        helperText: "Turn off to hide this industry from /, /brands and /aboutus shared industry sections.",
       },
       {
         key: "sort_order",
@@ -776,7 +866,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         label: "Card Link Override",
         group: "brands_page",
         placeholder: "/industry/education",
-        helperText: "Leave blank to link to /industry/{slug}.",
+        helperText: "Leave blank to link to /industry/{slug}. Used by /, /brands and /aboutus.",
       },
       { key: "payload", label: "Payload JSON", type: "json", rows: 12, group: "advanced" },
       {
@@ -908,26 +998,17 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     fields: [
       { key: "id", label: "ID", readOnly: true },
       { key: "intro_title_th", label: "Intro Title (TH)" },
-      { key: "intro_title_en", label: "Intro Title (EN)" },
       { key: "intro_desc_th", label: "Intro Desc (TH)", type: "textarea", rows: 3 },
-      { key: "intro_desc_en", label: "Intro Desc (EN)", type: "textarea", rows: 3 },
       
       { key: "story_p1_th", label: "Story P1 (TH)", type: "textarea", rows: 5 },
-      { key: "story_p1_en", label: "Story P1 (EN)", type: "textarea", rows: 5 },
       { key: "story_p2_th", label: "Story P2 (TH)", type: "textarea", rows: 5 },
-      { key: "story_p2_en", label: "Story P2 (EN)", type: "textarea", rows: 5 },
       { key: "story_p3_th", label: "Story P3 (TH)", type: "textarea", rows: 5 },
-      { key: "story_p3_en", label: "Story P3 (EN)", type: "textarea", rows: 5 },
       
       { key: "mission_th", label: "Mission (TH)", type: "textarea", rows: 3 },
-      { key: "mission_en", label: "Mission (EN)", type: "textarea", rows: 3 },
       { key: "vision_th", label: "Vision (TH)", type: "textarea", rows: 3 },
-      { key: "vision_en", label: "Vision (EN)", type: "textarea", rows: 3 },
       { key: "values_th", label: "Values (TH)", type: "textarea", rows: 3 },
-      { key: "values_en", label: "Values (EN)", type: "textarea", rows: 3 },
       
       { key: "address_th", label: "Address (TH)", type: "textarea", rows: 2 },
-      { key: "address_en", label: "Address (EN)", type: "textarea", rows: 2 },
       { key: "phone", label: "Phone" },
       { key: "email", label: "Email" },
       { key: "website", label: "Website" },
@@ -1021,9 +1102,12 @@ function AdminPage() {
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [isCreating, setIsCreating] = useState(false);
 
+  const isContactPageSettingsTab = activeTab === "contactPageSettings";
+  const isFooterSettingsTab = activeTab === "footerSettings";
   const isLineSettingsTab = activeTab === "lineSettings";
   const isTrackingSettingsTab = activeTab === "trackingSettings";
-  const isSettingsTab = isLineSettingsTab || isTrackingSettingsTab;
+  const isSettingsTab =
+    isContactPageSettingsTab || isFooterSettingsTab || isLineSettingsTab || isTrackingSettingsTab;
   const config = CONTENT_CONFIG[activeKind];
   const activeSchemaWarning = loadWarnings[activeKind];
   const activeFields = useMemo(() => {
@@ -1347,20 +1431,20 @@ function AdminPage() {
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "s") {
         e.preventDefault();
-        if (sessionToken && selectedItem) {
+        if (sessionToken && selectedItem && !isSettingsTab) {
           void saveCurrentItem();
         }
       }
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [sessionToken, selectedItem, draft, activeKind, config]); // Re-bind when state used in saveCurrentItem changes
+  }, [sessionToken, selectedItem, draft, activeKind, config, isSettingsTab]); // Re-bind when state used in saveCurrentItem changes
 
   const isDirty = useMemo(() => {
-    if (!selectedItem) return false;
+    if (isSettingsTab || !selectedItem) return false;
     const originalDraft = toDraft(selectedItem, config.fields);
     return JSON.stringify(originalDraft) !== JSON.stringify(draft);
-  }, [selectedItem, draft, config.fields]);
+  }, [isSettingsTab, selectedItem, draft, config.fields]);
 
   // Warn before navigating away with unsaved changes
   useEffect(() => {
@@ -1459,7 +1543,7 @@ function AdminPage() {
         onValueChange={(value) => {
           const nextTab = value as AdminTab;
           setActiveTab(nextTab);
-          if (nextTab !== "lineSettings" && nextTab !== "trackingSettings") setActiveKind(nextTab);
+          if (!isRuntimeSettingsTabValue(nextTab)) setActiveKind(nextTab as ContentKind);
           setIsCreating(false);
         }}
       >
@@ -1470,6 +1554,14 @@ function AdminPage() {
                 {CONTENT_CONFIG[kind].label} ({content[kind]?.length ?? 0})
               </TabsTrigger>
             ))}
+            <TabsTrigger value="contactPageSettings">
+              <Mail className="mr-2 h-4 w-4" />
+              Contact Us
+            </TabsTrigger>
+            <TabsTrigger value="footerSettings">
+              <Globe className="mr-2 h-4 w-4" />
+              Footer
+            </TabsTrigger>
             <TabsTrigger value="lineSettings">
               <Settings className="mr-2 h-4 w-4" />
               LINE Settings
@@ -1482,11 +1574,15 @@ function AdminPage() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                {isLineSettingsTab
-                  ? "Manage LINE notification credentials used by the contact form."
-                  : isTrackingSettingsTab
-                    ? "Manage Google Analytics and Meta Pixel tracking for the public website."
-                    : config.description}
+                {isContactPageSettingsTab
+                  ? "Edit runtime content used by the public /contactus page."
+                  : isFooterSettingsTab
+                    ? "Edit shared footer CTA, contact details, social links and newsletter copy."
+                    : isLineSettingsTab
+                      ? "Manage LINE notification credentials used by the contact form."
+                      : isTrackingSettingsTab
+                        ? "Manage Google Analytics and Meta Pixel tracking for the public website."
+                        : config.description}
               </p>
               {!isSettingsTab && (activeKind === "siteSections" || activeKind === "aboutUs") && (
                 <div className="flex max-w-3xl flex-col gap-3 rounded-xl border border-accent/20 bg-white px-4 py-3 text-sm text-muted-foreground shadow-sm md:flex-row md:items-center md:justify-between">
@@ -1618,6 +1714,40 @@ function AdminPage() {
         <TabsContent value="lineSettings" className="mt-5">
           <LineSettingsPanel sessionToken={sessionToken} />
         </TabsContent>
+        <TabsContent value="contactPageSettings" className="mt-5">
+          <RuntimeSiteSectionSettingsPanel
+            title="Contact Us page"
+            description="Edit the public /contactus hero, contact details, map and SEO copy."
+            sectionKey="contact_page"
+            previewHref="/contactus"
+            sessionToken={sessionToken}
+            fields={CONTACT_PAGE_SETTINGS_FIELDS}
+            fallbackPayload={fallbackContactPage}
+            item={(content.siteSections ?? []).find(
+              (item) => text(item.section_key) === "contact_page",
+            )}
+            onSaved={() => {
+              if (sessionToken) void loadAdminContent(sessionToken);
+            }}
+          />
+        </TabsContent>
+        <TabsContent value="footerSettings" className="mt-5">
+          <RuntimeSiteSectionSettingsPanel
+            title="Footer"
+            description="Edit shared footer CTA, company summary, contact details, social links and newsletter copy."
+            sectionKey="footer_settings"
+            previewHref="/"
+            sessionToken={sessionToken}
+            fields={FOOTER_SETTINGS_FIELDS}
+            fallbackPayload={fallbackFooterSettings}
+            item={(content.siteSections ?? []).find(
+              (item) => text(item.section_key) === "footer_settings",
+            )}
+            onSaved={() => {
+              if (sessionToken) void loadAdminContent(sessionToken);
+            }}
+          />
+        </TabsContent>
         <TabsContent value="trackingSettings" className="mt-5">
           <TrackingSettingsPanel sessionToken={sessionToken} />
         </TabsContent>
@@ -1638,6 +1768,200 @@ function AdminShell({ children, status }: { children?: ReactNode; status?: strin
         {children}
       </div>
     </main>
+  );
+}
+
+function RuntimeSiteSectionSettingsPanel({
+  title,
+  description,
+  sectionKey,
+  previewHref,
+  sessionToken,
+  fields,
+  fallbackPayload,
+  item,
+  onSaved,
+}: {
+  title: string;
+  description: string;
+  sectionKey: "contact_page" | "footer_settings";
+  previewHref: string;
+  sessionToken: string;
+  fields: RuntimeSettingsField[];
+  fallbackPayload: object;
+  item?: ContentItem;
+  onSaved: () => void;
+}) {
+  const [status, setStatus] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const initialPayload = useMemo(() => {
+    const payload =
+      item?.payload && typeof item.payload === "object" && !Array.isArray(item.payload)
+        ? (item.payload as Record<string, unknown>)
+        : {};
+    const merged: Record<string, string> = {};
+    fields.forEach((field) => {
+      const value = payload[field.key];
+      const fallbackValue = (fallbackPayload as Record<string, string>)[field.key] ?? "";
+      merged[field.key] = typeof value === "string" && value.trim() ? value : fallbackValue;
+    });
+    return merged;
+  }, [fallbackPayload, fields, item]);
+
+  const [draft, setDraft] = useState<Record<string, string>>(initialPayload);
+
+  useEffect(() => {
+    setDraft(initialPayload);
+    setStatus("");
+  }, [initialPayload]);
+
+  const isDirty = JSON.stringify(draft) !== JSON.stringify(initialPayload);
+  const filledCount = fields.filter((field) => draft[field.key]?.trim()).length;
+
+  async function saveSettings() {
+    setSaving(true);
+    setStatus("");
+    try {
+      const response = await fetch("/api/admin/content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({
+          kind: "siteSections",
+          id: sectionKey,
+          values: { payload: draft },
+          action: "update",
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? `Cannot save ${title}`);
+
+      setStatus(`${title} saved.`);
+      toast.success(`${title} saved.`);
+      onSaved();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : `Cannot save ${title}`;
+      setStatus(message);
+      toast.error(message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-border">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Globe className="h-5 w-5 text-accent" />
+                {title}
+              </CardTitle>
+              <CardDescription>{description}</CardDescription>
+            </div>
+            <Button asChild type="button" variant="outline" size="sm">
+              <a href={previewHref} target="_blank" rel="noreferrer">
+                Preview
+                <ExternalLink className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="grid gap-4 p-4 sm:p-6 md:grid-cols-2">
+          {fields.map((field) => (
+            <label
+              key={field.key}
+              className={`grid gap-1.5 text-sm font-medium text-primary ${
+                field.type === "textarea" ? "md:col-span-2" : ""
+              }`}
+            >
+              {field.label}
+              {field.type === "textarea" ? (
+                <Textarea
+                  value={draft[field.key] ?? ""}
+                  rows={field.rows ?? 3}
+                  placeholder={field.placeholder}
+                  onChange={(event) =>
+                    setDraft((current) => ({ ...current, [field.key]: event.target.value }))
+                  }
+                />
+              ) : (
+                <Input
+                  value={draft[field.key] ?? ""}
+                  placeholder={field.placeholder}
+                  onChange={(event) =>
+                    setDraft((current) => ({ ...current, [field.key]: event.target.value }))
+                  }
+                />
+              )}
+            </label>
+          ))}
+
+          {status && (
+            <div className="md:col-span-2 rounded-lg border border-border bg-secondary/60 px-3 py-2 text-sm text-muted-foreground">
+              {status}
+            </div>
+          )}
+
+          <div className="md:col-span-2 flex flex-wrap gap-2">
+            <Button type="button" onClick={saveSettings} disabled={saving || !isDirty}>
+              {saving ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              Save Settings
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setDraft(initialPayload)}
+              disabled={saving || !isDirty}
+            >
+              Reset
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Runtime Preview</CardTitle>
+          <CardDescription>
+            Saved to <code className="rounded bg-secondary px-1 py-0.5">{sectionKey}</code>.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
+          <div className="rounded-lg border border-border p-3">
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <span className="font-semibold text-primary">Content status</span>
+              <Badge variant={item ? "default" : "secondary"}>
+                {item ? "Runtime row" : "Fallback"}
+              </Badge>
+            </div>
+            <p className="text-muted-foreground">
+              {filledCount}/{fields.length} fields filled. If this row does not exist yet, saving
+              here will create it in Supabase.
+            </p>
+          </div>
+          <div className="max-h-[360px] overflow-auto rounded-lg border border-border bg-secondary/35 p-3">
+            <pre className="whitespace-pre-wrap break-words text-xs leading-relaxed text-muted-foreground">
+              {JSON.stringify(draft, null, 2)}
+            </pre>
+          </div>
+          <Button asChild type="button" variant="outline" className="w-full">
+            <a href={previewHref} target="_blank" rel="noreferrer">
+              Open public page
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
@@ -2237,10 +2561,25 @@ function ContentList({
                   {config.subtitle?.(item) || id}
                 </div>
                 {(kind === "articles" || kind === "products") && (
-                  <div className="mt-2">
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    {kind === "products" && text(item.price_text) && (
+                      <Badge variant="outline" className="px-1.5 py-0 text-[10px] font-medium">
+                        {text(item.price_text)}
+                      </Badge>
+                    )}
                     <Badge variant={String(item.status) === "draft" ? "secondary" : "default"} className={`text-[10px] px-1.5 py-0 font-medium ${String(item.status) === "draft" ? "bg-amber-100 text-amber-700 hover:bg-amber-100" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"}`}>
                       {String(item.status) === "draft" ? "📝 ฉบับร่าง" : "🌐 เผยแพร่แล้ว"}
                     </Badge>
+                  </div>
+                )}
+                {kind === "products" && (
+                  <div className="mt-2 space-y-0.5 text-[11px] text-muted-foreground">
+                    <div className="truncate">
+                      ID: {text(item.product_id) || "-"} · Brand slug: {text(item.brand_slug) || "-"}
+                    </div>
+                    <div className="truncate">
+                      Category: {text(item.brand_category_id) || "-"}
+                    </div>
                   </div>
                 )}
               </div>
@@ -2685,16 +3024,40 @@ function ContentEditor({
               value="content"
               className="m-0 p-4 sm:p-6 space-y-4 data-[state=inactive]:hidden focus-visible:ring-0"
             >
-              {regularFields.map((field) =>
-                renderField(field, draft, update, isCreating, allContent),
+              {isProduct ? (
+                <ProductFieldGroup
+                  title="ข้อมูลหลักของสินค้า"
+                  description="ข้อมูลที่ใช้แสดงบนหน้ารวมสินค้า หน้ารายละเอียดสินค้า และ preview ด้านขวา"
+                  fields={regularFields}
+                  draft={draft}
+                  update={update}
+                  isCreating={isCreating}
+                  allContent={allContent}
+                />
+              ) : (
+                regularFields.map((field) =>
+                  renderField(field, draft, update, isCreating, allContent),
+                )
               )}
             </TabsContent>
             <TabsContent
               value="publishing"
               className="m-0 p-4 sm:p-6 space-y-4 data-[state=inactive]:hidden focus-visible:ring-0"
             >
-              {publishingFields.map((field) =>
-                renderField(field, draft, update, isCreating, allContent),
+              {isProduct ? (
+                <ProductFieldGroup
+                  title="ข้อมูลแบรนด์และการเผยแพร่"
+                  description="ข้อมูลนี้ใช้เชื่อมสินค้าเข้ากับแบรนด์ หมวดสินค้า ราคา แหล่งอ้างอิง และสถานะการแสดงผล"
+                  fields={publishingFields}
+                  draft={draft}
+                  update={update}
+                  isCreating={isCreating}
+                  allContent={allContent}
+                />
+              ) : (
+                publishingFields.map((field) =>
+                  renderField(field, draft, update, isCreating, allContent),
+                )
               )}
             </TabsContent>
             <TabsContent
@@ -3055,6 +3418,16 @@ function IndustryPayloadEditor({
           <Input value={payload.productsTitle || ""} onChange={e => updateProp("productsTitle", e.target.value)} placeholder="ค่าเริ่มต้น: ผลิตภัณฑ์แนะนำ" />
         </div>
         
+        <div className="space-y-1.5 mb-2">
+          <label className="text-[13px] font-semibold text-primary">Products Description</label>
+          <Textarea
+            value={payload.productsDesc || ""}
+            onChange={e => updateProp("productsDesc", e.target.value)}
+            rows={3}
+            placeholder="Optional description shown above products on /industry/{slug}"
+          />
+        </div>
+
         <div className="grid gap-4">
           {(payload.products || []).map((prod: any, i: number) => (
             <div key={i} className="flex flex-col gap-3 p-4 border rounded-xl bg-white relative shadow-sm">
@@ -3095,6 +3468,36 @@ function IndustryPayloadEditor({
           ))}
         </div>
         <Button onClick={addProduct} variant="outline" className="w-max bg-white"><Plus className="w-4 h-4 mr-2" />เพิ่มแผงสินค้าใหม่</Button>
+      </div>
+    </div>
+  );
+}
+
+function ProductFieldGroup({
+  title,
+  description,
+  fields,
+  draft,
+  update,
+  isCreating,
+  allContent,
+}: {
+  title: string;
+  description: string;
+  fields: FieldConfig[];
+  draft: Draft;
+  update: (key: string, value: string) => void;
+  isCreating?: boolean;
+  allContent?: Partial<Record<ContentKind, ContentItem[]>>;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-white shadow-sm">
+      <div className="border-b border-border bg-secondary/35 px-4 py-3">
+        <h3 className="text-sm font-semibold text-primary">{title}</h3>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
+      </div>
+      <div className="grid gap-4 p-4">
+        {fields.map((field) => renderField(field, draft, update, isCreating, allContent))}
       </div>
     </div>
   );
@@ -3160,8 +3563,13 @@ function renderField(
   }
 
   // Wrap with helperText for all remaining field types
-  const helperEl = field.helperText ? (
-    <p className="text-[0.8rem] text-muted-foreground">{field.helperText}</p>
+  const resolvedHelperText =
+    field.helperText ||
+    (field.key === "description_html"
+      ? "ใช้เป็นเนื้อหาหลักในหน้ารายละเอียดสินค้า /product/{slug}"
+      : "");
+  const helperEl = resolvedHelperText ? (
+    <p className="text-[0.8rem] text-muted-foreground">{resolvedHelperText}</p>
   ) : null;
 
   if (field.type === "textarea" || field.type === "json") {
@@ -3196,13 +3604,15 @@ function renderField(
 
   if (field.type === "richtext") {
     return (
-      <RichTextField
-        key={field.key}
-        label={field.label}
-        value={value}
-        onChange={(next) => update(field.key, next)}
-        readOnly={field.readOnly}
-      />
+      <div key={field.key} className="grid gap-1.5">
+        <RichTextField
+          label={field.label}
+          value={value}
+          onChange={(next) => update(field.key, next)}
+          readOnly={field.readOnly}
+        />
+        {helperEl}
+      </div>
     );
   }
 
@@ -3329,6 +3739,251 @@ function ProductSeoChecklist({ item }: { item: Record<string, unknown> }) {
   );
 }
 
+function ProductSummaryPanel({ item, href }: { item: ContentItem; href?: string | null }) {
+  const sourceUrl = text(item.source_url);
+  const publicUrl = href || `/product/${text(item.slug) || text(item.product_id)}`;
+  const descriptionText = text(item.description_text);
+  const descriptionHtml = text(item.description_html);
+  const checks = [
+    { label: "รูปสินค้า", ready: Boolean(text(item.image_url)) },
+    { label: "คำอธิบายสั้น", ready: descriptionText.length >= 30 },
+    { label: "รายละเอียดสินค้า", ready: descriptionHtml.length >= 100 },
+    { label: "แบรนด์", ready: Boolean(text(item.brand) && text(item.brand_slug)) },
+    { label: "SEO", ready: Boolean(text(item.seo_title) || text(item.seo_description)) },
+  ];
+
+  return (
+    <div className="rounded-xl border border-border bg-white p-4 shadow-sm">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold text-primary">Product summary</h3>
+          <p className="mt-0.5 text-xs text-muted-foreground">ข้อมูลสำคัญของสินค้าที่กำลังแก้ไข</p>
+        </div>
+        <Badge variant={String(item.status) === "draft" ? "secondary" : "default"}>
+          {text(item.status) || "published"}
+        </Badge>
+      </div>
+
+      <div className="grid gap-2 rounded-lg bg-secondary/45 p-3 text-xs">
+        <ProductSummaryRow label="Product ID" value={text(item.product_id)} />
+        <ProductSummaryRow label="Slug" value={text(item.slug)} />
+        <ProductSummaryRow label="Brand" value={text(item.brand)} />
+        <ProductSummaryRow label="Brand slug" value={text(item.brand_slug)} />
+        <ProductSummaryRow label="Category ID" value={text(item.brand_category_id)} />
+        <ProductSummaryRow label="Price" value={text(item.price_text)} />
+        <ProductSummaryRow label="Public URL" value={publicUrl} />
+        <ProductSummaryRow label="Source URL" value={sourceUrl} />
+      </div>
+
+      {descriptionText && (
+        <div className="mt-3 rounded-lg border border-border bg-white p-3">
+          <div className="mb-1 text-xs font-semibold text-primary">คำอธิบายสั้น</div>
+          <p className="line-clamp-5 text-xs leading-relaxed text-muted-foreground">
+            {descriptionText}
+          </p>
+        </div>
+      )}
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {checks.map((check) => (
+          <div
+            key={check.label}
+            className={`flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs ${
+              check.ready
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "border-amber-200 bg-amber-50 text-amber-700"
+            }`}
+          >
+            {check.ready ? (
+              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+            ) : (
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            )}
+            <span className="truncate">{check.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button asChild variant="outline" size="sm" className="h-8">
+          <a href={publicUrl} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+            Public page
+          </a>
+        </Button>
+        {sourceUrl && (
+          <Button asChild variant="outline" size="sm" className="h-8">
+            <a href={sourceUrl} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+              Source
+            </a>
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ProductSummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid grid-cols-[92px_minmax(0,1fr)] gap-2">
+      <span className="font-semibold text-primary">{label}</span>
+      <span className="truncate text-muted-foreground">{value || "-"}</span>
+    </div>
+  );
+}
+
+type AdminActionKind = "save" | "draft" | "publish" | "delete" | null;
+
+function AdminContentActions({
+  kind,
+  config,
+  item,
+  saveState,
+  onSave,
+  onSaveAsDraft,
+  onPublish,
+  isDirty,
+  onDiscard,
+  isCreating,
+  onDelete,
+}: {
+  kind: ContentKind;
+  config: ContentConfig;
+  item: ContentItem;
+  saveState: SaveState;
+  onSave: () => void;
+  onSaveAsDraft?: () => void;
+  onPublish?: () => void;
+  isDirty?: boolean;
+  onDiscard?: () => void;
+  isCreating?: boolean;
+  onDelete?: () => void;
+}) {
+  const [pendingAction, setPendingAction] = useState<AdminActionKind>(null);
+  const isSaving = saveState === "saving";
+  const usesPublishFlow = kind === "articles" || kind === "products";
+  const itemStatus = String(item.status || "");
+  const deleteLabel =
+    kind === "articles"
+      ? "Delete article"
+      : kind === "products"
+        ? "Delete product"
+        : `Delete ${config.label}`;
+
+  useEffect(() => {
+    if (!isSaving) setPendingAction(null);
+  }, [isSaving]);
+
+  function run(action: Exclude<AdminActionKind, null>, callback?: () => void) {
+    if (!callback) return;
+    setPendingAction(action);
+    callback();
+  }
+
+  return (
+    <div className="rounded-2xl border border-border bg-secondary/25 p-3">
+      <div className="flex flex-col gap-2">
+        {isDirty && (
+          <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700">
+            <Circle className="h-2 w-2 fill-amber-500 text-amber-500" />
+            Unsaved changes
+          </div>
+        )}
+
+        {usesPublishFlow ? (
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 w-full border-border bg-white text-primary shadow-sm hover:bg-secondary"
+              onClick={() => run("draft", onSaveAsDraft)}
+              disabled={isSaving || (saveState !== "error" && !isDirty && itemStatus === "draft")}
+            >
+              {isSaving && pendingAction === "draft" ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              Save draft
+            </Button>
+            <Button
+              type="button"
+              className="h-10 w-full bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+              onClick={() => run("publish", onPublish)}
+              disabled={isSaving || (saveState !== "error" && !isDirty && itemStatus !== "draft")}
+            >
+              {isSaving && pendingAction === "publish" ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Globe className="mr-2 h-4 w-4" />
+              )}
+              Publish
+            </Button>
+          </div>
+        ) : (
+          <Button
+            type="button"
+            className="h-10 w-full bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+            onClick={() => run("save", onSave)}
+            disabled={isSaving || (saveState !== "error" && !isDirty)}
+          >
+            {isSaving && pendingAction === "save" ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="mr-2 h-4 w-4" />
+            )}
+            {saveState === "saved" && !isDirty
+              ? "Saved"
+              : isCreating
+                ? "Create item"
+                : "Save changes"}
+            <kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center rounded border border-primary-foreground/25 bg-primary-foreground/10 px-1.5 font-mono text-[10px] font-medium sm:flex">
+              Ctrl+S
+            </kbd>
+          </Button>
+        )}
+
+        {isDirty && onDiscard && (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 w-full border-border bg-white text-muted-foreground shadow-sm hover:bg-secondary hover:text-primary"
+            onClick={onDiscard}
+            disabled={isSaving}
+          >
+            Discard changes
+          </Button>
+        )}
+
+        {!isCreating && onDelete && (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 w-full border-destructive/25 bg-white text-destructive shadow-sm hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => run("delete", onDelete)}
+            disabled={isSaving}
+          >
+            {isSaving && pendingAction === "delete" ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Trash2 className="mr-2 h-4 w-4" />
+            )}
+            {deleteLabel}
+          </Button>
+        )}
+
+        {saveState === "error" && (
+          <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm font-medium text-destructive break-words">
+            <AlertTriangle className="mr-1.5 mb-0.5 inline-block h-4 w-4" />
+            Save failed. Check console or try again.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ContentPreview({
   kind,
   config,
@@ -3436,6 +4091,8 @@ function ContentPreview({
             </div>
           )}
 
+          {kind === "products" && <ProductSummaryPanel item={item} href={href} />}
+
           {kind === "solutions" && (
             <div className="space-y-4">
               <SolutionCardPreview item={item} href={href} />
@@ -3479,7 +4136,21 @@ function ContentPreview({
           {/* SEO Completeness checklist for products */}
           {kind === "products" && <ProductSeoChecklist item={item} />}
 
-          <div className="flex flex-col gap-2">
+          <AdminContentActions
+            kind={kind}
+            config={config}
+            item={item}
+            saveState={saveState}
+            onSave={onSave}
+            onSaveAsDraft={onSaveAsDraft}
+            onPublish={onPublish}
+            isDirty={isDirty}
+            onDiscard={onDiscard}
+            isCreating={isCreating}
+            onDelete={onDelete}
+          />
+
+          <div className="hidden">
             {/* Unsaved changes indicator */}
             {isDirty && (
               <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs font-medium text-amber-700 flex items-center gap-2">
@@ -4598,7 +5269,13 @@ function RichTextField({
   };
 
   const editor = useEditor({
-    extensions: [StarterKit, LinkExtension.configure({ openOnClick: false }), ImageExtension],
+    extensions: [
+      StarterKit.configure({
+        link: false,
+      }),
+      LinkExtension.configure({ openOnClick: false }),
+      ImageExtension,
+    ],
     content: value,
     editable: !readOnly,
     onUpdate: ({ editor }) => {
@@ -4796,7 +5473,7 @@ function RichTextField({
             />
           </div>
         )}
-        <div className="min-h-[400px] max-h-[600px] md:max-h-[70vh] overflow-y-auto p-3 prose prose-sm max-w-none text-foreground/90 focus:outline-none custom-scrollbar">
+        <div className="admin-rich-text-scroll min-h-[400px] max-h-[600px] md:max-h-[70vh] overflow-y-scroll p-3 prose prose-sm max-w-none text-foreground/90 focus:outline-none">
           <EditorContent editor={editor} />
         </div>
         {/* Word count footer */}

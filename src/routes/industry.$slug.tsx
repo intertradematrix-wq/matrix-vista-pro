@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { CTASection } from "@/components/site/CTASection";
 import { loadIndustryDetailContent } from "@/lib/content/site";
-import { resolveIcon } from "@/lib/icon-map";
+import { getIndustryDetailDefaults } from "@/data/managed-content-defaults";
 import { Check, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LazyImage } from "@/components/site/LazyImage";
@@ -31,14 +31,25 @@ export const Route = createFileRoute("/industry/$slug")({
     if (!ind) throw notFound();
     return { ind };
   },
-  head: ({ loaderData }) => ({
+  head: ({ loaderData }) => {
+    const ind = loaderData?.ind;
+    const title = ind?.seoTitle || ind?.ogTitle || `${ind?.title ?? "Industry"} — Matrix Intertrade`;
+    const description = ind?.seoDescription || ind?.ogDescription || ind?.desc || "";
+    return {
     meta: [
       { title: `${loaderData?.ind.title} — Matrix Intertrade` },
-      { name: "description", content: loaderData?.ind.desc },
-      { property: "og:url", content: `/industry/${loaderData?.ind.slug}` },
+      { title },
+      { name: "description", content: description },
+      ...(ind?.seoKeywords ? [{ name: "keywords", content: ind.seoKeywords }] : []),
+      ...(ind?.seoNoIndex ? [{ name: "robots", content: "noindex,nofollow" }] : []),
+      { property: "og:title", content: ind?.ogTitle || title },
+      { property: "og:description", content: ind?.ogDescription || description },
+      ...(ind?.ogImageUrl ? [{ property: "og:image", content: ind.ogImageUrl }] : []),
+      { property: "og:url", content: `/industry/${ind?.slug}` },
     ],
-    links: [{ rel: "canonical", href: `/industry/${loaderData?.ind.slug}` }],
-  }),
+    links: [{ rel: "canonical", href: ind?.seoCanonicalUrl || `/industry/${ind?.slug}` }],
+    };
+  },
   component: IndustryPage,
   notFoundComponent: () => <div className="p-20 text-center">Not found</div>,
   errorComponent: () => <div className="p-20 text-center">เกิดข้อผิดพลาด</div>,
@@ -47,6 +58,16 @@ export const Route = createFileRoute("/industry/$slug")({
 function IndustryPage() {
   const { ind } = Route.useLoaderData();
   const { lang } = useLanguage();
+  const detailPayload = mergeIndustryPayload(
+    getIndustryDetailDefaults(ind.slug, ind.title, ind.desc),
+    ind.payload,
+  );
+  const displayTitle = t(lang, ind.title, ind.titleEn);
+  const displayDesc = t(lang, ind.desc, ind.descEn);
+  const Icon = (_props: { className?: string }) => null;
+  const features: string[] = [];
+  const industryImage = ind.imageUrl ?? INDUSTRY_IMAGE_FALLBACKS[ind.slug];
+  /*
   const Icon = resolveIcon(ind.icon);
   const isHotel = ind.slug === "hotel";
   const featuresTH = [
@@ -71,6 +92,7 @@ function IndustryPage() {
   const displayTitle = isHotel ? t(lang, ind.title, hotelTitleEN) : t(lang, ind.title, ind.titleEn);
   const displayDesc = isHotel ? t(lang, ind.desc, hotelDescEN) : t(lang, ind.desc, ind.descEn);
   const industryImage = ind.imageUrl ?? INDUSTRY_IMAGE_FALLBACKS[ind.slug];
+  */
 
   return (
     <>
@@ -84,7 +106,8 @@ function IndustryPage() {
         ]}
         bgImage={heroSolutions}
       />
-      {!["education", "hotel", "corporate", "video-conference"].includes(ind.slug) && (
+      <DynamicIndustryContent payload={detailPayload} slug={ind.slug} />
+      {false && !["education", "hotel", "corporate", "video-conference"].includes(ind.slug) && (
         <section className="py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-2 gap-10 items-start">
             <div>
@@ -134,10 +157,10 @@ function IndustryPage() {
           </div>
         </section>
       )}
-      {ind.slug === "education" && <EducationContent />}
-      {ind.slug === "hotel" && <HotelContent />}
-      {ind.slug === "corporate" && <CorporateContent />}
-      {ind.slug === "video-conference" && <VideoConferenceContent />}
+      {false && ind.slug === "education" && <EducationContent />}
+      {false && ind.slug === "hotel" && <HotelContent />}
+      {false && ind.slug === "corporate" && <CorporateContent />}
+      {false && ind.slug === "video-conference" && <VideoConferenceContent />}
       <CTASection />
     </>
   );
@@ -755,6 +778,25 @@ function VideoConferenceContent() {
       </section>
     </>
   );
+}
+
+function asPayloadRecord(value: unknown): Record<string, any> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, any>)
+    : {};
+}
+
+function mergeIndustryPayload(fallback: Record<string, any>, runtime: unknown) {
+  const source = asPayloadRecord(runtime);
+  if (Object.keys(source).length === 0) return fallback;
+  return {
+    ...fallback,
+    ...source,
+    highlight_1: {
+      ...(fallback.highlight_1 ?? {}),
+      ...(asPayloadRecord(source.highlight_1)),
+    },
+  };
 }
 
 function DynamicIndustryContent({ payload, slug }: { payload?: any, slug: string }) {

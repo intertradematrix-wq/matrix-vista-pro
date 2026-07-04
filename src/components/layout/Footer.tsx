@@ -15,8 +15,10 @@ const FOOTER_BRANDS = [
 ] as const;
 
 export function Footer() {
-  const { solutions, articleCategories } = useSiteContent();
+  const { solutions, articleCategories, footerSettings } = useSiteContent();
   const { lang } = useLanguage();
+  const local = (th: string, en: string) => t(lang, th, en);
+  const phoneHref = `tel:${footerSettings.phone.split("/")[0].replace(/\D/g, "") || "021296193"}`;
   const footerBrandItems = FOOTER_BRANDS.map((footerBrand) => ({
     label: footerBrand.label,
     href: `/category/${footerBrand.slug}`,
@@ -33,14 +35,10 @@ export function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-5 px-4 py-8 md:flex-row md:items-center md:px-6">
           <div className="min-w-0">
             <h3 className="break-words text-xl font-bold tracking-tight md:text-2xl">
-              {t(lang, "พร้อมเริ่มโปรเจ็คของคุณแล้วหรือยัง?", "Ready to start your project?")}
+              {local(footerSettings.ctaTitleTh, footerSettings.ctaTitleEn)}
             </h3>
             <p className="mt-1.5 break-words text-sm text-slate-600">
-              {t(
-                lang,
-                "ขอใบเสนอราคา หรือนัด Site Survey ฟรีจากทีมผู้เชี่ยวชาญ",
-                "Request a quote or schedule a free site survey with our experts",
-              )}
+              {local(footerSettings.ctaDescriptionTh, footerSettings.ctaDescriptionEn)}
             </p>
           </div>
           <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:flex-wrap">
@@ -57,9 +55,9 @@ export function Footer() {
               variant="outline"
               className="min-h-11 w-full border-sky-200 bg-white/75 text-navy hover:bg-sky-50 hover:text-navy sm:w-auto"
             >
-              <a href="tel:021296193">
+              <a href={phoneHref}>
                 <Phone className="mr-1.5 h-4 w-4" />
-                02-129-6193
+                {footerSettings.phone.split("/")[0].trim() || footerSettings.phone}
               </a>
             </Button>
           </div>
@@ -72,11 +70,7 @@ export function Footer() {
             <img src={matrixLogo} alt="Matrix Intertrade Co., Ltd." className="absolute inset-0 h-full w-full object-contain" />
           </span>
           <p className="max-w-md break-words text-sm leading-relaxed text-slate-600">
-            {t(
-              lang,
-              "บจก.แมทริกซ์ อินเตอร์เทรด — ผู้เชี่ยวชาญด้าน AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation และ Smart Classroom สำหรับองค์กรในประเทศไทย",
-              "Matrix Intertrade Co., Ltd. — Experts in AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation, and Smart Classroom for enterprises in Thailand.",
-            )}
+            {local(footerSettings.companyDescriptionTh, footerSettings.companyDescriptionEn)}
           </p>
           <div className="space-y-2.5 text-sm text-slate-700">
             <div className="flex items-start gap-3">
@@ -84,45 +78,41 @@ export function Footer() {
                 <MapPin className="h-4 w-4 text-cyan" />
               </div>
               <span className="min-w-0 break-words pt-1">
-                {t(
-                  lang,
-                  "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000",
-                  "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000",
-                )}
+                {local(footerSettings.addressTh, footerSettings.addressEn)}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white/75">
                 <Phone className="h-4 w-4 text-cyan" />
               </div>
-              <span className="min-w-0 break-words">02-129-6193 / 094-888-7041</span>
+              <span className="min-w-0 break-words">{footerSettings.phone}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white/75">
                 <Mail className="h-4 w-4 text-cyan" />
               </div>
-              <span className="min-w-0 break-all">matrixintertrade2026@gmail.com</span>
+              <span className="min-w-0 break-all">{footerSettings.email}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white/75">
                 <span className="text-[10px] font-extrabold text-[#06C755]">LINE</span>
               </div>
-              <span className="min-w-0 break-words">@MatrixIntertrade</span>
+              <span className="min-w-0 break-words">{footerSettings.line}</span>
             </div>
           </div>
           <div className="flex gap-2 pt-1">
             {[
               {
                 Icon: Facebook,
-                href: "https://www.facebook.com/MatrixIntertrade",
+                href: footerSettings.facebookUrl,
                 label: "Facebook",
               },
               {
                 Icon: Youtube,
-                href: "https://www.youtube.com/@matrixintertrade",
+                href: footerSettings.youtubeUrl,
                 label: "Youtube",
               },
-              { Icon: Music2, href: "https://www.tiktok.com/@matrixintertrade", label: "TikTok" },
+              { Icon: Music2, href: footerSettings.tiktokUrl, label: "TikTok" },
             ].map(({ Icon, href, label }) => (
               <a
                 key={label}
@@ -165,11 +155,7 @@ export function Footer() {
         <div className="lg:col-span-2 space-y-4">
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-navy">Newsletter</h4>
           <p className="text-xs text-slate-600 leading-relaxed">
-            {t(
-              lang,
-              "รับบทความและคู่มือเลือก AV ใหม่ก่อนใคร",
-              "Get the latest AV articles and guides before anyone else",
-            )}
+            {local(footerSettings.newsletterDescriptionTh, footerSettings.newsletterDescriptionEn)}
           </p>
           <form
             className="flex min-w-0 overflow-hidden rounded-xl border border-sky-200 bg-white/80 transition-colors focus-within:border-cyan"
@@ -177,7 +163,10 @@ export function Footer() {
           >
             <input
               type="email"
-              placeholder={lang === "EN" ? "Your email" : "อีเมลของคุณ"}
+              placeholder={local(
+                footerSettings.newsletterPlaceholderTh,
+                footerSettings.newsletterPlaceholderEn,
+              )}
               className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-xs text-navy outline-none placeholder:text-slate-500"
             />
             <button

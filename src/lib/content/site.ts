@@ -73,6 +73,15 @@ export type SiteIndustry = (typeof fallbackIndustries)[number] & {
   metricLabelTh?: string | null;
   metricLabelEn?: string | null;
   linkUrl?: string | null;
+  payload?: Record<string, unknown> | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  seoKeywords?: string | null;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  ogImageUrl?: string | null;
+  seoCanonicalUrl?: string | null;
+  seoNoIndex?: boolean | null;
 };
 
 export type SiteShowcaseSection = {
@@ -128,6 +137,58 @@ export type SiteAboutUs = {
   statsPayload: any;
 };
 
+export type SiteContactPage = {
+  heroTitleTh: string;
+  heroTitleEn: string;
+  heroDescriptionTh: string;
+  heroDescriptionEn: string;
+  metaTitleTh: string;
+  metaTitleEn: string;
+  metaDescriptionTh: string;
+  metaDescriptionEn: string;
+  sectionTitleTh: string;
+  sectionTitleEn: string;
+  sectionDescriptionTh: string;
+  sectionDescriptionEn: string;
+  addressTh: string;
+  addressEn: string;
+  phone: string;
+  email: string;
+  line: string;
+  mapTitleTh: string;
+  mapTitleEn: string;
+  mapDescriptionTh: string;
+  mapDescriptionEn: string;
+  mapEmbedUrl: string;
+  directionsUrl: string;
+  phoneHref: string;
+  businessHoursTh: string;
+  businessHoursEn: string;
+  parkingTh: string;
+  parkingEn: string;
+};
+
+export type SiteFooterSettings = {
+  ctaTitleTh: string;
+  ctaTitleEn: string;
+  ctaDescriptionTh: string;
+  ctaDescriptionEn: string;
+  companyDescriptionTh: string;
+  companyDescriptionEn: string;
+  addressTh: string;
+  addressEn: string;
+  phone: string;
+  email: string;
+  line: string;
+  facebookUrl: string;
+  youtubeUrl: string;
+  tiktokUrl: string;
+  newsletterDescriptionTh: string;
+  newsletterDescriptionEn: string;
+  newsletterPlaceholderTh: string;
+  newsletterPlaceholderEn: string;
+};
+
 export type SiteContent = {
   nav: NavItem[];
   brands: SiteBrand[];
@@ -137,6 +198,8 @@ export type SiteContent = {
   articleCategories: SiteArticleCategory[];
   brandIntrosByCategoryId: Record<string, SiteBrandIntro>;
   aboutUs: SiteAboutUs | null;
+  contactPage: SiteContactPage;
+  footerSettings: SiteFooterSettings;
   source: "files" | "supabase";
 };
 
@@ -188,6 +251,7 @@ type IndustryRow = {
   icon: string | null;
   description: string | null;
   image_url?: string | null;
+  payload?: unknown;
   showcase_image_url?: string | null;
   show_on_brands?: boolean | null;
   sort_order?: number | null;
@@ -197,6 +261,14 @@ type IndustryRow = {
   metric_label_th?: string | null;
   metric_label_en?: string | null;
   link_url?: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  seo_keywords?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image_url?: string | null;
+  seo_canonical_url?: string | null;
+  seo_no_index?: boolean | null;
 };
 
 type SiteSectionRow = {
@@ -214,6 +286,7 @@ type SiteSectionRow = {
   description_suffix_th: string | null;
   description_suffix_en: string | null;
   is_enabled: boolean | null;
+  payload?: unknown;
 };
 
 type AboutUsRow = {
@@ -304,6 +377,68 @@ const fallbackAboutUs: SiteAboutUs = {
     { v: "10+", l: "Global Brands" },
     { v: "100%", l: "Support" }
   ]
+};
+
+const CONTACT_MAP_EMBED_URL =
+  "https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d208564.31411982139!2d100.08820455287514!3d13.754200668610048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2zTWF0cml4IEludGVydHJhZGUgQ28uLEx0ZC4gRmFjdG9yeSBGb3J3YXJkIDExMS81NiDguKvguKHguLnguYjguJfguLXguYggOCDguJUg4LiV4Liz4Lia4LilIOC4muC4suC4h-C4geC4o-C5iOC4suC4hyDguK0u4LmA4Lih4Li34Lit4LiHIOC4meC4meC4l-C4muC4uOC4o-C4tSAxMTAwMA!3m2!1d13.843674!2d100.45374869999999!4m5!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2zTWF0cml4IEludGVydHJhZGUgQ28uLEx0ZC4gRmFjdG9yeSBGb3J3YXJkIDExMS81NiDguKvguKHguLnguYjguJfguLXguYggOCDguJUg4LiV4Liz4Lia4LilIOC4muC4suC4h-C4geC4o-C5iOC4suC4hyDguK0u4LmA4Lih4Li34Lit4LiHIOC4meC4meC4l-C4muC4uOC4o-C4tSAxMTAwMA!3m2!1d13.843674!2d100.45374869999999!5e0!3m2!1sth!2sth!4v1780061893336!5m2!1sth!2sth";
+
+export const fallbackContactPage: SiteContactPage = {
+  heroTitleTh: "ติดต่อทีมผู้เชี่ยวชาญของเรา",
+  heroTitleEn: "Contact Our Experts",
+  heroDescriptionTh:
+    "ขอใบเสนอราคา หรือนัดหมาย Site Survey ฟรี ทีมงานพร้อมตอบกลับภายใน 1 วันทำการ",
+  heroDescriptionEn:
+    "Request a quote or schedule a free site survey. We reply within 1 business day.",
+  metaTitleTh: "ติดต่อเรา — Matrix Intertrade",
+  metaTitleEn: "Contact Us — Matrix Intertrade",
+  metaDescriptionTh: "ขอใบเสนอราคา หรือปรึกษาผู้เชี่ยวชาญด้าน AV Solutions ฟรี",
+  metaDescriptionEn: "Request a quote or consult our AV Solutions experts.",
+  sectionTitleTh: "ติดต่อเรา พร้อมให้บริการ",
+  sectionTitleEn: "We're Here to Help",
+  sectionDescriptionTh: "ช่องทางการติดต่อ Matrix Intertrade",
+  sectionDescriptionEn: "Contact Channels",
+  addressTh:
+    "บจก.แมทริกซ์ อินเตอร์เทรด 111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000",
+  addressEn: "Matrix Intertrade 111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000",
+  phone: "02-129-6193 / 094-888-7041",
+  email: "matrixintertrade2026@gmail.com",
+  line: "@MatrixIntertrade",
+  mapTitleTh: "แผนที่บริษัท & เส้นทางเดินทาง",
+  mapTitleEn: "Office Map & Directions",
+  mapDescriptionTh:
+    "นัดหมายเข้าชม Showroom และคลังสินค้าของเราที่นนทบุรี ทีมงานพร้อมต้อนรับและสาธิตสินค้าจริง",
+  mapDescriptionEn:
+    "Schedule a visit to our Showroom and Warehouse in Nonthaburi. Our team is ready to welcome you and provide live demonstrations.",
+  mapEmbedUrl: CONTACT_MAP_EMBED_URL,
+  directionsUrl: "https://maps.app.goo.gl/1SFM9izkXdenp7LYA",
+  phoneHref: "tel:021296193",
+  businessHoursTh: "เวลาทำการ จันทร์-ศุกร์ 08:30-17:30 น.",
+  businessHoursEn: "Business hours Monday-Friday 08:30-17:30",
+  parkingTh: "มีที่จอดรถภายในบริษัท",
+  parkingEn: "Parking available on-site",
+};
+
+export const fallbackFooterSettings: SiteFooterSettings = {
+  ctaTitleTh: "พร้อมเริ่มโปรเจ็คของคุณแล้วหรือยัง?",
+  ctaTitleEn: "Ready to start your project?",
+  ctaDescriptionTh: "ขอใบเสนอราคา หรือนัด Site Survey ฟรีจากทีมผู้เชี่ยวชาญ",
+  ctaDescriptionEn: "Request a quote or schedule a free site survey with our experts",
+  companyDescriptionTh:
+    "บจก.แมทริกซ์ อินเตอร์เทรด — ผู้เชี่ยวชาญด้าน AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation และ Smart Classroom สำหรับองค์กรในประเทศไทย",
+  companyDescriptionEn:
+    "Matrix Intertrade Co., Ltd. — Experts in AV Solutions, LED Display, Interactive Display, Projector, Wireless Presentation, and Smart Classroom for enterprises in Thailand.",
+  addressTh: "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000",
+  addressEn: "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000",
+  phone: "02-129-6193 / 094-888-7041",
+  email: "matrixintertrade2026@gmail.com",
+  line: "@MatrixIntertrade",
+  facebookUrl: "https://www.facebook.com/MatrixIntertrade",
+  youtubeUrl: "https://www.youtube.com/@matrixintertrade",
+  tiktokUrl: "https://www.tiktok.com/@matrixintertrade",
+  newsletterDescriptionTh: "รับบทความและคู่มือเลือก AV ใหม่ก่อนใคร",
+  newsletterDescriptionEn: "Get the latest AV articles and guides before anyone else",
+  newsletterPlaceholderTh: "อีเมลของคุณ",
+  newsletterPlaceholderEn: "Your email",
 };
 
 const fallbackIndustryShowcase: SiteShowcaseSection = {
@@ -400,6 +535,15 @@ function withIndustryCardFallbacks(
     metricLabelEn: row?.metric_label_en ?? fallback?.metricLabelEn ?? "",
     showcaseImageUrl: imageUrlOrUndefined(row?.showcase_image_url) ?? null,
     linkUrl: row?.link_url?.trim() || null,
+    payload: asRecord(row?.payload),
+    seoTitle: row?.seo_title ?? null,
+    seoDescription: row?.seo_description ?? null,
+    seoKeywords: row?.seo_keywords ?? null,
+    ogTitle: row?.og_title ?? null,
+    ogDescription: row?.og_description ?? null,
+    ogImageUrl: row?.og_image_url ?? null,
+    seoCanonicalUrl: row?.seo_canonical_url ?? null,
+    seoNoIndex: row?.seo_no_index ?? null,
   };
 }
 
@@ -413,6 +557,9 @@ export const fallbackSiteContent: SiteContent = {
   industryShowcase: fallbackIndustryShowcase,
   articleCategories: fallbackArticleCategories,
   brandIntrosByCategoryId: fallbackBrandIntrosByCategoryId,
+  aboutUs: fallbackAboutUs,
+  contactPage: fallbackContactPage,
+  footerSettings: fallbackFooterSettings,
   source: "files",
 };
 
@@ -425,6 +572,29 @@ function asStringArray(value: unknown): string[] {
 function asRecord(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   return value as Record<string, unknown>;
+}
+
+function mergeStringPayload<T extends Record<string, string>>(fallback: T, payload: unknown): T {
+  const source = asRecord(payload);
+  if (!source) return fallback;
+  const next = { ...fallback };
+  (Object.keys(fallback) as Array<keyof T>).forEach((key) => {
+    const value = source[key as string];
+    if (typeof value === "string" && value.trim()) {
+      next[key] = value.trim() as T[keyof T];
+    }
+  });
+  return next;
+}
+
+function mapContactPage(rows: SiteSectionRow[] | null | undefined): SiteContactPage {
+  const row = rows?.find((item) => item.section_key === "contact_page");
+  return mergeStringPayload(fallbackContactPage, row?.payload);
+}
+
+function mapFooterSettings(rows: SiteSectionRow[] | null | undefined): SiteFooterSettings {
+  const row = rows?.find((item) => item.section_key === "footer_settings");
+  return mergeStringPayload(fallbackFooterSettings, row?.payload);
 }
 
 function asSolutionSeoSections(value: unknown): SolutionDetailSeoSection[] | undefined {
@@ -880,7 +1050,7 @@ async function loadIndustryRows() {
   const result = await contentClient
     .from("content_industries")
     .select(
-      "slug,title,icon,description,image_url,showcase_image_url,show_on_brands,sort_order,card_tag_th,card_tag_en,metric_value,metric_label_th,metric_label_en,link_url",
+      "slug,title,icon,description,image_url,showcase_image_url,show_on_brands,sort_order,card_tag_th,card_tag_en,metric_value,metric_label_th,metric_label_en,link_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index",
     )
     .order("sort_order", { ascending: true });
 
@@ -889,7 +1059,7 @@ async function loadIndustryRows() {
   const fallbackResult = await contentClient
     .from("content_industries")
     .select(
-      "slug,title,icon,description,image_url,show_on_brands,sort_order,card_tag_th,card_tag_en,metric_value,metric_label_th,metric_label_en,link_url",
+      "slug,title,icon,description,image_url,show_on_brands,sort_order,card_tag_th,card_tag_en,metric_value,metric_label_th,metric_label_en,link_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index",
     )
     .order("sort_order", { ascending: true });
 
@@ -900,7 +1070,7 @@ async function loadIndustryRows() {
 
   const legacyResult = await contentClient
     .from("content_industries")
-    .select("slug,title,icon,description,image_url")
+    .select("slug,title,icon,description,image_url,payload")
     .order("slug", { ascending: true });
 
   if (!legacyResult.error) {
@@ -915,7 +1085,7 @@ async function loadSiteSectionRows() {
   const result = await contentClient
     .from("content_site_sections")
     .select(
-      "section_key,eyebrow_th,eyebrow_en,title_prefix_th,title_prefix_en,title_highlight_th,title_highlight_en,description_prefix_th,description_prefix_en,description_highlight_th,description_highlight_en,description_suffix_th,description_suffix_en,is_enabled",
+      "section_key,eyebrow_th,eyebrow_en,title_prefix_th,title_prefix_en,title_highlight_th,title_highlight_en,description_prefix_th,description_prefix_en,description_highlight_th,description_highlight_en,description_suffix_th,description_suffix_en,is_enabled,payload",
     )
     .order("section_key", { ascending: true });
 
@@ -992,6 +1162,8 @@ export async function loadSiteContent(): Promise<SiteContent> {
         brands,
       ),
       aboutUs: aboutUsResult.data ? mapAboutUs(aboutUsResult.data as AboutUsRow) : fallbackAboutUs,
+      contactPage: mapContactPage(siteSectionsResult.data as SiteSectionRow[] | null),
+      footerSettings: mapFooterSettings(siteSectionsResult.data as SiteSectionRow[] | null),
       source: "supabase",
     };
   } catch (error) {

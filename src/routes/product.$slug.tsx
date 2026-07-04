@@ -103,6 +103,13 @@ function ProductPage() {
   const hasPrice = p.price && p.price !== "0.00";
   const detail = productDetailById(p.id);
   const descriptionHtml = p.descriptionHtml ?? detail?.descriptionHtml;
+  const introText =
+    p.descriptionText?.trim() ||
+    t(
+      lang,
+      "เลือกสินค้า AV พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการออกแบบ ติดตั้ง และดูแลระบบในองค์กร",
+      "Select AV products with advice from the Matrix Intertrade team for corporate system design, installation, and maintenance.",
+    );
   const serviceHighlights = [
     { icon: Headset, label: t(lang, "ปรึกษาทีมขาย", "Consult Sales") },
     { icon: Ruler, label: t(lang, "ออกแบบระบบ", "System Design") },
@@ -150,11 +157,7 @@ function ProductPage() {
               {p.name}
             </h1>
             <p className="mt-4 max-w-xl break-words text-sm leading-relaxed text-muted-foreground md:text-base">
-              {t(
-                lang,
-                "เลือกสินค้า AV พร้อมคำแนะนำจากทีม Matrix Intertrade สำหรับการออกแบบ ติดตั้ง และดูแลระบบในองค์กร",
-                "Select AV products with advice from the Matrix Intertrade team for corporate system design, installation, and maintenance.",
-              )}
+              {introText}
             </p>
 
             <div className="mt-6 min-w-0 rounded-xl border border-border bg-white p-4">

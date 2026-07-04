@@ -19,6 +19,7 @@ import industryVC from "@/assets/about/industries/video-conference.jpg";
 import { Button } from "@/components/ui/button";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { useSiteContent } from "@/lib/content/use-site-content";
+import { resolveIcon } from "@/lib/icon-map";
 import {
   Target,
   Eye,
@@ -127,12 +128,18 @@ const industries = [
 
 function AboutPage() {
   const { lang } = useLanguage();
-  const { aboutUs } = useSiteContent();
+  const { aboutUs, industries: runtimeIndustries } = useSiteContent();
 
   if (!aboutUs) return null;
 
   const rawStats = aboutUs.statsPayload;
   const statsList = Array.isArray(rawStats) && rawStats.length > 0 ? rawStats : stats;
+  const aboutIndustryItems = runtimeIndustries
+    .filter((industry) => industry.showOnBrands !== false)
+    .sort(
+      (a, b) =>
+        (a.sortOrder ?? Number.MAX_SAFE_INTEGER) - (b.sortOrder ?? Number.MAX_SAFE_INTEGER),
+    );
 
   return (
     <>
@@ -160,43 +167,47 @@ function AboutPage() {
       </section>
 
       {/* Story */}
-      <section className="bg-navy pb-16 md:pb-24">
-        <div className="mx-auto max-w-4xl px-4 md:px-6">
-          <div>
-            <div className="inline-block rounded-full bg-sky-500/10 text-sky-400 px-3 py-1 text-[11px] font-bold uppercase tracking-widest mb-4">
+      <section className="relative overflow-hidden bg-gradient-subtle py-16 md:py-24">
+        <div className="pointer-events-none absolute inset-0 dot-pattern opacity-45" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan/30 to-transparent" />
+        <div className="relative mx-auto grid max-w-7xl gap-10 px-4 md:px-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.8fr)] lg:items-center">
+          <div className="max-w-[72ch]">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan/25 bg-cyan/10 px-3.5 py-1.5 text-[11px] font-bold uppercase leading-none tracking-[0.14em] text-accent">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan" />
               Our Story
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+            <h2 className="text-3xl font-bold tracking-tight text-primary md:text-4xl">
               {t(lang, aboutUs.introTitleTh, aboutUs.introTitleEn)}
             </h2>
-            <div className="mt-5 space-y-4 text-slate-400 leading-relaxed text-[15px]">
+            <div className="mt-5 space-y-4 text-[15px] leading-relaxed text-foreground/75 md:text-base">
               {aboutUs.storyP1Th && <p>{t(lang, aboutUs.storyP1Th, aboutUs.storyP1En)}</p>}
               {aboutUs.storyP2Th && <p>{t(lang, aboutUs.storyP2Th, aboutUs.storyP2En)}</p>}
               {aboutUs.storyP3Th && <p>{t(lang, aboutUs.storyP3Th, aboutUs.storyP3En)}</p>}
             </div>
-            <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {statsList.map((s: any) => (
-                <div
-                  key={s.l}
-                  className="rounded-xl border border-slate-800 bg-[#080d1a] p-4 text-center"
-                >
-                  <div className="text-2xl md:text-3xl font-black text-sky-500">
-                    {s.v}
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-1">
-                    {t(lang, s.l, s.lEn)}
-                  </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            {statsList.map((s: any) => (
+              <div
+                key={s.l}
+                className="rounded-2xl border border-border/80 bg-white/90 p-5 shadow-card transition-colors hover:border-cyan/45 sm:p-6"
+              >
+                <div className="text-3xl font-black leading-none text-accent md:text-4xl">
+                  {s.v}
                 </div>
-              ))}
-            </div>
+                <div className="mt-3 text-xs font-semibold leading-relaxed text-foreground/65">
+                  {t(lang, s.l, s.lEn)}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Mission / Vision / Values */}
-      <section className="bg-navy pb-24">
-        <div className="mx-auto max-w-5xl px-4 md:px-6">
-          <div className="grid md:grid-cols-3 gap-6">
+      <section className="bg-white pb-16 md:pb-24">
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <div className="grid gap-5 md:grid-cols-3">
             {[
               {
                 Icon: Target,
@@ -214,12 +225,15 @@ function AboutPage() {
                 d: t(lang, aboutUs.valuesTh, aboutUs.valuesEn),
               },
             ].map(({ Icon, t: title, d }) => (
-              <div key={title} className="rounded-2xl border border-slate-800 bg-[#080d1a] p-7 text-left hover:border-sky-500/30 transition-colors">
-                <div className="grid h-12 w-12 place-items-center rounded-full bg-sky-500 text-white mb-5">
+              <div
+                key={title}
+                className="rounded-2xl border border-border bg-card p-6 text-left shadow-card transition-colors hover:border-cyan/45 md:p-7"
+              >
+                <div className="mb-5 grid h-12 w-12 place-items-center rounded-xl bg-cyan/12 text-accent ring-1 ring-cyan/25">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{d}</p>
+                <h3 className="mb-2 text-xl font-bold text-primary">{title}</h3>
+                <p className="text-sm leading-relaxed text-foreground/70">{d}</p>
               </div>
             ))}
           </div>
@@ -246,19 +260,35 @@ function AboutPage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {industries.map(({ Icon, title, titleEn, subtitle, desc, descEn, img, href }) => (
+            {aboutIndustryItems.map((industry) => {
+              const Icon = resolveIcon(industry.icon);
+              const title = t(lang, industry.title, industry.titleEn);
+              const desc = t(lang, industry.desc, industry.descEn);
+              const img = industry.showcaseImageUrl || industry.imageUrl;
+              const href = industry.linkUrl || `/industry/${industry.slug}`;
+              const subtitle =
+                lang === "EN"
+                  ? industry.cardTagEn || industry.titleEn || industry.slug
+                  : industry.cardTagTh || industry.title || industry.slug;
+              return (
               <Link
-                key={title}
+                key={industry.slug}
                 to={href}
                 className="group relative overflow-hidden rounded-3xl border border-border bg-card shadow-card hover:shadow-elev hover:border-accent/40 transition-all"
               >
                 <div className="relative aspect-[16/10] overflow-hidden bg-navy">
-                  <img
-                    src={img}
-                    alt={title}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                  {img ? (
+                    <img
+                      src={img}
+                      alt={title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="grid h-full w-full place-items-center bg-gradient-hero text-white/30">
+                      <Icon className="h-20 w-20" />
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/30 to-transparent" />
                   <div className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/95 backdrop-blur px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-accent shadow">
                     <Icon className="h-3.5 w-3.5" />
@@ -267,10 +297,10 @@ function AboutPage() {
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl md:text-2xl font-bold text-primary group-hover:text-accent transition-colors">
-                    {t(lang, title, titleEn)}
+                    {title}
                   </h3>
                   <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                    {t(lang, desc, descEn)}
+                    {desc}
                   </p>
                   <div className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-accent">
                     {t(lang, "ดูรายละเอียดเพิ่มเติม", "View More Details")}
@@ -278,7 +308,8 @@ function AboutPage() {
                   </div>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
