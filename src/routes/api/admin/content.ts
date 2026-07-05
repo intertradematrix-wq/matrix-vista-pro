@@ -223,7 +223,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "intro_image_url",
       "highlights",
       "best_for",
-      "origin"
+      "origin",
     ],
     requiredFields: ["slug", "name", "category", "description"],
     nullableFields: [
@@ -239,7 +239,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       "seo_canonical_url",
       "intro_description",
       "intro_image_url",
-      "origin"
+      "origin",
     ],
     booleanFields: ["seo_no_index"],
     jsonFields: { accent: "object", payload: "object", highlights: "array", best_for: "array" },
@@ -392,30 +392,56 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     order: "id",
     allowCreate: false,
     fields: [
-      "intro_title_th", "intro_title_en",
-      "intro_desc_th", "intro_desc_en",
-      "story_p1_th", "story_p1_en",
-      "story_p2_th", "story_p2_en",
-      "story_p3_th", "story_p3_en",
-      "mission_th", "mission_en",
-      "vision_th", "vision_en",
-      "values_th", "values_en",
-      "address_th", "address_en",
-      "phone", "email", "website", "facebook", "map_url",
-      "stats_payload"
+      "intro_title_th",
+      "intro_title_en",
+      "intro_desc_th",
+      "intro_desc_en",
+      "story_p1_th",
+      "story_p1_en",
+      "story_p2_th",
+      "story_p2_en",
+      "story_p3_th",
+      "story_p3_en",
+      "mission_th",
+      "mission_en",
+      "vision_th",
+      "vision_en",
+      "values_th",
+      "values_en",
+      "address_th",
+      "address_en",
+      "phone",
+      "email",
+      "website",
+      "facebook",
+      "map_url",
+      "stats_payload",
     ],
     nullableFields: [
-      "intro_title_th", "intro_title_en",
-      "intro_desc_th", "intro_desc_en",
-      "story_p1_th", "story_p1_en",
-      "story_p2_th", "story_p2_en",
-      "story_p3_th", "story_p3_en",
-      "mission_th", "mission_en",
-      "vision_th", "vision_en",
-      "values_th", "values_en",
-      "address_th", "address_en",
-      "phone", "email", "website", "facebook", "map_url",
-      "stats_payload"
+      "intro_title_th",
+      "intro_title_en",
+      "intro_desc_th",
+      "intro_desc_en",
+      "story_p1_th",
+      "story_p1_en",
+      "story_p2_th",
+      "story_p2_en",
+      "story_p3_th",
+      "story_p3_en",
+      "mission_th",
+      "mission_en",
+      "vision_th",
+      "vision_en",
+      "values_th",
+      "values_en",
+      "address_th",
+      "address_en",
+      "phone",
+      "email",
+      "website",
+      "facebook",
+      "map_url",
+      "stats_payload",
     ],
     jsonFields: { stats_payload: "array" },
   },
@@ -749,7 +775,11 @@ async function executeWrite(
   return query.update(write.values).eq(config.key, id).select(write.select).single();
 }
 
-async function upsertSiteSection(config: ContentConfig, id: string, values: Record<string, unknown>) {
+async function upsertSiteSection(
+  config: ContentConfig,
+  id: string,
+  values: Record<string, unknown>,
+) {
   const write = await selectForWrite(config, {
     is_enabled: true,
     ...values,
@@ -863,12 +893,55 @@ async function loadKind(config: ContentConfig) {
   return result;
 }
 
+async function loadPreviewItem(kind: "products" | "articles", id: string) {
+  const config = CONTENT_CONFIG[kind];
+  const normalizedId = normalizeId(config, id);
+  const query = supabaseAdmin.from(tableName(config)).select(config.select);
+
+  if (kind === "products") {
+    const bySlug = await query.eq("slug", normalizedId).maybeSingle();
+    if (bySlug.data || bySlug.error) return bySlug;
+    return supabaseAdmin
+      .from(tableName(config))
+      .select(config.select)
+      .eq("product_id", id.trim())
+      .maybeSingle();
+  }
+
+  return query.eq("slug", normalizedId).maybeSingle();
+}
+
 export const Route = createFileRoute("/api/admin/content")({
   server: {
     handlers: {
       GET: async ({ request }) => {
         const admin = await requireAdmin(request);
         if ("response" in admin) return admin.response;
+
+        const url = new URL(request.url);
+        const previewKind = url.searchParams.get("previewKind");
+        const previewId = url.searchParams.get("previewId");
+
+        if (previewKind || previewId) {
+          if (previewKind !== "products" && previewKind !== "articles") {
+            return jsonError("Preview is only available for products and articles.", 400);
+          }
+          if (!previewId?.trim()) {
+            return jsonError("Preview item id is required.", 400);
+          }
+
+          const result = await loadPreviewItem(previewKind, previewId);
+          if (result.error)
+            return jsonError(`Failed to load ${previewKind} preview`, 500, result.error);
+          if (!result.data) return jsonError("Preview item not found.", 404);
+
+          return Response.json({
+            ok: true,
+            kind: previewKind,
+            item: result.data,
+            userEmail: admin.email,
+          });
+        }
 
         const entries = await Promise.all(
           Object.entries(CONTENT_CONFIG).map(async ([kind, config]) => {
@@ -900,13 +973,15 @@ export const Route = createFileRoute("/api/admin/content")({
         if (payload.brands) {
           const { data: brandIntrosData } = await supabaseAdmin
             .from("content_brand_category_intros")
-            .select("category_id,brand_slug,tagline,description,image_url,highlights,best_for,origin");
-            
+            .select(
+              "category_id,brand_slug,tagline,description,image_url,highlights,best_for,origin",
+            );
+
           const brands = payload.brands as Record<string, unknown>[];
           const intros = brandIntrosData || [];
-          
-          payload.brands = brands.map(brand => {
-            const intro = intros.find(i => i.brand_slug === brand.slug);
+
+          payload.brands = brands.map((brand) => {
+            const intro = intros.find((i) => i.brand_slug === brand.slug);
             return {
               ...brand,
               category_id: intro?.category_id || "",
@@ -915,11 +990,10 @@ export const Route = createFileRoute("/api/admin/content")({
               intro_image_url: intro?.image_url || "",
               highlights: intro?.highlights || [],
               best_for: intro?.best_for || [],
-              origin: intro?.origin || ""
+              origin: intro?.origin || "",
             };
           });
         }
-
 
         return Response.json(payload);
       },
@@ -1088,7 +1162,7 @@ export const Route = createFileRoute("/api/admin/content")({
 
         // Custom intercept for "brands" to save into both tables
         if (parsed.data.kind === "brands") {
-          const brandSlug = id || values.slug as string;
+          const brandSlug = id || (values.slug as string);
           const introValues = {
             category_id: values.category_id || CATEGORY_IDS_BY_SLUG[brandSlug] || "",
             brand_slug: brandSlug,
@@ -1097,9 +1171,9 @@ export const Route = createFileRoute("/api/admin/content")({
             image_url: values.intro_image_url || "",
             highlights: values.highlights || [],
             best_for: values.best_for || [],
-            origin: values.origin || ""
+            origin: values.origin || "",
           };
-          
+
           delete values.category_id;
           delete values.tagline;
           delete values.intro_description;
@@ -1107,14 +1181,15 @@ export const Route = createFileRoute("/api/admin/content")({
           delete values.highlights;
           delete values.best_for;
           delete values.origin;
-          
+
           const result = await executeWrite(config, action, id, values);
-          if (result.error) return jsonError(`Failed to ${action} ${parsed.data.kind}`, 500, result.error);
-          
+          if (result.error)
+            return jsonError(`Failed to ${action} ${parsed.data.kind}`, 500, result.error);
+
           if (introValues.category_id) {
             await supabaseAdmin.from("content_brand_category_intros").upsert(introValues);
           }
-          
+
           const combinedData = {
             ...result.data,
             category_id: introValues.category_id,
@@ -1123,9 +1198,9 @@ export const Route = createFileRoute("/api/admin/content")({
             intro_image_url: introValues.image_url,
             highlights: introValues.highlights,
             best_for: introValues.best_for,
-            origin: introValues.origin
+            origin: introValues.origin,
           };
-          
+
           return Response.json({ ok: true, kind: parsed.data.kind, item: combinedData });
         }
 

@@ -20,6 +20,7 @@ import { Route as InteractiveDisplayRouteImport } from './routes/interactive-dis
 import { Route as ContactusRouteImport } from './routes/contactus'
 import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as AvSolutionsRouteImport } from './routes/av-solutions'
+import { Route as AdminManualRouteImport } from './routes/admin-manual'
 import { Route as AboutusRouteImport } from './routes/aboutus'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -36,6 +37,8 @@ import { Route as ApiAdminTrackingSettingsRouteImport } from './routes/api/admin
 import { Route as ApiAdminSlugSuggestRouteImport } from './routes/api/admin/slug-suggest'
 import { Route as ApiAdminLineSettingsRouteImport } from './routes/api/admin/line-settings'
 import { Route as ApiAdminContentRouteImport } from './routes/api/admin/content'
+import { Route as AdminPreviewProductSlugRouteImport } from './routes/admin-preview.product.$slug'
+import { Route as AdminPreviewBlogSlugRouteImport } from './routes/admin-preview.blog.$slug'
 
 const WirelessPresentationRoute = WirelessPresentationRouteImport.update({
   id: '/wireless-presentation',
@@ -90,6 +93,11 @@ const BrandsRoute = BrandsRouteImport.update({
 const AvSolutionsRoute = AvSolutionsRouteImport.update({
   id: '/av-solutions',
   path: '/av-solutions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminManualRoute = AdminManualRouteImport.update({
+  id: '/admin-manual',
+  path: '/admin-manual',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutusRoute = AboutusRouteImport.update({
@@ -173,10 +181,21 @@ const ApiAdminContentRoute = ApiAdminContentRouteImport.update({
   path: '/api/admin/content',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPreviewProductSlugRoute = AdminPreviewProductSlugRouteImport.update({
+  id: '/admin-preview/product/$slug',
+  path: '/admin-preview/product/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPreviewBlogSlugRoute = AdminPreviewBlogSlugRouteImport.update({
+  id: '/admin-preview/blog/$slug',
+  path: '/admin-preview/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/aboutus': typeof AboutusRoute
+  '/admin-manual': typeof AdminManualRoute
   '/av-solutions': typeof AvSolutionsRoute
   '/brands': typeof BrandsRouteWithChildren
   '/contactus': typeof ContactusRoute
@@ -195,6 +214,8 @@ export interface FileRoutesByFullPath {
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/admin-preview/blog/$slug': typeof AdminPreviewBlogSlugRoute
+  '/admin-preview/product/$slug': typeof AdminPreviewProductSlugRoute
   '/api/admin/content': typeof ApiAdminContentRoute
   '/api/admin/line-settings': typeof ApiAdminLineSettingsRoute
   '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
@@ -206,6 +227,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/aboutus': typeof AboutusRoute
+  '/admin-manual': typeof AdminManualRoute
   '/av-solutions': typeof AvSolutionsRoute
   '/brands': typeof BrandsRouteWithChildren
   '/contactus': typeof ContactusRoute
@@ -224,6 +246,8 @@ export interface FileRoutesByTo {
   '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/admin-preview/blog/$slug': typeof AdminPreviewBlogSlugRoute
+  '/admin-preview/product/$slug': typeof AdminPreviewProductSlugRoute
   '/api/admin/content': typeof ApiAdminContentRoute
   '/api/admin/line-settings': typeof ApiAdminLineSettingsRoute
   '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
@@ -236,6 +260,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/aboutus': typeof AboutusRoute
+  '/admin-manual': typeof AdminManualRoute
   '/av-solutions': typeof AvSolutionsRoute
   '/brands': typeof BrandsRouteWithChildren
   '/contactus': typeof ContactusRoute
@@ -254,6 +279,8 @@ export interface FileRoutesById {
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/admin-preview/blog/$slug': typeof AdminPreviewBlogSlugRoute
+  '/admin-preview/product/$slug': typeof AdminPreviewProductSlugRoute
   '/api/admin/content': typeof ApiAdminContentRoute
   '/api/admin/line-settings': typeof ApiAdminLineSettingsRoute
   '/api/admin/slug-suggest': typeof ApiAdminSlugSuggestRoute
@@ -267,6 +294,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/aboutus'
+    | '/admin-manual'
     | '/av-solutions'
     | '/brands'
     | '/contactus'
@@ -285,6 +313,8 @@ export interface FileRouteTypes {
     | '/product/$slug'
     | '/admin/'
     | '/blog/'
+    | '/admin-preview/blog/$slug'
+    | '/admin-preview/product/$slug'
     | '/api/admin/content'
     | '/api/admin/line-settings'
     | '/api/admin/slug-suggest'
@@ -296,6 +326,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/aboutus'
+    | '/admin-manual'
     | '/av-solutions'
     | '/brands'
     | '/contactus'
@@ -314,6 +345,8 @@ export interface FileRouteTypes {
     | '/product/$slug'
     | '/admin'
     | '/blog'
+    | '/admin-preview/blog/$slug'
+    | '/admin-preview/product/$slug'
     | '/api/admin/content'
     | '/api/admin/line-settings'
     | '/api/admin/slug-suggest'
@@ -325,6 +358,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/aboutus'
+    | '/admin-manual'
     | '/av-solutions'
     | '/brands'
     | '/contactus'
@@ -343,6 +377,8 @@ export interface FileRouteTypes {
     | '/product/$slug'
     | '/admin/'
     | '/blog/'
+    | '/admin-preview/blog/$slug'
+    | '/admin-preview/product/$slug'
     | '/api/admin/content'
     | '/api/admin/line-settings'
     | '/api/admin/slug-suggest'
@@ -355,6 +391,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutusRoute: typeof AboutusRoute
+  AdminManualRoute: typeof AdminManualRoute
   AvSolutionsRoute: typeof AvSolutionsRoute
   BrandsRoute: typeof BrandsRouteWithChildren
   ContactusRoute: typeof ContactusRoute
@@ -372,6 +409,8 @@ export interface RootRouteChildren {
   ProductSlugRoute: typeof ProductSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  AdminPreviewBlogSlugRoute: typeof AdminPreviewBlogSlugRoute
+  AdminPreviewProductSlugRoute: typeof AdminPreviewProductSlugRoute
   ApiAdminContentRoute: typeof ApiAdminContentRoute
   ApiAdminLineSettingsRoute: typeof ApiAdminLineSettingsRoute
   ApiAdminSlugSuggestRoute: typeof ApiAdminSlugSuggestRoute
@@ -458,6 +497,13 @@ declare module '@tanstack/react-router' {
       path: '/av-solutions'
       fullPath: '/av-solutions'
       preLoaderRoute: typeof AvSolutionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-manual': {
+      id: '/admin-manual'
+      path: '/admin-manual'
+      fullPath: '/admin-manual'
+      preLoaderRoute: typeof AdminManualRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/aboutus': {
@@ -572,6 +618,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminContentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-preview/product/$slug': {
+      id: '/admin-preview/product/$slug'
+      path: '/admin-preview/product/$slug'
+      fullPath: '/admin-preview/product/$slug'
+      preLoaderRoute: typeof AdminPreviewProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-preview/blog/$slug': {
+      id: '/admin-preview/blog/$slug'
+      path: '/admin-preview/blog/$slug'
+      fullPath: '/admin-preview/blog/$slug'
+      preLoaderRoute: typeof AdminPreviewBlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -589,6 +649,7 @@ const BrandsRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutusRoute: AboutusRoute,
+  AdminManualRoute: AdminManualRoute,
   AvSolutionsRoute: AvSolutionsRoute,
   BrandsRoute: BrandsRouteWithChildren,
   ContactusRoute: ContactusRoute,
@@ -606,6 +667,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProductSlugRoute: ProductSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
+  AdminPreviewBlogSlugRoute: AdminPreviewBlogSlugRoute,
+  AdminPreviewProductSlugRoute: AdminPreviewProductSlugRoute,
   ApiAdminContentRoute: ApiAdminContentRoute,
   ApiAdminLineSettingsRoute: ApiAdminLineSettingsRoute,
   ApiAdminSlugSuggestRoute: ApiAdminSlugSuggestRoute,

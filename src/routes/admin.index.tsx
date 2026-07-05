@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
+  BookOpen,
   ExternalLink,
   Eye,
   Heart,
@@ -66,10 +67,7 @@ import {
 } from "@/data/managed-content-defaults";
 import { solutionImages } from "@/data/solution-images";
 import { CATEGORY_IDS_BY_SLUG } from "@/lib/seo-slugs";
-import {
-  fallbackContactPage,
-  fallbackFooterSettings,
-} from "@/lib/content/site";
+import { fallbackContactPage, fallbackFooterSettings } from "@/lib/content/site";
 import imgEducation from "@/assets/article-smart-classroom.jpg";
 import imgHotel from "@/assets/hero-av.jpg";
 import imgCorporate from "@/assets/article-meeting-room.jpg";
@@ -351,7 +349,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         label: "คำอธิบายสินค้า (ข้อความ)",
         type: "textarea" as FieldType,
         rows: 5,
-        helperText: "ข้อความสั้นๆ ที่แสดงใต้ชื่อสินค้าในหน้ารายละเอียดสินค้า ใช้ในหน้ารวมสินค้า และใช้เป็น SEO fallback",
+        helperText:
+          "ข้อความสั้นๆ ที่แสดงใต้ชื่อสินค้าในหน้ารายละเอียดสินค้า ใช้ในหน้ารวมสินค้า และใช้เป็น SEO fallback",
         placeholder: "เขียนสรุปจุดเด่นของสินค้า 2-3 ประโยค",
       },
       {
@@ -645,8 +644,18 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     href: (item) => `/brands/${text(item.slug)}`,
     fields: [
       { key: "slug", label: "Slug", placeholder: "brand-name", helperText: slugHelperText },
-      { key: "name", label: "Name (ชื่อแบรนด์)", placeholder: "เช่น Fabulux, Kramer", helperText: "ชื่อแบรนด์ที่จะแสดงเป็นหัวข้อหลัก" },
-      { key: "category", label: "Category (ประเภทสินค้า)", placeholder: "เช่น LED Display, Projector Screen", helperText: "ประเภทสินค้าหลักของแบรนด์นี้ (คำสั้นๆ)" },
+      {
+        key: "name",
+        label: "Name (ชื่อแบรนด์)",
+        placeholder: "เช่น Fabulux, Kramer",
+        helperText: "ชื่อแบรนด์ที่จะแสดงเป็นหัวข้อหลัก",
+      },
+      {
+        key: "category",
+        label: "Category (ประเภทสินค้า)",
+        placeholder: "เช่น LED Display, Projector Screen",
+        helperText: "ประเภทสินค้าหลักของแบรนด์นี้ (คำสั้นๆ)",
+      },
       { key: "description", label: "Description", type: "textarea", rows: 5 },
       { key: "color", label: "Color" },
       { key: "image_url", label: "Image URL", type: "image" },
@@ -672,7 +681,13 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         group: "category_page",
       },
       { key: "origin", label: "Origin (แหล่งกำเนิด)", group: "category_page" },
-      { key: "highlights", label: "Highlights JSON", type: "json", rows: 8, group: "category_page" },
+      {
+        key: "highlights",
+        label: "Highlights JSON",
+        type: "json",
+        rows: 8,
+        group: "category_page",
+      },
       { key: "best_for", label: "Best For JSON", type: "json", rows: 8, group: "category_page" },
       { key: "accent", label: "Accent JSON", type: "json", rows: 8, group: "advanced" },
       { key: "payload", label: "Payload JSON", type: "json", rows: 8, group: "advanced" },
@@ -785,9 +800,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     key: "slug",
     title: "title",
     subtitle: (item) => text(item.slug),
-    image: (item) =>
-      text(item.showcase_image_url) ||
-      industryShowcaseImages[text(item.slug)],
+    image: (item) => text(item.showcase_image_url) || industryShowcaseImages[text(item.slug)],
     href: (item) => `/industry/${text(item.slug)}`,
     fields: [
       { key: "slug", label: "Slug", placeholder: "industry-name", helperText: slugHelperText },
@@ -821,7 +834,8 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
         label: "Show on homepage and /brands",
         type: "toggle",
         group: "brands_page",
-        helperText: "Turn off to hide this industry from /, /brands and /aboutus shared industry sections.",
+        helperText:
+          "Turn off to hide this industry from /, /brands and /aboutus shared industry sections.",
       },
       {
         key: "sort_order",
@@ -999,22 +1013,22 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "id", label: "ID", readOnly: true },
       { key: "intro_title_th", label: "Intro Title (TH)" },
       { key: "intro_desc_th", label: "Intro Desc (TH)", type: "textarea", rows: 3 },
-      
+
       { key: "story_p1_th", label: "Story P1 (TH)", type: "textarea", rows: 5 },
       { key: "story_p2_th", label: "Story P2 (TH)", type: "textarea", rows: 5 },
       { key: "story_p3_th", label: "Story P3 (TH)", type: "textarea", rows: 5 },
-      
+
       { key: "mission_th", label: "Mission (TH)", type: "textarea", rows: 3 },
       { key: "vision_th", label: "Vision (TH)", type: "textarea", rows: 3 },
       { key: "values_th", label: "Values (TH)", type: "textarea", rows: 3 },
-      
+
       { key: "address_th", label: "Address (TH)", type: "textarea", rows: 2 },
       { key: "phone", label: "Phone" },
       { key: "email", label: "Email" },
       { key: "website", label: "Website" },
       { key: "facebook", label: "Facebook" },
       { key: "map_url", label: "Google Map URL", type: "textarea", rows: 3 },
-      
+
       { key: "stats_payload", label: "Stats (JSON)", type: "json", rows: 8, group: "advanced" },
     ],
   },
@@ -1527,6 +1541,12 @@ function AdminPage() {
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Refresh
           </Button>
+          <Button asChild variant="outline">
+            <a href="/admin-manual" target="_blank" rel="noopener noreferrer">
+              <BookOpen className="mr-2 h-4 w-4" />
+              คู่มือการใช้งาน
+            </a>
+          </Button>
           <Button variant="outline" onClick={signOut}>
             <LogOut className="mr-2 h-4 w-4" />
             Sign out
@@ -1646,7 +1666,9 @@ function AdminPage() {
                 setSaveState("idle");
               }}
               onAddNew={
-                activeKind === "contactSubmissions" || activeKind === "siteSections" || activeKind === "aboutUs"
+                activeKind === "contactSubmissions" ||
+                activeKind === "siteSections" ||
+                activeKind === "aboutUs"
                   ? undefined
                   : () => {
                       setIsCreating(true);
@@ -1691,7 +1713,9 @@ function AdminPage() {
                   isCreating={isCreating}
                   allContent={content}
                   sessionToken={sessionToken}
-                  onRefresh={() => { if (sessionToken) void loadAdminContent(sessionToken); }}
+                  onRefresh={() => {
+                    if (sessionToken) void loadAdminContent(sessionToken);
+                  }}
                 />
                 <ContentPreview
                   kind={activeKind}
@@ -1705,7 +1729,11 @@ function AdminPage() {
                   isDirty={isDirty || isCreating}
                   onDiscard={discardDraft}
                   isCreating={isCreating}
-                  onDelete={(activeKind === "siteSections" || activeKind === "aboutUs") ? undefined : deleteCurrentItem}
+                  onDelete={
+                    activeKind === "siteSections" || activeKind === "aboutUs"
+                      ? undefined
+                      : deleteCurrentItem
+                  }
                 />
               </div>
             )}
@@ -2269,8 +2297,8 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
                 autoComplete="off"
               />
               <span className="text-xs font-normal text-muted-foreground">
-                Use the GA4 measurement ID only, for example G-683MZXTBW1. Leave blank to disable the
-                runtime override.
+                Use the GA4 measurement ID only, for example G-683MZXTBW1. Leave blank to disable
+                the runtime override.
               </span>
             </label>
           </CardContent>
@@ -2285,7 +2313,8 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
                 Meta (Facebook) Pixel
               </CardTitle>
               <CardDescription>
-                Manage Meta Pixel for conversion tracking and audience building on Facebook/Instagram.
+                Manage Meta Pixel for conversion tracking and audience building on
+                Facebook/Instagram.
               </CardDescription>
             </div>
           </CardHeader>
@@ -2343,7 +2372,12 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
                 ))}
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
-                Add more events by importing <code className="rounded bg-secondary px-1 py-0.5 text-[11px]">fbqTrack</code> from <code className="rounded bg-secondary px-1 py-0.5 text-[11px]">@/lib/meta-pixel</code> in any component.
+                Add more events by importing{" "}
+                <code className="rounded bg-secondary px-1 py-0.5 text-[11px]">fbqTrack</code> from{" "}
+                <code className="rounded bg-secondary px-1 py-0.5 text-[11px]">
+                  @/lib/meta-pixel
+                </code>{" "}
+                in any component.
               </p>
             </div>
           </CardContent>
@@ -2388,8 +2422,9 @@ function TrackingSettingsPanel({ sessionToken }: { sessionToken: string }) {
             value={settings?.metaPixelId || "Not configured"}
           />
           <div className="rounded-lg bg-secondary/70 p-3 text-xs leading-relaxed text-muted-foreground">
-            Runtime values saved here take priority. Environment variables remain available as fallback.
-            The Meta Pixel also has a hardcoded default if neither runtime nor env values are set.
+            Runtime values saved here take priority. Environment variables remain available as
+            fallback. The Meta Pixel also has a hardcoded default if neither runtime nor env values
+            are set.
           </div>
         </CardContent>
       </Card>
@@ -2567,7 +2602,10 @@ function ContentList({
                         {text(item.price_text)}
                       </Badge>
                     )}
-                    <Badge variant={String(item.status) === "draft" ? "secondary" : "default"} className={`text-[10px] px-1.5 py-0 font-medium ${String(item.status) === "draft" ? "bg-amber-100 text-amber-700 hover:bg-amber-100" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"}`}>
+                    <Badge
+                      variant={String(item.status) === "draft" ? "secondary" : "default"}
+                      className={`text-[10px] px-1.5 py-0 font-medium ${String(item.status) === "draft" ? "bg-amber-100 text-amber-700 hover:bg-amber-100" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"}`}
+                    >
                       {String(item.status) === "draft" ? "📝 ฉบับร่าง" : "🌐 เผยแพร่แล้ว"}
                     </Badge>
                   </div>
@@ -2575,11 +2613,10 @@ function ContentList({
                 {kind === "products" && (
                   <div className="mt-2 space-y-0.5 text-[11px] text-muted-foreground">
                     <div className="truncate">
-                      ID: {text(item.product_id) || "-"} · Brand slug: {text(item.brand_slug) || "-"}
+                      ID: {text(item.product_id) || "-"} · Brand slug:{" "}
+                      {text(item.brand_slug) || "-"}
                     </div>
-                    <div className="truncate">
-                      Category: {text(item.brand_category_id) || "-"}
-                    </div>
+                    <div className="truncate">Category: {text(item.brand_category_id) || "-"}</div>
                   </div>
                 )}
               </div>
@@ -2695,7 +2732,7 @@ function BrandProductsTab({
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Save failed");
-      
+
       setSaveStatus("Saved successfully!");
       onProductSaved();
       setTimeout(() => setModalOpen(false), 1000);
@@ -2736,23 +2773,46 @@ function BrandProductsTab({
                 </tr>
               ) : (
                 products.map((p) => (
-                  <tr key={text(p.product_id)} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => handleOpenEdit(p)}>
+                  <tr
+                    key={text(p.product_id)}
+                    className="hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => handleOpenEdit(p)}
+                  >
                     <td className="px-4 py-2">
                       {p.image_url ? (
-                        <img src={text(p.image_url)} alt="" className="w-10 h-10 object-cover rounded shadow-sm border" />
+                        <img
+                          src={text(p.image_url)}
+                          alt=""
+                          className="w-10 h-10 object-cover rounded shadow-sm border"
+                        />
                       ) : (
-                        <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-[10px] border">No img</div>
+                        <div className="w-10 h-10 bg-muted rounded flex items-center justify-center text-[10px] border">
+                          No img
+                        </div>
                       )}
                     </td>
-                    <td className="px-4 py-2 font-medium text-xs whitespace-nowrap">{text(p.product_id)}</td>
+                    <td className="px-4 py-2 font-medium text-xs whitespace-nowrap">
+                      {text(p.product_id)}
+                    </td>
                     <td className="px-4 py-2">{text(p.name)}</td>
                     <td className="px-4 py-2">
-                      <Badge variant={p.status === "published" ? "default" : "secondary"} className="text-[10px]">
+                      <Badge
+                        variant={p.status === "published" ? "default" : "secondary"}
+                        className="text-[10px]"
+                      >
                         {p.status === "published" ? "Published" : "Draft"}
                       </Badge>
                     </td>
                     <td className="px-4 py-2 text-right">
-                      <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={(e) => { e.stopPropagation(); handleOpenEdit(p); }}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenEdit(p);
+                        }}
+                      >
                         Edit
                       </Button>
                     </td>
@@ -2768,12 +2828,17 @@ function BrandProductsTab({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-background rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h2 className="text-lg font-semibold">{editingProductId ? "แก้ไขสินค้า" : "เพิ่มสินค้าใหม่"}</h2>
-              <button onClick={() => setModalOpen(false)} className="text-muted-foreground hover:text-foreground">
+              <h2 className="text-lg font-semibold">
+                {editingProductId ? "แก้ไขสินค้า" : "เพิ่มสินค้าใหม่"}
+              </h2>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <Minus className="h-5 w-5" />
               </button>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-6 bg-muted/10">
               <ContentEditor
                 kind="products"
@@ -2787,7 +2852,9 @@ function BrandProductsTab({
             </div>
 
             <div className="flex items-center justify-between px-6 py-4 border-t bg-card rounded-b-xl">
-              <div className={`text-sm font-medium ${saveStatus.includes("success") ? "text-green-600" : "text-red-500"}`}>
+              <div
+                className={`text-sm font-medium ${saveStatus.includes("success") ? "text-green-600" : "text-red-500"}`}
+              >
                 {saveStatus}
               </div>
               <div className="flex gap-2">
@@ -2943,14 +3010,14 @@ function ContentEditor({
     if (!isProduct) return;
     const brandSlug = draft.brand_slug;
     if (!brandSlug) return;
-    
+
     // Find brand from allContent
-    const brand = allContent?.brands?.find(b => text(b.slug) === brandSlug);
+    const brand = allContent?.brands?.find((b) => text(b.slug) === brandSlug);
     if (!brand) return;
-    
+
     const brandName = text(brand.name) || brandSlug;
     const catId = CATEGORY_IDS_BY_SLUG[brandSlug] || brandSlug;
-    
+
     if (draft.brand !== brandName || draft.brand_category_id !== catId) {
       setDraft({ ...draft, brand: brandName, brand_category_id: catId } as Draft);
     }
@@ -3003,10 +3070,14 @@ function ContentEditor({
                   {isProduct ? "ข้อมูลแบรนด์" : "การเผยแพร่"}
                 </TabsTrigger>
                 {kind === "brands" && !isCreating && (
-                  <TabsTrigger value="products" className="text-xs sm:text-sm text-blue-600 data-[state=active]:text-blue-700 data-[state=active]:bg-blue-50">
+                  <TabsTrigger
+                    value="products"
+                    className="text-xs sm:text-sm text-blue-600 data-[state=active]:text-blue-700 data-[state=active]:bg-blue-50"
+                  >
                     สินค้าในแบรนด์นี้
                     <span className="ml-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-blue-100 text-[9px] font-medium text-blue-700">
-                      {allContent?.products?.filter(p => text(p.brand_slug) === draft.slug).length || 0}
+                      {allContent?.products?.filter((p) => text(p.brand_slug) === draft.slug)
+                        .length || 0}
                     </span>
                   </TabsTrigger>
                 )}
@@ -3078,7 +3149,10 @@ function ContentEditor({
               {seoFields.map((field) => renderField(field, draft, update, isCreating, allContent))}
             </TabsContent>
             {kind === "brands" && !isCreating && (
-              <TabsContent value="products" className="m-0 p-0 focus-visible:ring-0 bg-accent/[0.02]">
+              <TabsContent
+                value="products"
+                className="m-0 p-0 focus-visible:ring-0 bg-accent/[0.02]"
+              >
                 <BrandProductsTab
                   brandSlug={draft.slug as string}
                   allContent={allContent}
@@ -3136,7 +3210,6 @@ function ContentEditor({
           </div>
         )}
 
-        
         {kind === "solutions" && (
           <SolutionPayloadEditor
             slug={text(draft.slug)}
@@ -3148,7 +3221,7 @@ function ContentEditor({
         )}
 
         {kind === "industries" && !isCreating && (
-          <IndustryPayloadEditor 
+          <IndustryPayloadEditor
             slug={text(draft.slug)}
             title={draft.title}
             description={draft.description}
@@ -3157,7 +3230,7 @@ function ContentEditor({
           />
         )}
 
-{/* Advanced section is always at the bottom, separate from tabs if tabs exist */}
+        {/* Advanced section is always at the bottom, separate from tabs if tabs exist */}
         {advancedFields.length > 0 && (
           <div className="border-t border-border bg-muted/10 p-4 sm:p-6">
             <div className="rounded-xl border border-border bg-white overflow-hidden">
@@ -3240,28 +3313,28 @@ function IndustryPayloadEditor({
   };
 
   const updateProp = (prop: string, val: any) => {
-    updatePayload(p => ({ ...p, [prop]: val }));
+    updatePayload((p) => ({ ...p, [prop]: val }));
   };
 
   const updateHighlight = (prop: string, val: any) => {
-    updatePayload(p => {
+    updatePayload((p) => {
       const hl = p.highlight_1 || {};
       return { ...p, highlight_1: { ...hl, [prop]: val } };
     });
   };
 
   const addBanner = () => {
-    updatePayload(p => ({ ...p, banners: [...(p.banners || []), ""] }));
+    updatePayload((p) => ({ ...p, banners: [...(p.banners || []), ""] }));
   };
   const updateBanner = (idx: number, val: string) => {
-    updatePayload(p => {
+    updatePayload((p) => {
       const b = [...(p.banners || [])];
       b[idx] = val;
       return { ...p, banners: b };
     });
   };
   const removeBanner = (idx: number) => {
-    updatePayload(p => {
+    updatePayload((p) => {
       const b = [...(p.banners || [])];
       b.splice(idx, 1);
       return { ...p, banners: b };
@@ -3269,13 +3342,13 @@ function IndustryPayloadEditor({
   };
 
   const addFeature = () => {
-    updatePayload(p => {
+    updatePayload((p) => {
       const hl = p.highlight_1 || {};
       return { ...p, highlight_1: { ...hl, features: [...(hl.features || []), ""] } };
     });
   };
   const updateFeature = (idx: number, val: string) => {
-    updatePayload(p => {
+    updatePayload((p) => {
       const hl = p.highlight_1 || {};
       const f = [...(hl.features || [])];
       f[idx] = val;
@@ -3283,7 +3356,7 @@ function IndustryPayloadEditor({
     });
   };
   const removeFeature = (idx: number) => {
-    updatePayload(p => {
+    updatePayload((p) => {
       const hl = p.highlight_1 || {};
       const f = [...(hl.features || [])];
       f.splice(idx, 1);
@@ -3292,20 +3365,20 @@ function IndustryPayloadEditor({
   };
 
   const addProduct = () => {
-    updatePayload(p => ({
+    updatePayload((p) => ({
       ...p,
-      products: [...(p.products || []), { title: "", desc: "", img: "", href: "/category/" }]
+      products: [...(p.products || []), { title: "", desc: "", img: "", href: "/category/" }],
     }));
   };
   const updateProductProp = (idx: number, prop: string, val: string) => {
-    updatePayload(p => {
+    updatePayload((p) => {
       const prods = [...(p.products || [])];
       prods[idx] = { ...prods[idx], [prop]: val };
       return { ...p, products: prods };
     });
   };
   const removeProduct = (idx: number) => {
-    updatePayload(p => {
+    updatePayload((p) => {
       const prods = [...(p.products || [])];
       prods.splice(idx, 1);
       return { ...p, products: prods };
@@ -3314,7 +3387,6 @@ function IndustryPayloadEditor({
 
   return (
     <div className="grid gap-6 px-4 py-6 sm:px-6 border-t border-border bg-slate-50/50">
-      
       {/* Banners */}
       <div className="flex flex-col gap-4">
         <div>
@@ -3328,15 +3400,26 @@ function IndustryPayloadEditor({
         <div className="grid gap-3">
           {(payload.banners || []).map((url: string, i: number) => (
             <div key={i} className="flex items-center gap-2">
-              <Input value={url} onChange={e => updateBanner(i, e.target.value)} placeholder="https://..." className="flex-1" />
+              <Input
+                value={url}
+                onChange={(e) => updateBanner(i, e.target.value)}
+                placeholder="https://..."
+                className="flex-1"
+              />
               {url && <img src={url} alt="" className="w-10 h-10 object-cover rounded border" />}
-              <button onClick={() => removeBanner(i)} className="p-2 text-red-500 hover:bg-red-50 rounded">
+              <button
+                onClick={() => removeBanner(i)}
+                className="p-2 text-red-500 hover:bg-red-50 rounded"
+              >
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
           ))}
         </div>
-        <Button onClick={addBanner} variant="outline" className="w-max bg-white"><Plus className="w-4 h-4 mr-2" />เพิ่มภาพแบนเนอร์</Button>
+        <Button onClick={addBanner} variant="outline" className="w-max bg-white">
+          <Plus className="w-4 h-4 mr-2" />
+          เพิ่มภาพแบนเนอร์
+        </Button>
       </div>
       <hr />
 
@@ -3354,49 +3437,85 @@ function IndustryPayloadEditor({
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-[13px] font-semibold text-primary">ป้ายกำกับ (Badge)</label>
-              <Input value={payload.highlight_1?.badge || ""} onChange={e => updateHighlight("badge", e.target.value)} placeholder="เช่น Interactive Display" />
+              <Input
+                value={payload.highlight_1?.badge || ""}
+                onChange={(e) => updateHighlight("badge", e.target.value)}
+                placeholder="เช่น Interactive Display"
+              />
             </div>
             <div className="space-y-1.5">
               <label className="text-[13px] font-semibold text-primary">ตำแหน่งรูปภาพ</label>
-              <select 
+              <select
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                value={payload.highlight_1?.imagePosition || "left"} 
-                onChange={e => updateHighlight("imagePosition", e.target.value)}
+                value={payload.highlight_1?.imagePosition || "left"}
+                onChange={(e) => updateHighlight("imagePosition", e.target.value)}
               >
                 <option value="left">ซ้าย (Left)</option>
                 <option value="right">ขวา (Right)</option>
               </select>
             </div>
           </div>
-          
+
           <div className="space-y-1.5">
             <label className="text-[13px] font-semibold text-primary">หัวข้อหลัก (Title)</label>
-            <Input value={payload.highlight_1?.title || ""} onChange={e => updateHighlight("title", e.target.value)} placeholder="หัวข้อหลัก..." />
+            <Input
+              value={payload.highlight_1?.title || ""}
+              onChange={(e) => updateHighlight("title", e.target.value)}
+              placeholder="หัวข้อหลัก..."
+            />
           </div>
           <div className="space-y-1.5">
             <label className="text-[13px] font-semibold text-primary">คำอธิบาย (Description)</label>
-            <Textarea value={payload.highlight_1?.desc || ""} onChange={e => updateHighlight("desc", e.target.value)} rows={3} placeholder="คำอธิบาย..." />
+            <Textarea
+              value={payload.highlight_1?.desc || ""}
+              onChange={(e) => updateHighlight("desc", e.target.value)}
+              rows={3}
+              placeholder="คำอธิบาย..."
+            />
           </div>
-          
+
           <div className="space-y-1.5">
             <label className="text-[13px] font-semibold text-primary">URL รูปภาพประกอบ</label>
             <div className="flex gap-2">
-              <Input value={payload.highlight_1?.image || ""} onChange={e => updateHighlight("image", e.target.value)} placeholder="https://..." />
-              {payload.highlight_1?.image && <img src={payload.highlight_1.image} alt="" className="w-10 h-10 object-cover rounded border" />}
+              <Input
+                value={payload.highlight_1?.image || ""}
+                onChange={(e) => updateHighlight("image", e.target.value)}
+                placeholder="https://..."
+              />
+              {payload.highlight_1?.image && (
+                <img
+                  src={payload.highlight_1.image}
+                  alt=""
+                  className="w-10 h-10 object-cover rounded border"
+                />
+              )}
             </div>
           </div>
 
           <div className="space-y-3 mt-2">
-            <label className="text-[13px] font-semibold text-primary">รายการจุดเด่น (Features - ข้อความสั้นๆ)</label>
+            <label className="text-[13px] font-semibold text-primary">
+              รายการจุดเด่น (Features - ข้อความสั้นๆ)
+            </label>
             {(payload.highlight_1?.features || []).map((f: string, i: number) => (
               <div key={i} className="flex items-center gap-2">
-                <Input value={f} onChange={e => updateFeature(i, e.target.value)} placeholder="จุดเด่น..." className="flex-1" />
-                <button onClick={() => removeFeature(i)} className="p-2 text-red-500 hover:bg-red-50 rounded">
+                <Input
+                  value={f}
+                  onChange={(e) => updateFeature(i, e.target.value)}
+                  placeholder="จุดเด่น..."
+                  className="flex-1"
+                />
+                <button
+                  onClick={() => removeFeature(i)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             ))}
-            <Button onClick={addFeature} variant="outline" size="sm" className="bg-white"><Plus className="w-3 h-3 mr-2" />เพิ่มจุดเด่น</Button>
+            <Button onClick={addFeature} variant="outline" size="sm" className="bg-white">
+              <Plus className="w-3 h-3 mr-2" />
+              เพิ่มจุดเด่น
+            </Button>
           </div>
         </div>
       </div>
@@ -3412,17 +3531,23 @@ function IndustryPayloadEditor({
             เพิ่มข้อมูลสินค้าที่จะแสดงด้านล่างสุดของหน้า
           </p>
         </div>
-        
+
         <div className="space-y-1.5 mb-2">
-          <label className="text-[13px] font-semibold text-primary">หัวข้อของส่วนสินค้า (ทางเลือก)</label>
-          <Input value={payload.productsTitle || ""} onChange={e => updateProp("productsTitle", e.target.value)} placeholder="ค่าเริ่มต้น: ผลิตภัณฑ์แนะนำ" />
+          <label className="text-[13px] font-semibold text-primary">
+            หัวข้อของส่วนสินค้า (ทางเลือก)
+          </label>
+          <Input
+            value={payload.productsTitle || ""}
+            onChange={(e) => updateProp("productsTitle", e.target.value)}
+            placeholder="ค่าเริ่มต้น: ผลิตภัณฑ์แนะนำ"
+          />
         </div>
-        
+
         <div className="space-y-1.5 mb-2">
           <label className="text-[13px] font-semibold text-primary">Products Description</label>
           <Textarea
             value={payload.productsDesc || ""}
-            onChange={e => updateProp("productsDesc", e.target.value)}
+            onChange={(e) => updateProp("productsDesc", e.target.value)}
             rows={3}
             placeholder="Optional description shown above products on /industry/{slug}"
           />
@@ -3430,30 +3555,51 @@ function IndustryPayloadEditor({
 
         <div className="grid gap-4">
           {(payload.products || []).map((prod: any, i: number) => (
-            <div key={i} className="flex flex-col gap-3 p-4 border rounded-xl bg-white relative shadow-sm">
-              <button 
+            <div
+              key={i}
+              className="flex flex-col gap-3 p-4 border rounded-xl bg-white relative shadow-sm"
+            >
+              <button
                 onClick={() => removeProduct(i)}
                 className="absolute top-3 right-3 text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded-md transition-colors"
                 title="Remove"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
-              
+
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-semibold text-primary">หัวข้อ / ชื่อสินค้า (Title)</label>
-                  <Input value={prod.title || ""} onChange={e => updateProductProp(i, "title", e.target.value)} placeholder="เช่น Grandview Screen" />
+                  <label className="text-[13px] font-semibold text-primary">
+                    หัวข้อ / ชื่อสินค้า (Title)
+                  </label>
+                  <Input
+                    value={prod.title || ""}
+                    onChange={(e) => updateProductProp(i, "title", e.target.value)}
+                    placeholder="เช่น Grandview Screen"
+                  />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[13px] font-semibold text-primary">ลิงก์ปลายทาง (URL)</label>
-                  <Input value={prod.href || ""} onChange={e => updateProductProp(i, "href", e.target.value)} placeholder="เช่น /category/grandview" />
+                  <label className="text-[13px] font-semibold text-primary">
+                    ลิงก์ปลายทาง (URL)
+                  </label>
+                  <Input
+                    value={prod.href || ""}
+                    onChange={(e) => updateProductProp(i, "href", e.target.value)}
+                    placeholder="เช่น /category/grandview"
+                  />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[13px] font-semibold text-primary">URL ภาพสินค้า (Image)</label>
+                <label className="text-[13px] font-semibold text-primary">
+                  URL ภาพสินค้า (Image)
+                </label>
                 <div className="flex gap-2">
-                  <Input value={prod.img || ""} onChange={e => updateProductProp(i, "img", e.target.value)} placeholder="https://..." />
+                  <Input
+                    value={prod.img || ""}
+                    onChange={(e) => updateProductProp(i, "img", e.target.value)}
+                    placeholder="https://..."
+                  />
                   {prod.img && (
                     <img src={prod.img} alt="" className="w-10 h-10 object-cover rounded border" />
                   )}
@@ -3462,12 +3608,20 @@ function IndustryPayloadEditor({
 
               <div className="space-y-1.5">
                 <label className="text-[13px] font-semibold text-primary">คำอธิบาย</label>
-                <Textarea value={prod.desc || ""} onChange={e => updateProductProp(i, "desc", e.target.value)} rows={3} placeholder="คำอธิบาย..." />
+                <Textarea
+                  value={prod.desc || ""}
+                  onChange={(e) => updateProductProp(i, "desc", e.target.value)}
+                  rows={3}
+                  placeholder="คำอธิบาย..."
+                />
               </div>
             </div>
           ))}
         </div>
-        <Button onClick={addProduct} variant="outline" className="w-max bg-white"><Plus className="w-4 h-4 mr-2" />เพิ่มแผงสินค้าใหม่</Button>
+        <Button onClick={addProduct} variant="outline" className="w-max bg-white">
+          <Plus className="w-4 h-4 mr-2" />
+          เพิ่มแผงสินค้าใหม่
+        </Button>
       </div>
     </div>
   );
@@ -3984,6 +4138,15 @@ function AdminContentActions({
   );
 }
 
+function draftPreviewHrefFor(kind: ContentKind, item: ContentItem) {
+  if (kind !== "products" && kind !== "articles") return null;
+  const slug = text(item.slug) || text(item[kind === "products" ? "product_id" : "article_id"]);
+  if (!slug || slug.startsWith("new-")) return null;
+  return kind === "products"
+    ? `/admin-preview/product/${encodeURIComponent(slug)}`
+    : `/admin-preview/blog/${encodeURIComponent(slug)}`;
+}
+
 function ContentPreview({
   kind,
   config,
@@ -4014,6 +4177,10 @@ function ContentPreview({
   const image = previewImage(kind, config, item, allContent);
   const fallbackImage = previewFallbackImage(kind, item);
   const href = config.href?.(item);
+  const isDraftPreviewKind = kind === "products" || kind === "articles";
+  const isDraftItem = String(item.status || "") === "draft";
+  const draftPreviewHref = draftPreviewHrefFor(kind, item);
+  const previewHref = isDraftPreviewKind && isDraftItem ? draftPreviewHref : href;
   const title = text(item[config.title]) || text(item[config.key]);
   const description = previewDescription(kind, item);
 
@@ -4034,21 +4201,33 @@ function ContentPreview({
               <CardTitle className="flex items-center gap-2">
                 Preview
                 {(kind === "articles" || kind === "products") && (
-                  <Badge variant={String(item.status) === "draft" ? "secondary" : "default"} className={String(item.status) === "draft" ? "bg-amber-100 text-amber-700 hover:bg-amber-100" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"}>
+                  <Badge
+                    variant={String(item.status) === "draft" ? "secondary" : "default"}
+                    className={
+                      String(item.status) === "draft"
+                        ? "bg-amber-100 text-amber-700 hover:bg-amber-100"
+                        : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
+                    }
+                  >
                     {String(item.status) === "draft" ? "📝 ฉบับร่าง" : "🌐 เผยแพร่แล้ว"}
                   </Badge>
                 )}
               </CardTitle>
               <CardDescription>{config.label}</CardDescription>
             </div>
-            {href && (
+            {isDraftPreviewKind && isCreating ? (
+              <Button variant="outline" size="sm" disabled>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Save draft first
+              </Button>
+            ) : previewHref ? (
               <Button asChild variant="outline" size="sm">
-                <a href={href} target="_blank" rel="noopener noreferrer">
+                <a href={previewHref} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="mr-2 h-4 w-4" />
-                  Open
+                  {isDraftPreviewKind && isDraftItem ? "Preview draft" : "Open"}
                 </a>
               </Button>
-            )}
+            ) : null}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -4136,6 +4315,13 @@ function ContentPreview({
           {/* SEO Completeness checklist for products */}
           {kind === "products" && <ProductSeoChecklist item={item} />}
 
+          {isDraftPreviewKind && isDirty && !isCreating && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-800">
+              Preview draft opens the latest saved version. Save draft again to preview these
+              unsaved changes.
+            </div>
+          )}
+
           <AdminContentActions
             kind={kind}
             config={config}
@@ -4166,7 +4352,10 @@ function ContentPreview({
                   variant="outline"
                   className="w-full"
                   onClick={onSaveAsDraft}
-                  disabled={saveState === "saving" || (saveState !== "error" && !isDirty && String(item.status) === "draft")}
+                  disabled={
+                    saveState === "saving" ||
+                    (saveState !== "error" && !isDirty && String(item.status) === "draft")
+                  }
                 >
                   {saveState === "saving" ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -4178,7 +4367,10 @@ function ContentPreview({
                 <Button
                   className="w-full bg-gradient-accent text-white border-0 hover:brightness-110 shadow-[0_4px_14px_0_oklch(var(--accent)/0.3)]"
                   onClick={onPublish}
-                  disabled={saveState === "saving" || (saveState !== "error" && !isDirty && String(item.status) !== "draft")}
+                  disabled={
+                    saveState === "saving" ||
+                    (saveState !== "error" && !isDirty && String(item.status) !== "draft")
+                  }
                 >
                   {saveState === "saving" ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -4621,13 +4813,17 @@ function SolutionDetailPreview({ item }: { item: ContentItem }) {
           <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             Bullets
           </div>
-          <div className="mt-2 text-sm font-semibold text-primary">{payload.bullets?.length ?? 0}</div>
+          <div className="mt-2 text-sm font-semibold text-primary">
+            {payload.bullets?.length ?? 0}
+          </div>
         </div>
         <div className="rounded-lg border border-border bg-white p-3">
           <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             Applications
           </div>
-          <div className="mt-2 text-sm font-semibold text-primary">{payload.applications?.length ?? 0}</div>
+          <div className="mt-2 text-sm font-semibold text-primary">
+            {payload.applications?.length ?? 0}
+          </div>
         </div>
         <div className="rounded-lg border border-border bg-white p-3">
           <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
@@ -4639,7 +4835,9 @@ function SolutionDetailPreview({ item }: { item: ContentItem }) {
           <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
             Related Links
           </div>
-          <div className="mt-2 text-sm font-semibold text-primary">{payload.relatedLinks?.length ?? 0}</div>
+          <div className="mt-2 text-sm font-semibold text-primary">
+            {payload.relatedLinks?.length ?? 0}
+          </div>
         </div>
       </div>
     </div>
@@ -4789,13 +4987,19 @@ function SolutionPayloadEditor({
         <TextField
           label="SEO Sections"
           value={(payload.seoSections ?? [])
-            .map((section) => [section.heading, section.headingEn ?? "", section.body, section.bodyEn ?? ""].join(" | "))
+            .map((section) =>
+              [section.heading, section.headingEn ?? "", section.body, section.bodyEn ?? ""].join(
+                " | ",
+              ),
+            )
             .join("\n")}
           rows={6}
           onChange={(value) => {
             const nextSections = fromLines(value)
               .map((line) => {
-                const [heading, headingEn, body, bodyEn] = line.split("|").map((segment) => segment.trim());
+                const [heading, headingEn, body, bodyEn] = line
+                  .split("|")
+                  .map((segment) => segment.trim());
                 if (!heading || !body) return null;
                 return {
                   heading,
@@ -4812,13 +5016,17 @@ function SolutionPayloadEditor({
         <TextField
           label="FAQs"
           value={(payload.faqs ?? [])
-            .map((faq) => [faq.question, faq.questionEn ?? "", faq.answer, faq.answerEn ?? ""].join(" | "))
+            .map((faq) =>
+              [faq.question, faq.questionEn ?? "", faq.answer, faq.answerEn ?? ""].join(" | "),
+            )
             .join("\n")}
           rows={6}
           onChange={(value) => {
             const nextFaqs = fromLines(value)
               .map((line) => {
-                const [question, questionEn, answer, answerEn] = line.split("|").map((segment) => segment.trim());
+                const [question, questionEn, answer, answerEn] = line
+                  .split("|")
+                  .map((segment) => segment.trim());
                 if (!question || !answer) return null;
                 return {
                   question,
@@ -4836,13 +5044,23 @@ function SolutionPayloadEditor({
         <TextField
           label="Related Links"
           value={(payload.relatedLinks ?? [])
-            .map((link) => [link.label, link.labelEn ?? "", link.href, link.description ?? "", link.descriptionEn ?? ""].join(" | "))
+            .map((link) =>
+              [
+                link.label,
+                link.labelEn ?? "",
+                link.href,
+                link.description ?? "",
+                link.descriptionEn ?? "",
+              ].join(" | "),
+            )
             .join("\n")}
           rows={6}
           onChange={(value) => {
             const nextLinks = fromLines(value)
               .map((line) => {
-                const [label, labelEn, href, description, descriptionEn] = line.split("|").map((segment) => segment.trim());
+                const [label, labelEn, href, description, descriptionEn] = line
+                  .split("|")
+                  .map((segment) => segment.trim());
                 if (!label || !href) return null;
                 return {
                   label,
@@ -4860,7 +5078,12 @@ function SolutionPayloadEditor({
 
         <div className="rounded-xl border border-border bg-white p-4 lg:col-span-2">
           <p className="mb-2 text-sm font-semibold text-primary">Raw JSON Preview</p>
-          <Textarea value={stringifySolutionPayload(payload)} readOnly rows={10} className="font-mono text-xs" />
+          <Textarea
+            value={stringifySolutionPayload(payload)}
+            readOnly
+            rows={10}
+            className="font-mono text-xs"
+          />
         </div>
       </div>
     </div>
@@ -4996,7 +5219,9 @@ function BrandIntroPreview({ item }: { item: ContentItem }) {
     <div className="rounded-xl border border-accent/20 bg-white p-4">
       <div className="mb-3">
         <div className="text-sm font-semibold text-primary">Category page — Brand Intro banner</div>
-        <div className="text-xs text-muted-foreground">Shown at the top of /category/{text(item.category_id) || "slug"}</div>
+        <div className="text-xs text-muted-foreground">
+          Shown at the top of /category/{text(item.category_id) || "slug"}
+        </div>
       </div>
       <div className="overflow-hidden rounded-2xl border border-border bg-white">
         <div className="grid gap-6 p-5 lg:grid-cols-[1.1fr_1fr]">
@@ -5021,11 +5246,18 @@ function BrandIntroPreview({ item }: { item: ContentItem }) {
             <div className="grid gap-3 sm:grid-cols-2">
               {highlights.length > 0 && (
                 <div>
-                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">จุดเด่น</div>
+                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                    จุดเด่น
+                  </div>
                   <ul className="space-y-1">
                     {highlights.slice(0, 4).map((h, i) => (
-                      <li key={i} className="flex items-start gap-1.5 text-[10px] text-foreground/85">
-                        <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-accent/15 text-accent text-[8px]">✓</span>
+                      <li
+                        key={i}
+                        className="flex items-start gap-1.5 text-[10px] text-foreground/85"
+                      >
+                        <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-accent/15 text-accent text-[8px]">
+                          ✓
+                        </span>
                         {h}
                       </li>
                     ))}
@@ -5034,10 +5266,15 @@ function BrandIntroPreview({ item }: { item: ContentItem }) {
               )}
               {bestFor.length > 0 && (
                 <div>
-                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">เหมาะกับ</div>
+                  <div className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
+                    เหมาะกับ
+                  </div>
                   <ul className="space-y-1">
                     {bestFor.slice(0, 4).map((b, i) => (
-                      <li key={i} className="flex items-center gap-1.5 text-[10px] text-foreground/80">
+                      <li
+                        key={i}
+                        className="flex items-center gap-1.5 text-[10px] text-foreground/80"
+                      >
                         <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
                         {b}
                       </li>
@@ -5047,8 +5284,12 @@ function BrandIntroPreview({ item }: { item: ContentItem }) {
               )}
             </div>
             <div className="flex gap-2 pt-1">
-              <div className="rounded-lg bg-primary px-3 py-1.5 text-[10px] font-semibold text-white">ขอใบเสนอราคา →</div>
-              <div className="rounded-lg border border-border px-3 py-1.5 text-[10px] font-semibold text-primary">ข้อมูลแบรนด์</div>
+              <div className="rounded-lg bg-primary px-3 py-1.5 text-[10px] font-semibold text-white">
+                ขอใบเสนอราคา →
+              </div>
+              <div className="rounded-lg border border-border px-3 py-1.5 text-[10px] font-semibold text-primary">
+                ข้อมูลแบรนด์
+              </div>
             </div>
           </div>
 
@@ -5059,20 +5300,25 @@ function BrandIntroPreview({ item }: { item: ContentItem }) {
                 src={imageUrl}
                 alt={name}
                 className="absolute inset-0 h-full w-full object-cover"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.display = "none";
+                }}
               />
             ) : (
               <div className="grid h-full place-items-center text-xs text-muted-foreground">
                 <div className="text-center">
                   <div className="text-2xl mb-1">🖼️</div>
-                  ยังไม่มีรูปภาพ<br />
+                  ยังไม่มีรูปภาพ
+                  <br />
                   <span className="text-[10px]">อัปโหลดในช่อง "รูปภาพประกอบ"</span>
                 </div>
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             <div className="absolute bottom-3 left-3 right-3 text-white">
-              <div className="text-[9px] font-bold uppercase tracking-widest opacity-90">Authorized Distributor</div>
+              <div className="text-[9px] font-bold uppercase tracking-widest opacity-90">
+                Authorized Distributor
+              </div>
               <div className="text-base font-black drop-shadow">{name}</div>
             </div>
           </div>
@@ -5300,7 +5546,7 @@ function RichTextField({
       <div className="rounded-xl border border-border bg-card shadow-sm focus-within:border-accent focus-within:ring-1 focus-within:ring-accent/20 transition-all">
         {!readOnly && (
           <div className="sticky top-0 z-20 flex flex-wrap items-center gap-1 border-b border-border bg-muted/95 backdrop-blur p-1.5 rounded-t-xl">
-            {/* Undo / Redo */ }
+            {/* Undo / Redo */}
             <Button
               type="button"
               variant="ghost"
@@ -5462,7 +5708,11 @@ function RichTextField({
               className="h-8 w-8 p-0"
               title="แทรกรูปภาพ (Upload & Compress)"
             >
-              {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+              {uploading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ImageIcon className="h-4 w-4" />
+              )}
             </Button>
             <input
               type="file"
@@ -5722,11 +5972,19 @@ function defaultJsonValue(key: string) {
   return {};
 }
 
-function defaultSolutionPayload(slug?: string, title?: string, description?: string): SolutionDetailPayload {
+function defaultSolutionPayload(
+  slug?: string,
+  title?: string,
+  description?: string,
+): SolutionDetailPayload {
   return getSolutionDetailDefaults(slug || "", title, description);
 }
 
-function defaultIndustryPayload(slug?: string, title?: string, description?: string): IndustryDetailPayload {
+function defaultIndustryPayload(
+  slug?: string,
+  title?: string,
+  description?: string,
+): IndustryDetailPayload {
   return getIndustryDetailDefaults(slug || "", title, description);
 }
 
@@ -5777,7 +6035,12 @@ function stringifyIndustryPayload(payload: IndustryDetailPayload) {
 }
 
 function industryPayloadSummary(item: ContentItem) {
-  return parseIndustryPayload(item.payload, text(item.slug), text(item.title), text(item.description));
+  return parseIndustryPayload(
+    item.payload,
+    text(item.slug),
+    text(item.title),
+    text(item.description),
+  );
 }
 
 function parseSolutionPayload(
@@ -5838,12 +6101,22 @@ function text(value: unknown) {
 }
 
 function solutionPreviewIntro(item: ContentItem) {
-  const payload = parseSolutionPayload(item.payload, text(item.slug), text(item.title), text(item.description));
+  const payload = parseSolutionPayload(
+    item.payload,
+    text(item.slug),
+    text(item.title),
+    text(item.description),
+  );
   return payload.intro || text(item.description);
 }
 
 function solutionPayloadSummary(item: ContentItem) {
-  return parseSolutionPayload(item.payload, text(item.slug), text(item.title), text(item.description));
+  return parseSolutionPayload(
+    item.payload,
+    text(item.slug),
+    text(item.title),
+    text(item.description),
+  );
 }
 
 function browserImageUrl(value: unknown) {
