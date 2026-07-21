@@ -13,14 +13,15 @@ import {
   type BrandIntro,
 } from "@/data/brand-intros";
 import { CATEGORY_SLUGS } from "@/lib/seo-slugs";
+import type { ManagedSeoFields } from "@/lib/seo";
 
-export type SiteBrand = (typeof fallbackBrands)[number] & {
+export type SiteBrand = (typeof fallbackBrands)[number] & ManagedSeoFields & {
   imageUrl?: string | null;
   logoUrl?: string | null;
   accent?: unknown;
 };
 
-export type SiteSolution = (typeof fallbackSolutions)[number] & {
+export type SiteSolution = (typeof fallbackSolutions)[number] & ManagedSeoFields & {
   imageUrl?: string | null;
   payload?: Record<string, unknown> | null;
 };
@@ -47,7 +48,7 @@ export type SolutionDetailRelatedLink = {
   descriptionEn?: string;
 };
 
-export type SolutionDetailContent = {
+export type SolutionDetailContent = ManagedSeoFields & {
   slug: string;
   title: string;
   iconName: string;
@@ -60,6 +61,7 @@ export type SolutionDetailContent = {
   seoSections?: SolutionDetailSeoSection[];
   relatedLinks?: SolutionDetailRelatedLink[];
   faqs?: SolutionDetailFaq[];
+  imageUrl?: string | null;
 };
 
 export type SiteIndustry = (typeof fallbackIndustries)[number] & {
@@ -223,6 +225,14 @@ type BrandRow = {
   image_url: string | null;
   logo_url: string | null;
   accent: unknown;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image_url?: string | null;
+  seo_canonical_url?: string | null;
+  seo_no_index?: boolean | null;
+  updated_at?: string | null;
 };
 
 type BrandIntroRow = {
@@ -243,6 +253,14 @@ type SolutionRow = {
   description: string | null;
   image_url: string | null;
   payload: unknown;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  og_image_url?: string | null;
+  seo_canonical_url?: string | null;
+  seo_no_index?: boolean | null;
+  updated_at?: string | null;
 };
 
 type IndustryRow = {
@@ -839,6 +857,14 @@ function mapBrands(rows: BrandRow[] | null | undefined): SiteBrand[] {
       imageUrl: imageUrlOrUndefined(row.image_url),
       logoUrl: imageUrlOrUndefined(row.logo_url),
       accent: row.accent,
+      seoTitle: row.seo_title,
+      seoDescription: row.seo_description,
+      ogTitle: row.og_title,
+      ogDescription: row.og_description,
+      ogImageUrl: row.og_image_url,
+      seoCanonicalUrl: row.seo_canonical_url,
+      seoNoIndex: row.seo_no_index,
+      updatedAt: row.updated_at,
     };
   });
 
@@ -857,6 +883,14 @@ function mapBrands(rows: BrandRow[] | null | undefined): SiteBrand[] {
         imageUrl: imageUrlOrUndefined(row.image_url),
         logoUrl: imageUrlOrUndefined(row.logo_url),
         accent: row.accent,
+        seoTitle: row.seo_title,
+        seoDescription: row.seo_description,
+        ogTitle: row.og_title,
+        ogDescription: row.og_description,
+        ogImageUrl: row.og_image_url,
+        seoCanonicalUrl: row.seo_canonical_url,
+        seoNoIndex: row.seo_no_index,
+        updatedAt: row.updated_at,
       };
     });
   return [...mapped, ...additions];
@@ -877,6 +911,14 @@ function mapSolutions(rows: SolutionRow[] | null | undefined): SiteSolution[] {
       descEn: (fallback as LocalizedFallback).descEn,
       imageUrl: imageUrlOrUndefined(row.image_url),
       payload: asRecord(row.payload),
+      seoTitle: row.seo_title,
+      seoDescription: row.seo_description,
+      ogTitle: row.og_title,
+      ogDescription: row.og_description,
+      ogImageUrl: row.og_image_url,
+      seoCanonicalUrl: row.seo_canonical_url,
+      seoNoIndex: row.seo_no_index,
+      updatedAt: row.updated_at,
     };
   });
 
@@ -894,6 +936,14 @@ function mapSolutions(rows: SolutionRow[] | null | undefined): SiteSolution[] {
         descEn: (fallback as LocalizedFallback | undefined)?.descEn,
         imageUrl: imageUrlOrUndefined(row.image_url),
         payload: asRecord(row.payload),
+        seoTitle: row.seo_title,
+        seoDescription: row.seo_description,
+        ogTitle: row.og_title,
+        ogDescription: row.og_description,
+        ogImageUrl: row.og_image_url,
+        seoCanonicalUrl: row.seo_canonical_url,
+        seoNoIndex: row.seo_no_index,
+        updatedAt: row.updated_at,
       };
     });
   return [...mapped, ...additions];
@@ -1113,11 +1163,11 @@ export async function loadSiteContent(): Promise<SiteContent> {
         .order("sort_order", { ascending: true }),
       contentClient
         .from("content_brands")
-        .select("slug,name,category,description,color,image_url,logo_url,accent")
+        .select("slug,name,category,description,color,image_url,logo_url,accent,seo_title,seo_description,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at")
         .order("slug", { ascending: true }),
       contentClient
         .from("content_solutions")
-        .select("slug,title,icon,description,image_url,payload")
+        .select("slug,title,icon,description,image_url,payload,seo_title,seo_description,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at")
         .order("slug", { ascending: true }),
       loadIndustryRows(),
       loadSiteSectionRows(),
@@ -1201,6 +1251,15 @@ export async function loadSolutionDetailContent(
     slug,
     title: solution?.title || fallback.title,
     iconName: solution?.icon || fallback.iconName,
+    imageUrl: solution?.imageUrl,
+    seoTitle: solution?.seoTitle,
+    seoDescription: solution?.seoDescription,
+    ogTitle: solution?.ogTitle,
+    ogDescription: solution?.ogDescription,
+    ogImageUrl: solution?.ogImageUrl,
+    seoCanonicalUrl: solution?.seoCanonicalUrl,
+    seoNoIndex: solution?.seoNoIndex,
+    updatedAt: solution?.updatedAt,
   });
 }
 

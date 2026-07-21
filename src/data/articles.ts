@@ -1,7 +1,8 @@
 import { articleCategories } from "./site";
 import type { ArticleBlock } from "./article-contents";
+import type { ManagedSeoFields } from "@/lib/seo";
 
-export type Article = {
+export type Article = ManagedSeoFields & {
   id: number;
   title: string;
   slug: string;

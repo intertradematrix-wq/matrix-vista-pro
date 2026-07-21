@@ -4,6 +4,8 @@ import {
   loadSolutionDetailContent,
   type SolutionDetailContent,
 } from "@/lib/content/site";
+import { buildSeoHead } from "@/lib/seo";
+import heroInteractive from "@/assets/hero-interactive.jpg";
 
 const interactiveDisplayContent: SolutionDetailContent = {
   slug: "interactive-display",
@@ -40,25 +42,20 @@ const interactiveDisplayContent: SolutionDetailContent = {
 
 export const Route = createFileRoute("/interactive-display")({
   loader: async () => loadSolutionDetailContent("interactive-display", interactiveDisplayContent),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.title ?? interactiveDisplayContent.title} — Matrix Intertrade` },
-      {
-        name: "description",
-        content: loaderData?.intro ?? interactiveDisplayContent.intro,
-      },
-      {
-        property: "og:title",
-        content: loaderData?.title ?? interactiveDisplayContent.title,
-      },
-      {
-        property: "og:description",
-        content: loaderData?.intro ?? interactiveDisplayContent.intro,
-      },
-      { property: "og:url", content: "/interactive-display" },
-    ],
-    links: [{ rel: "canonical", href: "/interactive-display" }],
-  }),
+  head: ({ loaderData }) =>
+    buildSeoHead({
+      title:
+        loaderData?.seoTitle && loaderData.seoTitle.trim() !== "Interactive Display"
+          ? loaderData.seoTitle
+          : "จอ Interactive Display สำหรับองค์กรและการศึกษา | Matrix Intertrade",
+      description: loaderData?.seoDescription || loaderData?.intro || interactiveDisplayContent.intro,
+      path: "/interactive-display",
+      canonical: loaderData?.seoCanonicalUrl,
+      image: loaderData?.ogImageUrl || loaderData?.imageUrl || heroInteractive,
+      ogTitle: loaderData?.ogTitle,
+      ogDescription: loaderData?.ogDescription,
+      noIndex: loaderData?.seoNoIndex,
+    }),
   component: InteractiveDisplayPage,
 });
 

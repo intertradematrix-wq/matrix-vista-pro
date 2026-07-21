@@ -4,6 +4,8 @@ import {
   loadSolutionDetailContent,
   type SolutionDetailContent,
 } from "@/lib/content/site";
+import { buildSeoHead } from "@/lib/seo";
+import heroAv from "@/assets/hero-av.jpg";
 
 const avSolutionsContent: SolutionDetailContent = {
   slug: "av-solutions",
@@ -33,22 +35,17 @@ const avSolutionsContent: SolutionDetailContent = {
 
 export const Route = createFileRoute("/av-solutions")({
   loader: async () => loadSolutionDetailContent("av-solutions", avSolutionsContent),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.title ?? avSolutionsContent.title} — Matrix Intertrade` },
-      { name: "description", content: loaderData?.intro ?? avSolutionsContent.intro },
-      {
-        property: "og:title",
-        content: loaderData?.title ?? avSolutionsContent.title,
-      },
-      {
-        property: "og:description",
-        content: loaderData?.intro ?? avSolutionsContent.intro,
-      },
-      { property: "og:url", content: "/av-solutions" },
-    ],
-    links: [{ rel: "canonical", href: "/av-solutions" }],
-  }),
+  head: ({ loaderData }) =>
+    buildSeoHead({
+      title: loaderData?.seoTitle || "ออกแบบและติดตั้งระบบ AV Solutions ครบวงจร | Matrix Intertrade",
+      description: loaderData?.seoDescription || loaderData?.intro || avSolutionsContent.intro,
+      path: "/av-solutions",
+      canonical: loaderData?.seoCanonicalUrl,
+      image: loaderData?.ogImageUrl || loaderData?.imageUrl || heroAv,
+      ogTitle: loaderData?.ogTitle,
+      ogDescription: loaderData?.ogDescription,
+      noIndex: loaderData?.seoNoIndex,
+    }),
   component: AvSolutionsPage,
 });
 

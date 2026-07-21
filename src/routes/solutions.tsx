@@ -6,22 +6,16 @@ import { useSiteContent } from "@/lib/content/use-site-content";
 import heroSolutions from "@/assets/hero-solutions.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { ArrowRight } from "lucide-react";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/solutions")({
-  head: () => ({
-    meta: [
-      { title: "โซลูชั่นของเรา — Matrix Intertrade" },
-      {
-        name: "description",
-        content:
-          "LED Display, Interactive Display, Projector, Wireless Presentation, AV Solutions สำหรับองค์กรไทย",
-      },
-      { property: "og:title", content: "โซลูชั่นของเรา — Matrix Intertrade" },
-      { property: "og:description", content: "โซลูชั่น AV ครบวงจรสำหรับองค์กร" },
-      { property: "og:url", content: "/solutions" },
-    ],
-    links: [{ rel: "canonical", href: "/solutions" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "โซลูชัน LED Display และระบบ AV สำหรับองค์กร | Matrix Intertrade",
+      description: "โซลูชัน LED Display, Interactive Display, Projector, Wireless Presentation และระบบ AV ครบวงจรสำหรับองค์กรไทย",
+      path: "/solutions",
+      image: heroSolutions,
+    }),
   component: SolutionsPage,
 });
 

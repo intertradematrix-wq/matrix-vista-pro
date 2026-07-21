@@ -15,6 +15,6 @@ Matrix Intertrade เป็นตัวแทนจำหน่ายอย่�
 - [Wireless Presentation](/wireless-presentation): tranScreen ระบบนำเสนอไร้สาย
 - [AV Solutions](/av-solutions): ระบบภาพและเสียงครบวงจร Kramer AV
 - [แบรนด์พันธมิตร](/brands): รายชื่อแบรนด์ที่บริษัทเป็นตัวแทนจำหน่าย
-- [สินค้าทั้งหมด](/category/0): แค็ตตาล็อกสินค้า AV
+- [สินค้าทั้งหมด](/category/all-products): แค็ตตาล็อกสินค้า AV
 - [บทความและคู่มือ](/blog): ความรู้และ Case Study ด้าน AV
 - [ติดต่อเรา](/contactus): ขอใบเสนอราคาและนัด Site Survey

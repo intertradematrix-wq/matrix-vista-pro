@@ -4,6 +4,8 @@ import {
   loadSolutionDetailContent,
   type SolutionDetailContent,
 } from "@/lib/content/site";
+import { buildSeoHead } from "@/lib/seo";
+import heroWireless from "@/assets/hero-wireless.jpg";
 
 const wirelessPresentationContent: SolutionDetailContent = {
   slug: "wireless-presentation",
@@ -31,19 +33,17 @@ const wirelessPresentationContent: SolutionDetailContent = {
 
 export const Route = createFileRoute("/wireless-presentation")({
   loader: async () => loadSolutionDetailContent("wireless-presentation", wirelessPresentationContent),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.title ?? wirelessPresentationContent.title} — Matrix Intertrade` },
-      { name: "description", content: loaderData?.intro ?? wirelessPresentationContent.intro },
-      { property: "og:title", content: loaderData?.title ?? wirelessPresentationContent.title },
-      {
-        property: "og:description",
-        content: loaderData?.intro ?? wirelessPresentationContent.intro,
-      },
-      { property: "og:url", content: "/wireless-presentation" },
-    ],
-    links: [{ rel: "canonical", href: "/wireless-presentation" }],
-  }),
+  head: ({ loaderData }) =>
+    buildSeoHead({
+      title: loaderData?.seoTitle || "Wireless Presentation สำหรับห้องประชุม | Matrix Intertrade",
+      description: loaderData?.seoDescription || loaderData?.intro || wirelessPresentationContent.intro,
+      path: "/wireless-presentation",
+      canonical: loaderData?.seoCanonicalUrl,
+      image: loaderData?.ogImageUrl || loaderData?.imageUrl || heroWireless,
+      ogTitle: loaderData?.ogTitle,
+      ogDescription: loaderData?.ogDescription,
+      noIndex: loaderData?.seoNoIndex,
+    }),
   component: WirelessPresentationPage,
 });
 

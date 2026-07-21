@@ -34,6 +34,7 @@ export const Route = createFileRoute("/admin-manual")({
   head: () => ({
     meta: [
       { title: "คู่มือการใช้งาน Admin Panel | Matrix Intertrade" },
+      { name: "robots", content: "noindex,nofollow" },
       {
         name: "description",
         content:

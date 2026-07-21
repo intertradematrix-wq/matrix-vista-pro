@@ -1096,6 +1096,12 @@ function blocksToHtml(blocks: unknown): string {
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
+  head: () => ({
+    meta: [
+      { title: "Admin Panel | Matrix Intertrade" },
+      { name: "robots", content: "noindex,nofollow" },
+    ],
+  }),
 });
 
 function AdminPage() {

@@ -5,16 +5,16 @@ import { BrandCard } from "@/components/site/BrandCard";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import heroProductLine from "@/assets/hero-productline.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/product-line")({
-  head: () => ({
-    meta: [
-      { title: "Product Line — Matrix Intertrade" },
-      { name: "description", content: "ภาพรวมไลน์สินค้าทั้งหมดของ Matrix Intertrade" },
-      { property: "og:url", content: "/product-line" },
-    ],
-    links: [{ rel: "canonical", href: "/product-line" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "แบรนด์และไลน์สินค้าระบบ AV | Matrix Intertrade",
+      description: "เลือกดูแบรนด์และไลน์สินค้า LED Display, Interactive Display, Projector, Wireless Presentation และอุปกรณ์ระบบ AV สำหรับองค์กร",
+      path: "/product-line",
+      image: heroProductLine,
+    }),
   component: ProductLinePage,
 });
 

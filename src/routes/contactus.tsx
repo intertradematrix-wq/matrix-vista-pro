@@ -18,6 +18,7 @@ import {
   type SiteContactPage,
 } from "@/lib/content/site";
 import { useSiteContent } from "@/lib/content/use-site-content";
+import { absoluteUrl, buildSeoHead } from "@/lib/seo";
 
 type ContactLoaderData = {
   contactPage: SiteContactPage;
@@ -30,15 +31,14 @@ export const Route = createFileRoute("/contactus")({
   },
   head: (ctx: { loaderData?: ContactLoaderData }) => {
     const contact = ctx.loaderData?.contactPage ?? fallbackContactPage;
+    const seo = buildSeoHead({
+      title: contact.metaTitleTh,
+      description: contact.metaDescriptionTh,
+      path: "/contactus",
+      image: heroContact,
+    });
     return {
-      meta: [
-        { title: contact.metaTitleTh },
-        { name: "description", content: contact.metaDescriptionTh },
-        { property: "og:title", content: contact.metaTitleTh },
-        { property: "og:description", content: contact.metaDescriptionTh },
-        { property: "og:url", content: "/contactus" },
-      ],
-      links: [{ rel: "canonical", href: "/contactus" }],
+      ...seo,
       scripts: [
         {
           type: "application/ld+json",
@@ -46,8 +46,8 @@ export const Route = createFileRoute("/contactus")({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             name: "Matrix Intertrade Co., Ltd.",
-            image: "https://matrix-vista-pro.lovable.app/og-image.jpg",
-            url: "https://matrix-vista-pro.lovable.app/contactus",
+            image: absoluteUrl(heroContact),
+            url: absoluteUrl("/contactus"),
             telephone: contact.phone,
             email: contact.email,
             address: {

@@ -39,6 +39,13 @@ type ContentDatabase = {
           content_html: string | null;
           blocks: ArticleBlock[] | null;
           is_featured: boolean;
+          seo_title: string | null;
+          seo_description: string | null;
+          og_title: string | null;
+          og_description: string | null;
+          og_image_url: string | null;
+          seo_no_index: boolean | null;
+          updated_at: string | null;
         };
       };
     };
@@ -53,6 +60,18 @@ type ArticleListContent = {
 };
 
 const contentClient = supabase as unknown as SupabaseClient<ContentDatabase>;
+
+function getManagedCanonicalSlug(canonicalUrl: string | null): string | undefined {
+  if (!canonicalUrl) return undefined;
+  try {
+    const url = new URL(canonicalUrl, "https://www.matrixintertrade.com");
+    if (url.hostname !== "www.matrixintertrade.com") return undefined;
+    const match = url.pathname.match(/^\/blog\/([^/]+)\/?$/);
+    return match?.[1] ? decodeURIComponent(match[1]) : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 function fromFiles(error?: unknown): ArticleListContent {
   return {
@@ -73,7 +92,7 @@ export async function loadArticleListContent(): Promise<ArticleListContent> {
       contentClient
         .from("content_articles")
         .select(
-          "article_id,title,slug,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,is_featured,status",
+          "article_id,title,slug,category,excerpt,published_date,read_min,canonical_url,cover_image_url,content_html,blocks,is_featured,status,seo_title,seo_description,og_title,og_description,og_image_url,seo_no_index,updated_at",
         )
         .or("status.is.null,status.neq.draft")
         .order("published_date", { ascending: false }),
@@ -89,12 +108,14 @@ export async function loadArticleListContent(): Promise<ArticleListContent> {
         labelEn: row.label,
       })) ?? [];
 
-    const articles = ensureCanonicalArticleSlugs(
+    const mappedArticles =
       articlesResult.data?.map((row) => {
+        const managedSlug = getManagedCanonicalSlug(row.canonical_url);
         return {
           id: row.article_id,
           title: row.title,
-          slug: row.slug,
+          slug: managedSlug || row.slug,
+          sourceSlug: row.slug,
           category: row.category,
           excerpt: row.excerpt,
           date: row.published_date,
@@ -104,8 +125,21 @@ export async function loadArticleListContent(): Promise<ArticleListContent> {
           content_html: row.content_html ?? undefined,
           blocks: row.blocks ?? undefined,
           isFeatured: row.is_featured ?? false,
+          seoTitle: row.seo_title,
+          seoDescription: row.seo_description,
+          ogTitle: row.og_title,
+          ogDescription: row.og_description,
+          ogImageUrl: row.og_image_url,
+          seoCanonicalUrl: row.canonical_url,
+          seoNoIndex: row.seo_no_index,
+          updatedAt: row.updated_at,
         };
-      }) ?? [],
+      }) ?? [];
+    const articles = ensureCanonicalArticleSlugs(mappedArticles).map(
+      ({ sourceSlug, ...article }) => ({
+        ...article,
+        legacySlug: sourceSlug !== article.slug ? sourceSlug : article.legacySlug,
+      }),
     );
 
     if (articleCategories.length === 0 || articles.length === 0) {

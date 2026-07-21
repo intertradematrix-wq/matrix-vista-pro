@@ -1,11 +1,6 @@
-// Official brand logos via Google favicon service — reliable and CORS-friendly.
-export const brandLogos: Record<string, string> = {
-  unilumin: "https://www.google.com/s2/favicons?domain=unilumin.com&sz=128",
-  kramerav: "https://www.google.com/s2/favicons?domain=kramerav.com&sz=128",
-  grandview: "https://www.google.com/s2/favicons?domain=grandviewscreen.com&sz=128",
-  persona: "https://www.google.com/s2/favicons?domain=personadisplays.com&sz=128",
-  transcreen: "https://www.google.com/s2/favicons?domain=transcreen.com&sz=128",
-};
+// Keep this map for admin-provided/local logo URLs only. Remote favicon services
+// can emit noisy 404s in DevTools when a partner domain has no favicon.
+export const brandLogos: Record<string, string> = {};
 
 // Brand-specific accent gradient used for monogram fallback (always renders).
 export const brandAccent: Record<string, { from: string; to: string }> = {

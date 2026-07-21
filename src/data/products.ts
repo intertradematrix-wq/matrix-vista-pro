@@ -1,5 +1,7 @@
 // Auto-generated from matrixintertrade.com/category/0 (site owner-supplied content)
-export type Product = {
+import type { ManagedSeoFields } from "@/lib/seo";
+
+export type Product = ManagedSeoFields & {
   id: string;
   slug?: string;
   name: string;

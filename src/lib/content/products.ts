@@ -23,6 +23,14 @@ type ContentDatabase = {
           brand_category_id: string | null;
           description_text: string | null;
           description_html: string | null;
+          seo_title: string | null;
+          seo_description: string | null;
+          og_title: string | null;
+          og_description: string | null;
+          og_image_url: string | null;
+          seo_canonical_url: string | null;
+          seo_no_index: boolean | null;
+          updated_at: string | null;
         };
       };
     };
@@ -56,6 +64,14 @@ function mapProduct(row: ContentDatabase["public"]["Tables"]["content_products"]
     brandCategoryId: row.brand_category_id ?? "",
     descriptionText: row.description_text ?? undefined,
     descriptionHtml: row.description_html ?? undefined,
+    seoTitle: row.seo_title,
+    seoDescription: row.seo_description,
+    ogTitle: row.og_title,
+    ogDescription: row.og_description,
+    ogImageUrl: row.og_image_url,
+    seoCanonicalUrl: row.seo_canonical_url,
+    seoNoIndex: row.seo_no_index,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -89,7 +105,7 @@ export async function loadProductListContent(): Promise<ProductListContent> {
     const { data, error } = await contentClient
       .from("content_products")
       .select(
-        "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,status",
+        "product_id,slug,name,image_url,price_text,source_url,brand,brand_slug,brand_category_id,description_text,description_html,status,seo_title,seo_description,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at",
       )
       .or("status.is.null,status.neq.draft");
 

@@ -20,6 +20,7 @@ import { articles } from "@/data/articles";
 import { articleImages } from "@/data/article-images";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import heroPoster from "@/assets/hero-led.jpg";
+import { buildSeoHead } from "@/lib/seo";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -33,24 +34,13 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Matrix Intertrade — ผู้เชี่ยวชาญ LED & AV ครบวงจร" },
-      {
-        name: "description",
-        content:
-          "LED Display, Interactive Display, Projector, Wireless Presentation และ AV Solutions สำหรับองค์กรไทย พร้อมทีมออกแบบและติดตั้ง",
-      },
-      { property: "og:title", content: "Matrix Intertrade — ผู้เชี่ยวชาญ LED & AV ครบวงจร" },
-      {
-        property: "og:description",
-        content:
-          "ออกแบบ ติดตั้ง และดูแลระบบ LED Display, Interactive Display และ AV Solutions ให้องค์กรไทย",
-      },
-      { property: "og:url", content: "https://www.matrixintertrade.com/" },
-    ],
-    links: [{ rel: "canonical", href: "https://www.matrixintertrade.com/" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "Matrix Intertrade | ผู้เชี่ยวชาญจอ LED Display และระบบ AV",
+      description: "จำหน่าย ออกแบบ ติดตั้ง และดูแลจอ LED Display, Interactive Display, Projector และระบบ AV ครบวงจรสำหรับองค์กรทั่วประเทศไทย",
+      path: "/",
+      image: heroPoster,
+    }),
   component: HomePage,
 });
 

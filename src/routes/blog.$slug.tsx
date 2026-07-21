@@ -5,11 +5,12 @@ import { CTASection } from "@/components/site/CTASection";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { articleContents } from "@/data/article-contents";
 import { loadArticleDetailContent } from "@/lib/content/articles";
-import { Calendar, Clock, Tag, ExternalLink, Eye, ArrowRight } from "lucide-react";
+import { Calendar, Clock, Tag, ExternalLink, Eye, ArrowRight, UserRound } from "lucide-react";
 import heroBlog from "@/assets/hero-blog.jpg";
 import { incrementArticleView, useArticleViews, formatViews } from "@/lib/article-views";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { absoluteUrl, buildSeoHead } from "@/lib/seo";
 
 const ledDisplayHubArticleSlugs = new Set([
   "led-led-display",
@@ -33,25 +34,25 @@ export const Route = createFileRoute("/blog/$slug")({
   },
   head: ({ loaderData, params }) => {
     const article = loaderData?.article;
-    const title = article ? `${article.title} — Matrix Intertrade` : "ไม่พบบทความ — Matrix Intertrade";
-    const description = article?.excerpt ?? "บทความนี้อาจถูกย้ายหรือไม่มีในระบบแล้ว";
+    const title = article?.seoTitle || (article ? `${article.title} | Matrix Intertrade` : "ไม่พบบทความ | Matrix Intertrade");
+    const description = article?.seoDescription || article?.excerpt || "บทความนี้อาจถูกย้ายหรือไม่มีในระบบแล้ว";
     const slug = article?.slug ?? params.slug;
+    const canonicalPath = `/blog/${slug}`;
+    const image = article?.ogImageUrl || article?.coverImageUrl || heroBlog;
+    const seo = buildSeoHead({
+      title,
+      description,
+      path: canonicalPath,
+      canonical: article?.seoCanonicalUrl || article?.canonicalUrl,
+      image,
+      ogTitle: article?.ogTitle,
+      ogDescription: article?.ogDescription,
+      type: "article",
+      noIndex: article?.seoNoIndex,
+    });
 
     return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:type", content: "article" },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-        { property: "og:url", content: `/blog/${slug}` },
-      ],
-      links: [
-        {
-          rel: "canonical",
-          href: `/blog/${slug}`,
-        },
-      ],
+      ...seo,
       scripts: article
         ? [
             {
@@ -61,13 +62,23 @@ export const Route = createFileRoute("/blog/$slug")({
                 "@type": "Article",
                 headline: article.title,
                 description: article.excerpt,
+                image: absoluteUrl(image),
                 datePublished: article.date,
-                author: { "@type": "Organization", name: "Matrix Intertrade" },
+                dateModified: article.updatedAt || article.date,
+                author: {
+                  "@type": "Organization",
+                  name: "ทีม Matrix Intertrade",
+                  url: absoluteUrl("/aboutus"),
+                },
                 publisher: {
                   "@type": "Organization",
                   name: "Matrix Intertrade",
+                  logo: {
+                    "@type": "ImageObject",
+                    url: absoluteUrl("/web-app-manifest-512x512.png"),
+                  },
                 },
-                mainEntityOfPage: `https://www.matrixintertrade.com/blog/${article.slug}`,
+                mainEntityOfPage: absoluteUrl(canonicalPath),
               }),
             },
           ]
@@ -91,6 +102,7 @@ function BlogDetail() {
   const { data: views } = useArticleViews();
   const viewCount = views?.[article.slug] ?? 0;
   const shouldShowLedDisplayHubCta =
+    article.category === "led-display" ||
     ledDisplayHubArticleSlugs.has(article.slug) ||
     Boolean(article.legacySlug && ledDisplayHubArticleSlugs.has(article.legacySlug));
   const queryClient = useQueryClient();
@@ -121,6 +133,10 @@ function BlogDetail() {
               <Clock className="h-4 w-4" />
               {article.readMin} {t(lang, "นาทีในการอ่าน", "min read")}
             </span>
+            <Link to="/aboutus" className="inline-flex items-center gap-1.5 hover:text-accent">
+              <UserRound className="h-4 w-4" />
+              {t(lang, "ทีม Matrix Intertrade", "Matrix Intertrade team")}
+            </Link>
             <span
               className="inline-flex items-center gap-1.5"
               title={t(lang, "ยอดเข้าชม", "Views")}

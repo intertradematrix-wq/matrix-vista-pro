@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { startTransition, useEffect, useState, useMemo } from "react";
 import { PageHeader } from "@/components/site/PageHeader";
 import { CTASection } from "@/components/site/CTASection";
@@ -14,6 +14,7 @@ import {
 import { loadBrandIntroContent, type SiteBrandIntro } from "@/lib/content/site";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { CATEGORY_IDS_BY_SLUG, CATEGORY_SLUGS } from "@/lib/seo-slugs";
+import { buildSeoHead } from "@/lib/seo";
 
 const catMap: Record<string, string> = {
   "0": "สินค้าทั้งหมด",
@@ -52,19 +53,18 @@ export const Route = createFileRoute("/category/$slug")({
         statusCode: 301,
       });
     }
+
+    if (!CATEGORY_IDS_BY_SLUG[params.slug]) throw notFound();
   },
   head: ({ params }) => {
     const slug = CATEGORY_SLUGS[params.slug] ?? params.slug;
     const id = CATEGORY_IDS_BY_SLUG[slug] ?? slug;
     const name = catMap[id] ?? "หมวดสินค้า";
-    return {
-      meta: [
-        { title: `${name} - สินค้า - Matrix Intertrade` },
-        { name: "description", content: `เลือกชม ${name} จาก Matrix Intertrade` },
-        { property: "og:url", content: `/category/${slug}` },
-      ],
-      links: [{ rel: "canonical", href: `/category/${slug}` }],
-    };
+    return buildSeoHead({
+      title: `${name} | สินค้าระบบภาพและเสียง Matrix Intertrade`,
+      description: `เลือกชม ${name} สำหรับระบบภาพและเสียงองค์กร พร้อมคำปรึกษาและบริการหลังการขายจาก Matrix Intertrade`,
+      path: `/category/${slug}`,
+    });
   },
   component: CategoryPage,
 });

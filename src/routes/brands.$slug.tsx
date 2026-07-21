@@ -7,6 +7,7 @@ import { loadBrandDetailContent } from "@/lib/content/site";
 import { Check, ArrowRight } from "lucide-react";
 import heroBrands from "@/assets/hero-brands.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { buildSeoHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/brands/$slug")({
   loader: async ({ params }) => {
@@ -14,14 +15,24 @@ export const Route = createFileRoute("/brands/$slug")({
     if (!brand) throw notFound();
     return { brand };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.brand.name} — Matrix Intertrade` },
-      { name: "description", content: loaderData?.brand.desc },
-      { property: "og:url", content: `/brands/${loaderData?.brand.slug}` },
-    ],
-    links: [{ rel: "canonical", href: `/brands/${loaderData?.brand.slug}` }],
-  }),
+  head: ({ loaderData }) => {
+    const brand = loaderData?.brand;
+    const isUnilumin = brand?.slug === "unilumin";
+    return buildSeoHead({
+      title:
+        brand?.seoTitle ||
+        (isUnilumin
+          ? "จอ LED Unilumin | ตัวแทนจำหน่ายในประเทศไทย"
+          : `${brand?.name ?? "แบรนด์สินค้า"} สำหรับระบบ AV | Matrix Intertrade`),
+      description: brand?.seoDescription || brand?.desc || "แบรนด์ระบบภาพและเสียงสำหรับองค์กร",
+      path: `/brands/${brand?.slug ?? ""}`,
+      canonical: brand?.seoCanonicalUrl,
+      image: brand?.ogImageUrl || brand?.imageUrl || heroBrands,
+      ogTitle: brand?.ogTitle,
+      ogDescription: brand?.ogDescription,
+      noIndex: brand?.seoNoIndex,
+    });
+  },
   component: BrandPage,
   notFoundComponent: () => <div className="p-20 text-center">Brand not found</div>,
   errorComponent: () => <div className="p-20 text-center">เกิดข้อผิดพลาด</div>,

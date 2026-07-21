@@ -125,9 +125,11 @@ function IndustryCardLink({
 export function IndustriesShowcase({
   industries: industryItems = industries,
   section = fallbackSection,
+  headingAs = "h2",
 }: {
   industries?: Industry[];
   section?: SiteShowcaseSection;
+  headingAs?: "h1" | "h2";
 }) {
   const { lang } = useLanguage();
   if (section.isEnabled === false) return null;
@@ -138,6 +140,7 @@ export function IndustriesShowcase({
     .sort((a, b) => sortOrderFor(a.ind, a.index) - sortOrderFor(b.ind, b.index))
     .map(({ ind }) => ind);
   const cards = visibleIndustryItems.slice(0, 5);
+  const Heading = headingAs;
 
   return (
     <section className="relative overflow-hidden bg-[#E8E4DC] py-14 sm:py-16 lg:py-28 dark:bg-[#1a1814]">
@@ -152,12 +155,12 @@ export function IndustriesShowcase({
               <Sparkles className="h-3.5 w-3.5" />
               {t(lang, section.eyebrowTh, section.eyebrowEn)}
             </div>
-            <h2 className="mt-5 text-3xl font-extrabold leading-[1.15] tracking-tight text-primary sm:text-4xl md:text-5xl">
+            <Heading className="mt-5 text-3xl font-extrabold leading-[1.15] tracking-tight text-primary sm:text-4xl md:text-5xl">
               {t(lang, section.titlePrefixTh, section.titlePrefixEn)}
               <span className="bg-gradient-accent bg-clip-text text-transparent">
                 {t(lang, section.titleHighlightTh, section.titleHighlightEn)}
               </span>
-            </h2>
+            </Heading>
             <p className="mt-4 text-base text-muted-foreground sm:text-lg">
               {t(lang, section.descriptionPrefixTh, section.descriptionPrefixEn)}
               <span className="font-semibold text-primary">

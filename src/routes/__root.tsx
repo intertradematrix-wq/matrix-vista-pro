@@ -3,11 +3,9 @@ import {
   Outlet,
   createRootRouteWithContext,
   useRouter,
-  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileCTABar } from "@/components/layout/MobileCTABar";
@@ -30,17 +28,24 @@ type RootLoaderData = {
 };
 
 function NotFoundComponent() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate({ to: "/", replace: true });
-  }, [navigate]);
-
-  // แสดง placeholder ชั่วคราวระหว่าง redirect
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <p className="text-sm text-muted-foreground">กำลังนำคุณกลับสู่หน้าแรก…</p>
+    <div className="flex min-h-[70vh] items-center justify-center bg-background px-4 py-20">
+      <title>ไม่พบหน้าที่ค้นหา | Matrix Intertrade</title>
+      <meta name="robots" content="noindex,nofollow" />
+      <div className="max-w-xl text-center">
+        <p className="text-sm font-semibold uppercase text-accent">404 Not Found</p>
+        <h1 className="mt-3 text-3xl font-bold text-primary md:text-4xl">ไม่พบหน้าที่คุณค้นหา</h1>
+        <p className="mt-4 leading-relaxed text-muted-foreground">
+          หน้านี้อาจถูกย้าย เปลี่ยนชื่อ หรือไม่มีอยู่แล้ว คุณสามารถกลับไปเลือกดูโซลูชันและสินค้าจากหน้าแรกได้
+        </p>
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
+          <a href="/" className="rounded-md bg-gradient-accent px-5 py-2.5 text-sm font-semibold text-white">
+            กลับหน้าแรก
+          </a>
+          <a href="/contactus" className="rounded-md border border-input px-5 py-2.5 text-sm font-semibold">
+            ติดต่อเรา
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -90,7 +95,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Matrix Intertrade — AV Solutions Specialist" },
       {
         name: "description",
         content:
@@ -149,10 +153,32 @@ fbq('track','PageView');`,
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "Matrix Intertrade",
+          legalName: "Matrix Intertrade Co., Ltd.",
           description:
             "AV Solution Specialist — LED Display, Interactive Display, Projector, Wireless Presentation, AV Solutions",
           url: "https://www.matrixintertrade.com/",
-          sameAs: [],
+          logo: "https://www.matrixintertrade.com/web-app-manifest-512x512.png",
+          telephone: "+66-2-129-6193",
+          email: "info@matrixintertrade.com",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "99/9 หมู่ 2 ถนนราชพฤกษ์",
+            addressLocality: "บางกรวย",
+            addressRegion: "นนทบุรี",
+            postalCode: "11130",
+            addressCountry: "TH",
+          },
+          contactPoint: {
+            "@type": "ContactPoint",
+            telephone: "+66-2-129-6193",
+            contactType: "sales",
+            areaServed: "TH",
+            availableLanguage: ["Thai", "English"],
+          },
+          sameAs: [
+            "https://www.facebook.com/MatrixIntertrade",
+            "https://www.linkedin.com/company/matrix-intertrade",
+          ],
         }),
       },
     ],

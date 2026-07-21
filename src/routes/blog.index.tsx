@@ -9,22 +9,19 @@ import { Search } from "lucide-react";
 import { z } from "zod";
 import heroBlog from "@/assets/hero-blog.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { buildSeoHead } from "@/lib/seo";
 
 const search = z.object({ category: z.string().optional() });
 
 export const Route = createFileRoute("/blog/")({
   validateSearch: search,
-  head: () => ({
-    meta: [
-      { title: "บทความ — Matrix Intertrade" },
-      {
-        name: "description",
-        content: "บทความและคู่มือเลือก LED Display, Interactive Display, AV และ Smart Classroom",
-      },
-      { property: "og:url", content: "/blog" },
-    ],
-    links: [{ rel: "canonical", href: "/blog" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "บทความจอ LED และระบบ AV สำหรับองค์กร | Matrix Intertrade",
+      description: "รวมคู่มือเลือกจอ LED Display ราคาและงบติดตั้ง Pixel Pitch เทคโนโลยี SMD COB GOB รวมถึง Interactive Display และระบบ AV สำหรับองค์กร",
+      path: "/blog",
+      image: heroBlog,
+    }),
   component: BlogPage,
 });
 

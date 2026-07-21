@@ -4,6 +4,8 @@ import {
   loadSolutionDetailContent,
   type SolutionDetailContent,
 } from "@/lib/content/site";
+import { buildSeoHead } from "@/lib/seo";
+import heroLed from "@/assets/hero-led.jpg";
 
 const siteUrl = "https://www.matrixintertrade.com";
 
@@ -193,27 +195,26 @@ export const Route = createFileRoute("/led-display")({
   loader: async () => loadSolutionDetailContent("led-display", ledDisplayContent),
   head: ({ loaderData }) => {
     const faqs = (loaderData?.faqs ?? ledDisplayContent.faqs ?? ledDisplayFaqs) as typeof ledDisplayFaqs;
+    const managedTitle = loaderData?.seoTitle?.trim();
+    const title =
+      !managedTitle || managedTitle === "จอ LED สำหรับองค์กร | LED Display Indoor Outdoor - Matrix Intertrade"
+        ? "จอ LED Display สำหรับองค์กร | ออกแบบ ติดตั้งครบวงจร"
+        : managedTitle;
+    const seo = buildSeoHead({
+      title,
+      description:
+        loaderData?.seoDescription ||
+        "จำหน่าย ออกแบบ และรับติดตั้งจอ LED Display สำหรับองค์กร ทั้ง Indoor, Outdoor และ All-in-One พร้อมสำรวจหน้างานและดูแลโดยทีม Matrix Intertrade",
+      path: "/led-display",
+      canonical: loaderData?.seoCanonicalUrl,
+      image: loaderData?.ogImageUrl || loaderData?.imageUrl || heroLed,
+      ogTitle: loaderData?.ogTitle,
+      ogDescription: loaderData?.ogDescription,
+      noIndex: loaderData?.seoNoIndex,
+    });
 
     return {
-      meta: [
-        {
-          title: `${loaderData?.title ?? ledDisplayContent.title} - Matrix Intertrade`,
-        },
-        {
-          name: "description",
-          content: loaderData?.intro ?? ledDisplayContent.intro,
-        },
-        {
-          property: "og:title",
-          content: loaderData?.title ?? ledDisplayContent.title,
-        },
-        {
-          property: "og:description",
-          content: loaderData?.intro ?? ledDisplayContent.intro,
-        },
-        { property: "og:url", content: "/led-display" },
-      ],
-      links: [{ rel: "canonical", href: "/led-display" }],
+      ...seo,
       scripts: [
         {
           type: "application/ld+json",
@@ -235,5 +236,5 @@ export const Route = createFileRoute("/led-display")({
 
 function LedDisplayPage() {
   const content = Route.useLoaderData();
-  return <SolutionDetailTemplate {...content} />;
+  return <SolutionDetailTemplate {...content} title="จอ LED Display สำหรับองค์กร" />;
 }

@@ -4,6 +4,8 @@ import {
   loadSolutionDetailContent,
   type SolutionDetailContent,
 } from "@/lib/content/site";
+import { buildSeoHead } from "@/lib/seo";
+import heroProjector from "@/assets/hero-projector.jpg";
 
 const projectorContent: SolutionDetailContent = {
   slug: "projector",
@@ -31,19 +33,17 @@ const projectorContent: SolutionDetailContent = {
 
 export const Route = createFileRoute("/projector")({
   loader: async () => loadSolutionDetailContent("projector", projectorContent),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.title ?? projectorContent.title} — Matrix Intertrade` },
-      { name: "description", content: loaderData?.intro ?? projectorContent.intro },
-      { property: "og:title", content: loaderData?.title ?? projectorContent.title },
-      {
-        property: "og:description",
-        content: loaderData?.intro ?? projectorContent.intro,
-      },
-      { property: "og:url", content: "/projector" },
-    ],
-    links: [{ rel: "canonical", href: "/projector" }],
-  }),
+  head: ({ loaderData }) =>
+    buildSeoHead({
+      title: loaderData?.seoTitle || "โปรเจคเตอร์และจอรับภาพสำหรับองค์กร | Matrix Intertrade",
+      description: loaderData?.seoDescription || loaderData?.intro || projectorContent.intro,
+      path: "/projector",
+      canonical: loaderData?.seoCanonicalUrl,
+      image: loaderData?.ogImageUrl || loaderData?.imageUrl || heroProjector,
+      ogTitle: loaderData?.ogTitle,
+      ogDescription: loaderData?.ogDescription,
+      noIndex: loaderData?.seoNoIndex,
+    }),
   component: ProjectorPage,
 });
 

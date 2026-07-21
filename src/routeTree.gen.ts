@@ -22,6 +22,7 @@ import { Route as BrandsRouteImport } from './routes/brands'
 import { Route as AvSolutionsRouteImport } from './routes/av-solutions'
 import { Route as AdminManualRouteImport } from './routes/admin-manual'
 import { Route as AboutusRouteImport } from './routes/aboutus'
+import { Route as LegacySlugRouteImport } from './routes/$legacySlug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -103,6 +104,11 @@ const AdminManualRoute = AdminManualRouteImport.update({
 const AboutusRoute = AboutusRouteImport.update({
   id: '/aboutus',
   path: '/aboutus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegacySlugRoute = LegacySlugRouteImport.update({
+  id: '/$legacySlug',
+  path: '/$legacySlug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -194,6 +200,7 @@ const AdminPreviewBlogSlugRoute = AdminPreviewBlogSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$legacySlug': typeof LegacySlugRoute
   '/aboutus': typeof AboutusRoute
   '/admin-manual': typeof AdminManualRoute
   '/av-solutions': typeof AvSolutionsRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$legacySlug': typeof LegacySlugRoute
   '/aboutus': typeof AboutusRoute
   '/admin-manual': typeof AdminManualRoute
   '/av-solutions': typeof AvSolutionsRoute
@@ -259,6 +267,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$legacySlug': typeof LegacySlugRoute
   '/aboutus': typeof AboutusRoute
   '/admin-manual': typeof AdminManualRoute
   '/av-solutions': typeof AvSolutionsRoute
@@ -293,6 +302,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$legacySlug'
     | '/aboutus'
     | '/admin-manual'
     | '/av-solutions'
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$legacySlug'
     | '/aboutus'
     | '/admin-manual'
     | '/av-solutions'
@@ -357,6 +368,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$legacySlug'
     | '/aboutus'
     | '/admin-manual'
     | '/av-solutions'
@@ -390,6 +402,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LegacySlugRoute: typeof LegacySlugRoute
   AboutusRoute: typeof AboutusRoute
   AdminManualRoute: typeof AdminManualRoute
   AvSolutionsRoute: typeof AvSolutionsRoute
@@ -511,6 +524,13 @@ declare module '@tanstack/react-router' {
       path: '/aboutus'
       fullPath: '/aboutus'
       preLoaderRoute: typeof AboutusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$legacySlug': {
+      id: '/$legacySlug'
+      path: '/$legacySlug'
+      fullPath: '/$legacySlug'
+      preLoaderRoute: typeof LegacySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -648,6 +668,7 @@ const BrandsRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LegacySlugRoute: LegacySlugRoute,
   AboutusRoute: AboutusRoute,
   AdminManualRoute: AdminManualRoute,
   AvSolutionsRoute: AvSolutionsRoute,

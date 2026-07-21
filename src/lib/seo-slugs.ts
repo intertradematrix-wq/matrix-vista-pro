@@ -6,6 +6,7 @@ export const CATEGORY_SLUGS: Record<string, string> = {
   "288210": "transcreen",
   "237068": "grandview",
   "237477": "hdmi-cable",
+  "237676": "all-products",
 };
 
 export const CATEGORY_IDS_BY_SLUG = {

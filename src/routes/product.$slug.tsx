@@ -18,6 +18,7 @@ import type { Product } from "@/data/products";
 import { loadProductDetailContent } from "@/lib/content/products";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { CATEGORY_SLUGS } from "@/lib/seo-slugs";
+import { absoluteUrl, buildSeoHead } from "@/lib/seo";
 
 type ProductLoaderData = {
   product: Product;
@@ -29,14 +30,17 @@ export const Route = createFileRoute("/product/$slug")({
     const { loaderData, params } = ctx;
     const p = loaderData?.product;
     const detail = p ? productDetailById(p.id) : undefined;
-    const title = p ? `${p.name} - Matrix Intertrade` : "สินค้า - Matrix Intertrade";
+    const title = p?.seoTitle || (p ? `${p.name}${p.brand ? ` ${p.brand}` : ""} | Matrix Intertrade` : "สินค้า | Matrix Intertrade");
     const desc =
+      p?.seoDescription ||
       p?.descriptionText?.slice(0, 200) ||
       detail?.descriptionText?.slice(0, 200) ||
       (p
         ? `${p.name}${p.brand ? ` โดย ${p.brand}` : ""} - สอบถามและขอใบเสนอราคาจาก Matrix Intertrade`
         : "รายละเอียดสินค้า");
-    const hasPrice = p?.price && p.price !== "0.00";
+    const normalizedPrice = p?.price?.replace(/,/g, "").trim();
+    const hasPrice = Boolean(normalizedPrice && Number(normalizedPrice) > 0);
+    const canonicalPath = `/product/${p?.slug ?? params.slug}`;
     const productLd = p
       ? {
           "@context": "https://schema.org",
@@ -45,26 +49,32 @@ export const Route = createFileRoute("/product/$slug")({
           ...(p.image ? { image: p.image } : {}),
           ...(p.brand ? { brand: { "@type": "Brand", name: p.brand } } : {}),
           description: desc,
-          offers: {
-            "@type": "Offer",
-            priceCurrency: "THB",
-            ...(hasPrice
-              ? { price: p.price }
-              : { price: "0", availability: "https://schema.org/InStock" }),
-            url: `https://matrix-vista-pro.lovable.app/product/${p.slug ?? params.slug}`,
-          },
+          ...(hasPrice
+            ? {
+                offers: {
+                  "@type": "Offer",
+                  priceCurrency: "THB",
+                  price: normalizedPrice,
+                  availability: "https://schema.org/InStock",
+                  url: absoluteUrl(canonicalPath),
+                },
+              }
+            : {}),
         }
       : null;
+    const seo = buildSeoHead({
+      title,
+      description: desc,
+      path: canonicalPath,
+      canonical: p?.seoCanonicalUrl,
+      image: p?.ogImageUrl || p?.image,
+      ogTitle: p?.ogTitle,
+      ogDescription: p?.ogDescription,
+      type: "product",
+      noIndex: p?.seoNoIndex,
+    });
     return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        { property: "og:type", content: "product" },
-        ...(p?.image ? [{ property: "og:image", content: p.image }] : []),
-      ],
-      links: [{ rel: "canonical", href: `/product/${p?.slug ?? params.slug}` }],
+      ...seo,
       ...(productLd
         ? { scripts: [{ type: "application/ld+json", children: JSON.stringify(productLd) }] }
         : {}),

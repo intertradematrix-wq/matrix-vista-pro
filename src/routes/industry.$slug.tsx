@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { LazyImage } from "@/components/site/LazyImage";
 import heroSolutions from "@/assets/hero-solutions.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import { buildSeoHead } from "@/lib/seo";
 const GRANDVIEW_IMAGE = "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg";
 const KRAMER_IMAGE = "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg";
 const INTERACTIVE_IMAGE = "/legacy-imports/f7c323982191-interactive_display12.png";
@@ -33,22 +34,16 @@ export const Route = createFileRoute("/industry/$slug")({
   },
   head: ({ loaderData }) => {
     const ind = loaderData?.ind;
-    const title = ind?.seoTitle || ind?.ogTitle || `${ind?.title ?? "Industry"} — Matrix Intertrade`;
-    const description = ind?.seoDescription || ind?.ogDescription || ind?.desc || "";
-    return {
-    meta: [
-      { title: `${loaderData?.ind.title} — Matrix Intertrade` },
-      { title },
-      { name: "description", content: description },
-      ...(ind?.seoKeywords ? [{ name: "keywords", content: ind.seoKeywords }] : []),
-      ...(ind?.seoNoIndex ? [{ name: "robots", content: "noindex,nofollow" }] : []),
-      { property: "og:title", content: ind?.ogTitle || title },
-      { property: "og:description", content: ind?.ogDescription || description },
-      ...(ind?.ogImageUrl ? [{ property: "og:image", content: ind.ogImageUrl }] : []),
-      { property: "og:url", content: `/industry/${ind?.slug}` },
-    ],
-    links: [{ rel: "canonical", href: ind?.seoCanonicalUrl || `/industry/${ind?.slug}` }],
-    };
+    return buildSeoHead({
+      title: ind?.seoTitle || `${ind?.title ?? "โซลูชันตามอุตสาหกรรม"} | Matrix Intertrade`,
+      description: ind?.seoDescription || ind?.desc || "ออกแบบระบบภาพและเสียงสำหรับองค์กร",
+      path: `/industry/${ind?.slug ?? ""}`,
+      canonical: ind?.seoCanonicalUrl,
+      image: ind?.ogImageUrl || ind?.imageUrl || heroSolutions,
+      ogTitle: ind?.ogTitle,
+      ogDescription: ind?.ogDescription,
+      noIndex: ind?.seoNoIndex,
+    });
   },
   component: IndustryPage,
   notFoundComponent: () => <div className="p-20 text-center">Not found</div>,

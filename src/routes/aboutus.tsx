@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import { resolveIcon } from "@/lib/icon-map";
+import { buildSeoHead } from "@/lib/seo";
 import {
   Target,
   Eye,
@@ -37,23 +38,13 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/aboutus")({
-  head: () => ({
-    meta: [
-      { title: "เกี่ยวกับเรา — Matrix Intertrade" },
-      {
-        name: "description",
-        content:
-          "บริษัท แมทริกซ์ อินเตอร์เทรด จำกัด ผู้นำเข้าและจัดจำหน่ายระบบภาพแบรนด์ชั้นนำของโลก ประสบการณ์มากกว่า 20 ปี",
-      },
-      { property: "og:title", content: "เกี่ยวกับเรา — Matrix Intertrade" },
-      {
-        property: "og:description",
-        content: "ผู้นำเข้าและจัดจำหน่ายระบบภาพแบรนด์ชั้นนำของโลก ด้วยประสบการณ์มากกว่า 20 ปี",
-      },
-      { property: "og:url", content: "/aboutus" },
-    ],
-    links: [{ rel: "canonical", href: "/aboutus" }],
-  }),
+  head: () =>
+    buildSeoHead({
+      title: "เกี่ยวกับ Matrix Intertrade | ผู้เชี่ยวชาญระบบภาพและเสียง",
+      description: "รู้จัก Matrix Intertrade ผู้เชี่ยวชาญด้าน LED Display และระบบ AV สำหรับองค์กร พร้อมทีมออกแบบ ติดตั้ง และบริการหลังการขายในประเทศไทย",
+      path: "/aboutus",
+      image: heroAbout,
+    }),
   component: AboutPage,
 });
 
