@@ -11,6 +11,7 @@ export const CATEGORY_SLUGS: Record<string, string> = {
 
 export const CATEGORY_IDS_BY_SLUG = {
   ...Object.fromEntries(Object.entries(CATEGORY_SLUGS).map(([id, slug]) => [slug, id])),
+  "all-products": "0",
   kramerav: "235610",
 } as Record<string, string>;
 

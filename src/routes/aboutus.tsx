@@ -16,11 +16,26 @@ import industryEducation from "@/assets/about/industries/education.jpg";
 import industryHotel from "@/assets/about/industries/hotel-events.jpg";
 import industryOffice from "@/assets/about/industries/office-business.jpg";
 import industryVC from "@/assets/about/industries/video-conference.jpg";
+import imgEducation from "@/assets/article-smart-classroom.jpg";
+import imgHotel from "@/assets/hero-av.jpg";
+import imgCorporate from "@/assets/article-meeting-room.jpg";
+import imgGovernment from "@/assets/hero-led.jpg";
+import imgHospital from "@/assets/hero-interactive.jpg";
+import imgVideo from "@/assets/hero-wireless.jpg";
 import { Button } from "@/components/ui/button";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import { resolveIcon } from "@/lib/icon-map";
 import { buildSeoHead } from "@/lib/seo";
+
+const industryImages: Record<string, string> = {
+  education: imgEducation,
+  hotel: imgHotel,
+  corporate: imgCorporate,
+  government: imgGovernment,
+  hospital: imgHospital,
+  "video-conference": imgVideo,
+};
 import {
   Target,
   Eye,
@@ -255,7 +270,7 @@ function AboutPage() {
               const Icon = resolveIcon(industry.icon);
               const title = t(lang, industry.title, industry.titleEn);
               const desc = t(lang, industry.desc, industry.descEn);
-              const img = industry.showcaseImageUrl || industry.imageUrl;
+              const img = industry.showcaseImageUrl || industry.imageUrl || industryImages[industry.slug];
               const href = industry.linkUrl || `/industry/${industry.slug}`;
               const subtitle =
                 lang === "EN"

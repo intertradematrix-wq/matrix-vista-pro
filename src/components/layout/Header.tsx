@@ -58,34 +58,40 @@ export function Header() {
 
   const navItems = originalNavItems.map((item) => {
     if (item.label === "สินค้า" || item.href === "/category/all-products") {
-      const dynamicSubmenu = [
-        ...brands.map((b) => {
-          const categoryId = CATEGORY_IDS_BY_SLUG[b.slug];
-          const targetUrl = categoryId
-            ? `/category/${CATEGORY_SLUGS[categoryId] ?? categoryId}`
-            : `/brands/${b.slug}`;
+      const dynamicSubmenu = brands.map((b) => {
+        const categoryId = CATEGORY_IDS_BY_SLUG[b.slug];
+        const targetUrl = categoryId
+          ? `/category/${CATEGORY_SLUGS[categoryId] ?? categoryId}`
+          : `/brands/${b.slug}`;
 
-          return {
-            label: b.name,
-            href: targetUrl,
-            image: b.imageUrl || brandImages[b.slug],
-            desc: b.desc,
-          };
-        }),
-      ];
-      return { ...item, submenu: dynamicSubmenu };
+        return {
+          label: b.name,
+          href: targetUrl,
+          image: b.imageUrl || brandImages[b.slug],
+          desc: b.desc,
+        };
+      });
+
+      const deduplicatedSubmenu = Array.from(
+        new Map(dynamicSubmenu.map((item) => [item.href, item])).values(),
+      );
+
+      return { ...item, submenu: deduplicatedSubmenu };
     }
     
     if (item.label === "โซลูชันของเรา" || item.href === "/solutions") {
-      const dynamicSubmenu = [
-        ...solutions.map((s) => ({
-          label: s.title,
-          href: `/${s.slug}`,
-          image: s.imageUrl || solutionImages[s.slug],
-          desc: s.desc,
-        })),
-      ];
-      return { ...item, submenu: dynamicSubmenu };
+      const dynamicSubmenu = solutions.map((s) => ({
+        label: s.title,
+        href: `/${s.slug}`,
+        image: s.imageUrl || solutionImages[s.slug],
+        desc: s.desc,
+      }));
+
+      const deduplicatedSubmenu = Array.from(
+        new Map(dynamicSubmenu.map((item) => [item.href, item])).values(),
+      );
+
+      return { ...item, submenu: deduplicatedSubmenu };
     }
 
     return item;
