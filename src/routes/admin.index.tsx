@@ -310,7 +310,7 @@ const ABOUT_STATS_FALLBACK: AboutStat[] = [
 
 const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   products: {
-    label: "All Products",
+    label: "สินค้าทั้งหมด (All Products)",
     description: "จัดการสินค้า รูปภาพ รายละเอียด และข้อมูลแบรนด์",
     key: "product_id",
     title: "name",
@@ -478,7 +478,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     ],
   },
   articles: {
-    label: "Articles",
+    label: "บทความ (Articles)",
     description: "จัดการบทความ รูปปก และเนื้อหาบทความ",
     key: "slug",
     title: "title",
@@ -615,7 +615,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     ],
   },
   articleCategories: {
-    label: "Article Categories",
+    label: "หมวดหมู่บทความ (Article Categories)",
     description: "Blog category labels and cover imagery",
     key: "slug",
     title: "label",
@@ -630,7 +630,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     ],
   },
   brands: {
-    label: "Brands",
+    label: "แบรนด์ (Brands)",
     description: "Brand landing cards, logos and color accents",
     key: "slug",
     title: "name",
@@ -739,7 +739,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   },
 
   solutions: {
-    label: "Solutions",
+    label: "โซลูชัน (Solutions)",
     description: "Solution cards and navigation entries",
     key: "slug",
     title: "title",
@@ -795,7 +795,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     ],
   },
   industries: {
-    label: "Industries",
+    label: "ผลงาน (Industries)",
     description: "Industry showcase cards and industry pages",
     key: "slug",
     title: "title",
@@ -1053,7 +1053,7 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     ],
   },
   contactSubmissions: {
-    label: "Contact Submissions",
+    label: "แบบฟอร์มติดต่อ (Contact Submissions)",
     description: "Inquiries from the Contact Us page",
     key: "id",
     title: "name",
@@ -1582,19 +1582,19 @@ function AdminPage() {
             ))}
             <TabsTrigger value="contactPageSettings">
               <Mail className="mr-2 h-4 w-4" />
-              Contact Us
+              หน้าติดต่อ (Contact Us)
             </TabsTrigger>
             <TabsTrigger value="footerSettings">
               <Globe className="mr-2 h-4 w-4" />
-              Footer
+              ฟุตเตอร์ (Footer)
             </TabsTrigger>
             <TabsTrigger value="lineSettings">
               <Settings className="mr-2 h-4 w-4" />
-              LINE Settings
+              ตั้งค่า LINE (LINE Settings)
             </TabsTrigger>
             <TabsTrigger value="trackingSettings">
               <Code2 className="mr-2 h-4 w-4" />
-              Tracking Settings
+              ตั้งค่า Tracking (Tracking Settings)
             </TabsTrigger>
           </TabsList>
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
