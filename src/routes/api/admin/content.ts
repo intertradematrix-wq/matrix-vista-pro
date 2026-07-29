@@ -12,6 +12,7 @@ type ContentKind =
   | "brands"
   | "solutions"
   | "industries"
+  | "projects"
   | "siteSections"
   | "navItems"
   | "contactSubmissions"
@@ -348,6 +349,39 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
     slugFields: ["slug"],
     uniqueFields: ["slug"],
   },
+  projects: {
+    table: "content_projects",
+    key: "slug",
+    select:
+      "slug,industry_slug,title,excerpt,cover_image_url,gallery_images,content_html,sort_order,status,created_at,updated_at",
+    order: "sort_order",
+    orderAscending: true,
+    fields: [
+      "slug",
+      "industry_slug",
+      "title",
+      "excerpt",
+      "cover_image_url",
+      "gallery_images",
+      "content_html",
+      "sort_order",
+      "status",
+    ],
+    requiredFields: ["slug", "industry_slug", "title"],
+    nullableFields: ["excerpt", "cover_image_url", "content_html"],
+    numericFields: ["sort_order"],
+    jsonFields: { gallery_images: "array" },
+    slugFields: ["slug", "industry_slug"],
+    uniqueFields: ["slug"],
+    foreignKeys: [
+      {
+        field: "industry_slug",
+        table: "content_industries",
+        key: "slug",
+        label: "Project category",
+      },
+    ],
+  },
   siteSections: {
     table: "content_site_sections",
     key: "section_key",
@@ -505,6 +539,7 @@ const UpdateSchema = z.object({
     "brandIntros",
     "solutions",
     "industries",
+    "projects",
     "siteSections",
     "navItems",
     "contactSubmissions",
@@ -629,6 +664,51 @@ function validateRequiredFields(
     const value = values[field];
     if (value === null || value === undefined || (typeof value === "string" && !value.trim())) {
       return jsonError(`${fieldLabel(field)} is required.`, 400);
+    }
+  }
+
+  return null;
+}
+
+function validateProjectValues(values: Record<string, unknown>) {
+  if ("status" in values && values.status !== "draft" && values.status !== "published") {
+    return jsonError("Project status must be draft or published.", 400);
+  }
+
+  if ("gallery_images" in values) {
+    if (!Array.isArray(values.gallery_images)) {
+      return jsonError("Gallery images must be an array.", 400);
+    }
+    for (const [index, image] of values.gallery_images.entries()) {
+      if (!isPlainObject(image)) {
+        return jsonError(`Gallery image ${index + 1} is invalid.`, 400);
+      }
+      const item = image as Record<string, unknown>;
+      if (
+        typeof item.id !== "string" ||
+        !item.id.trim() ||
+        typeof item.url !== "string" ||
+        !item.url.trim()
+      ) {
+        return jsonError(`Gallery image ${index + 1} requires an id and URL.`, 400);
+      }
+      if (
+        (item.alt !== undefined && typeof item.alt !== "string") ||
+        (item.caption !== undefined && typeof item.caption !== "string")
+      ) {
+        return jsonError(`Gallery image ${index + 1} has invalid text metadata.`, 400);
+      }
+    }
+  }
+
+  if (values.status === "published") {
+    const required = ["title", "industry_slug", "cover_image_url"];
+    const missing = required.filter((field) => {
+      const value = values[field];
+      return typeof value !== "string" || !value.trim();
+    });
+    if (missing.length > 0) {
+      return jsonError(`A visible project requires: ${missing.map(fieldLabel).join(", ")}.`, 400);
     }
   }
 
@@ -1081,6 +1161,16 @@ export const Route = createFileRoute("/api/admin/content")({
           ) {
             values.show_on_brands = true;
           }
+        }
+
+        if (parsed.data.kind === "projects") {
+          if (action === "create") {
+            values.status ??= "draft";
+            values.gallery_images ??= [];
+            values.sort_order ??= 0;
+          }
+          const projectError = validateProjectValues(values);
+          if (projectError) return projectError;
         }
 
         if (parsed.data.kind === "siteSections" && !(await hasColumn(config, "section_key"))) {

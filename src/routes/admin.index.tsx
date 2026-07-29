@@ -2,6 +2,23 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
   BookOpen,
   ExternalLink,
   Eye,
@@ -45,6 +62,11 @@ import {
   Send,
   Settings,
   Facebook,
+  ArrowDown,
+  ArrowUp,
+  GripVertical,
+  Star,
+  Upload,
 } from "lucide-react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -82,6 +104,7 @@ type ContentKind =
   | "brands"
   | "solutions"
   | "industries"
+  | "projects"
   | "siteSections"
   | "navItems"
   | "contactSubmissions"
@@ -794,9 +817,95 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "seo_no_index", label: "ซ่อนจาก Google (No Index)", type: "toggle", group: "seo" },
     ],
   },
+  projects: {
+    label: "ผลงาน",
+    description: "จัดการผลงานแต่ละชิ้น รูปปก แกลเลอรี และลำดับการแสดงผล",
+    key: "slug",
+    title: "title",
+    subtitle: (item) =>
+      `${text(item.industry_slug) || "ยังไม่เลือกหมวด"} · ${
+        text(item.status) === "published" ? "แสดงบนเว็บไซต์" : "ซ่อนอยู่"
+      }`,
+    image: (item) => text(item.cover_image_url),
+    href: (item) =>
+      text(item.industry_slug) && text(item.slug)
+        ? `/industry/${text(item.industry_slug)}/${text(item.slug)}`
+        : null,
+    fields: [
+      {
+        key: "title",
+        label: "ชื่อผลงาน",
+        placeholder: "เช่น โครงการติดตั้งจอ LED โรงพยาบาลพิจิตร",
+        helperText: "ชื่อที่แสดงบนหน้ารวมและหน้ารายละเอียดผลงาน",
+      },
+      {
+        key: "slug",
+        label: "URL Slug",
+        placeholder: "phichit-hospital",
+        helperText: "ใช้ตัวอักษรอังกฤษ ตัวเลข และขีดกลาง ระบบจะช่วยสร้างให้เมื่อเพิ่มผลงานใหม่",
+      },
+      {
+        key: "industry_slug",
+        label: "หมวดผลงาน",
+        type: "select",
+        helperText: "หนึ่งผลงานอยู่ได้หนึ่งหมวด",
+        getOptions: (allContent) =>
+          (allContent?.industries ?? [])
+            .filter(
+              (industry) =>
+                text(industry.slug) !== "phichit-hospital" &&
+                (industry.show_on_brands === undefined ||
+                  industry.show_on_brands === true ||
+                  industry.show_on_brands === "true"),
+            )
+            .map((industry) => ({
+              value: text(industry.slug),
+              label: text(industry.title) || text(industry.slug),
+            })),
+      },
+      {
+        key: "excerpt",
+        label: "คำเกริ่น",
+        type: "textarea",
+        rows: 4,
+        placeholder: "สรุปภาพรวมของผลงานแบบสั้น กระชับ",
+        helperText: "แสดงในการ์ดหน้าหมวดและใต้ชื่อในหน้ารายละเอียด",
+      },
+      {
+        key: "content_html",
+        label: "เนื้อหาผลงาน",
+        type: "richtext",
+        helperText: "รายละเอียดงานติดตั้ง อุปกรณ์ที่ใช้ และผลลัพธ์ของโครงการ",
+      },
+      {
+        key: "sort_order",
+        label: "ลำดับผลงาน",
+        type: "number",
+        placeholder: "10",
+        helperText: "เลขน้อยแสดงก่อน หากเท่ากันจะใช้วันที่แก้ไขล่าสุด",
+      },
+      {
+        key: "cover_image_url",
+        label: "รูปปก",
+        type: "image",
+        hidden: () => true,
+      },
+      {
+        key: "gallery_images",
+        label: "แกลเลอรี",
+        type: "json",
+        hidden: () => true,
+      },
+      {
+        key: "status",
+        label: "สถานะ",
+        hidden: () => true,
+      },
+    ],
+  },
   industries: {
-    label: "ผลงาน (Industries)",
-    description: "Industry showcase cards and industry pages",
+    label: "หมวดผลงาน (Industries)",
+    description: "จัดการข้อมูลหมวด Hero, Banner, Highlight และสินค้าแนะนำเดิม",
     key: "slug",
     title: "title",
     subtitle: (item) => text(item.slug),
@@ -1371,7 +1480,9 @@ function AdminPage() {
               ? "บันทึกบทความสำเร็จ!"
               : activeKind === "products"
                 ? "บันทึกสินค้าสำเร็จ!"
-                : "Saved successfully!",
+                : activeKind === "projects"
+                  ? "บันทึกผลงานสำเร็จ!"
+                  : "Saved successfully!",
       );
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : `Cannot save ${config.label}`;
@@ -1382,7 +1493,9 @@ function AdminPage() {
           ? "เกิดข้อผิดพลาดในการบันทึก"
           : activeKind === "products"
             ? "เกิดข้อผิดพลาดในการบันทึก"
-            : "Save failed",
+            : activeKind === "projects"
+              ? "เกิดข้อผิดพลาดในการบันทึกผลงาน"
+              : "Save failed",
         {
           description: errMsg,
         },
@@ -1393,8 +1506,10 @@ function AdminPage() {
   async function deleteCurrentItem() {
     if (!sessionToken || !selectedItem || isCreating) return;
     const confirmMsg =
-      activeKind === "articles" || activeKind === "products"
-        ? `คุณต้องการลบ${activeKind === "articles" ? "บทความ" : "สินค้า"}นี้ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้`
+      activeKind === "articles" || activeKind === "products" || activeKind === "projects"
+        ? `คุณต้องการลบ${
+            activeKind === "articles" ? "บทความ" : activeKind === "products" ? "สินค้า" : "ผลงาน"
+          }นี้ใช่หรือไม่? รายการจะถูกลบ แต่ไฟล์ภาพใน Storage จะยังคงอยู่`
         : `Are you sure you want to delete this ${config.label}? This action cannot be undone.`;
     if (!window.confirm(confirmMsg)) return;
 
@@ -1428,7 +1543,9 @@ function AdminPage() {
           ? "ลบบทความสำเร็จ"
           : activeKind === "products"
             ? "ลบสินค้าสำเร็จ"
-            : "Deleted successfully",
+            : activeKind === "projects"
+              ? "ลบผลงานสำเร็จ"
+              : "Deleted successfully",
       );
     } catch (error) {
       const errMsg = error instanceof Error ? error.message : `Cannot delete ${config.label}`;
@@ -1439,7 +1556,9 @@ function AdminPage() {
           ? "เกิดข้อผิดพลาดในการลบ"
           : activeKind === "products"
             ? "เกิดข้อผิดพลาดในการลบ"
-            : "Delete failed",
+            : activeKind === "projects"
+              ? "เกิดข้อผิดพลาดในการลบผลงาน"
+              : "Delete failed",
         {
           description: errMsg,
         },
@@ -1704,6 +1823,11 @@ function AdminPage() {
                       activeFields.forEach((f) => {
                         if (f.key !== config.key) newDraft[f.key] = "";
                       });
+                      if (activeKind === "projects") {
+                        newDraft.status = "draft";
+                        newDraft.gallery_images = "[]";
+                        newDraft.sort_order = "0";
+                      }
                       setDraft(newDraft);
                       setSaveState("idle");
                     }
@@ -2601,7 +2725,7 @@ function ContentList({
                 <div className="mt-1 truncate text-xs text-muted-foreground">
                   {config.subtitle?.(item) || id}
                 </div>
-                {(kind === "articles" || kind === "products") && (
+                {(kind === "articles" || kind === "products" || kind === "projects") && (
                   <div className="mt-2 flex flex-wrap items-center gap-1.5">
                     {kind === "products" && text(item.price_text) && (
                       <Badge variant="outline" className="px-1.5 py-0 text-[10px] font-medium">
@@ -2612,7 +2736,13 @@ function ContentList({
                       variant={String(item.status) === "draft" ? "secondary" : "default"}
                       className={`text-[10px] px-1.5 py-0 font-medium ${String(item.status) === "draft" ? "bg-amber-100 text-amber-700 hover:bg-amber-100" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"}`}
                     >
-                      {String(item.status) === "draft" ? "📝 ฉบับร่าง" : "🌐 เผยแพร่แล้ว"}
+                      {kind === "projects"
+                        ? String(item.status) === "published"
+                          ? "แสดงบนเว็บไซต์"
+                          : "ซ่อนอยู่"
+                        : String(item.status) === "draft"
+                          ? "📝 ฉบับร่าง"
+                          : "🌐 เผยแพร่แล้ว"}
                     </Badge>
                   </div>
                 )}
@@ -2905,7 +3035,8 @@ function ContentEditor({
 
   const isArticle = kind === "articles";
   const isProduct = kind === "products";
-  const isThaiUI = isArticle || isProduct;
+  const isProject = kind === "projects";
+  const isThaiUI = isArticle || isProduct || isProject;
 
   // Auto-fill initial dates for new articles
   useEffect(() => {
@@ -3011,6 +3142,47 @@ function ContentEditor({
     return () => clearTimeout(timer);
   }, [isProduct, isCreating, draft.name, draft.brand, sessionToken, setDraft]);
 
+  // Auto-fill a readable English slug for new projects.
+  useEffect(() => {
+    if (!isProject || !isCreating || !draft.title || draft.slug) return;
+
+    const timer = setTimeout(async () => {
+      if (!sessionToken) return;
+      try {
+        const res = await fetch("/api/admin/slug-suggest", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({
+            kind: "projects",
+            sourceText: draft.title,
+            context: { category: draft.industry_slug || "project" },
+            existingSlugs: (allContent?.projects ?? []).map((item) => text(item.slug)),
+          }),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.slug) setDraft({ ...draft, slug: data.slug });
+      } catch (error) {
+        console.error("Failed to suggest project slug", error);
+      }
+    }, 900);
+
+    return () => clearTimeout(timer);
+  }, [
+    isProject,
+    isCreating,
+    draft,
+    draft.title,
+    draft.slug,
+    draft.industry_slug,
+    sessionToken,
+    allContent?.projects,
+    setDraft,
+  ]);
+
   // Auto-fill brand name and category id when brand_slug changes (products)
   useEffect(() => {
     if (!isProduct) return;
@@ -3047,12 +3219,16 @@ function ContentEditor({
                   ? "สร้างบทความใหม่"
                   : isProduct
                     ? "เพิ่มสินค้าใหม่"
-                    : `Create ${config.label}`
+                    : isProject
+                      ? "เพิ่มผลงานใหม่"
+                      : `Create ${config.label}`
                 : isArticle
                   ? "แก้ไขบทความ"
                   : isProduct
                     ? "แก้ไขสินค้า"
-                    : `Edit ${config.label}`}
+                    : isProject
+                      ? "แก้ไขผลงาน"
+                      : `Edit ${config.label}`}
             </CardTitle>
             <CardDescription className="text-xs">
               {isThaiUI
@@ -3178,6 +3354,10 @@ function ContentEditor({
               )}
             </div>
 
+            {isProject && (
+              <ProjectMediaEditor draft={draft} setDraft={setDraft} sessionToken={sessionToken} />
+            )}
+
             {seoFields.length > 0 && (
               <div className="rounded-xl border border-accent/20 bg-gradient-to-br from-accent/[0.03] to-transparent overflow-hidden">
                 <button
@@ -3298,7 +3478,7 @@ function IndustryPayloadEditor({
   payloadStr: string;
   onChange: (val: string) => void;
 }) {
-  const [payload, setPayload] = useState<any>(() => {
+  const [payload, setPayload] = useState<IndustryDetailPayload>(() => {
     try {
       return parseIndustryPayload(payloadStr, slug, title, description);
     } catch {
@@ -3310,19 +3490,19 @@ function IndustryPayloadEditor({
     setPayload(parseIndustryPayload(payloadStr, slug, title, description));
   }, [payloadStr, slug, title, description]);
 
-  const updatePayload = (updater: (prev: any) => any) => {
-    setPayload((prev: any) => {
+  const updatePayload = (updater: (prev: IndustryDetailPayload) => IndustryDetailPayload) => {
+    setPayload((prev) => {
       const next = updater(prev);
       onChange(JSON.stringify(next, null, 2));
       return next;
     });
   };
 
-  const updateProp = (prop: string, val: any) => {
+  const updateProp = (prop: string, val: string) => {
     updatePayload((p) => ({ ...p, [prop]: val }));
   };
 
-  const updateHighlight = (prop: string, val: any) => {
+  const updateHighlight = (prop: string, val: string) => {
     updatePayload((p) => {
       const hl = p.highlight_1 || {};
       return { ...p, highlight_1: { ...hl, [prop]: val } };
@@ -3560,7 +3740,7 @@ function IndustryPayloadEditor({
         </div>
 
         <div className="grid gap-4">
-          {(payload.products || []).map((prod: any, i: number) => (
+          {(payload.products || []).map((prod, i: number) => (
             <div
               key={i}
               className="flex flex-col gap-3 p-4 border rounded-xl bg-white relative shadow-sm"
@@ -4029,7 +4209,9 @@ function AdminContentActions({
       ? "Delete article"
       : kind === "products"
         ? "Delete product"
-        : `Delete ${config.label}`;
+        : kind === "projects"
+          ? "ลบผลงาน"
+          : `Delete ${config.label}`;
 
   useEffect(() => {
     if (!isSaving) setPendingAction(null);
@@ -4094,10 +4276,16 @@ function AdminContentActions({
               <Save className="mr-2 h-4 w-4" />
             )}
             {saveState === "saved" && !isDirty
-              ? "Saved"
+              ? kind === "projects"
+                ? "บันทึกแล้ว"
+                : "Saved"
               : isCreating
-                ? "Create item"
-                : "Save changes"}
+                ? kind === "projects"
+                  ? "สร้างผลงาน"
+                  : "Create item"
+                : kind === "projects"
+                  ? "บันทึกการเปลี่ยนแปลง"
+                  : "Save changes"}
             <kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center rounded border border-primary-foreground/25 bg-primary-foreground/10 px-1.5 font-mono text-[10px] font-medium sm:flex">
               Ctrl+S
             </kbd>
@@ -4215,7 +4403,13 @@ function ContentPreview({
                         : "bg-emerald-100 text-emerald-700 hover:bg-emerald-100"
                     }
                   >
-                    {String(item.status) === "draft" ? "📝 ฉบับร่าง" : "🌐 เผยแพร่แล้ว"}
+                    {kind === "projects"
+                      ? String(item.status) === "published"
+                        ? "แสดงบนเว็บไซต์"
+                        : "ซ่อนอยู่"
+                      : String(item.status) === "draft"
+                        ? "📝 ฉบับร่าง"
+                        : "🌐 เผยแพร่แล้ว"}
                   </Badge>
                 )}
               </CardTitle>
@@ -4299,8 +4493,12 @@ function ContentPreview({
           {kind === "brandIntros" && <BrandIntroPreview item={item} />}
 
           {/* Body content preview for articles and products */}
-          {(kind === "articles" || kind === "products") &&
-            text(kind === "articles" ? item.content_html : item.description_html) && (
+          {(kind === "articles" || kind === "products" || kind === "projects") &&
+            text(
+              kind === "articles" || kind === "projects"
+                ? item.content_html
+                : item.description_html,
+            ) && (
               <div className="rounded-xl border border-border bg-white overflow-hidden">
                 <div className="px-4 py-2.5 border-b border-border bg-muted/30">
                   <span className="text-xs font-semibold text-muted-foreground">
@@ -4309,7 +4507,11 @@ function ContentPreview({
                 </div>
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: text(kind === "articles" ? item.content_html : item.description_html),
+                    __html: text(
+                      kind === "articles" || kind === "projects"
+                        ? item.content_html
+                        : item.description_html,
+                    ),
                   }}
                   className="max-h-[300px] overflow-auto p-4 prose prose-sm max-w-none text-foreground/85 prose-img:rounded-xl prose-headings:text-primary prose-a:text-accent"
                 />
@@ -5211,7 +5413,9 @@ function BrandIntroPreview({ item }: { item: ContentItem }) {
     const raw = item.highlights;
     if (Array.isArray(raw)) highlights = raw as string[];
     else if (typeof raw === "string" && raw.trim()) highlights = JSON.parse(raw);
-  } catch {}
+  } catch {
+    // Ignore malformed legacy preview data.
+  }
 
   // Parse bestFor
   let bestFor: string[] = [];
@@ -5219,7 +5423,9 @@ function BrandIntroPreview({ item }: { item: ContentItem }) {
     const raw = item.best_for;
     if (Array.isArray(raw)) bestFor = raw as string[];
     else if (typeof raw === "string" && raw.trim()) bestFor = JSON.parse(raw);
-  } catch {}
+  } catch {
+    // Ignore malformed legacy preview data.
+  }
 
   return (
     <div className="rounded-xl border border-accent/20 bg-white p-4">
@@ -5426,6 +5632,460 @@ function CharCount({ value, max }: { value: string; max: number }) {
       >
         {len}/{max}
       </span>
+    </div>
+  );
+}
+
+type ProjectGalleryItem = {
+  id: string;
+  url: string;
+  alt?: string;
+  caption?: string;
+};
+
+function parseProjectGallery(value: string): ProjectGalleryItem[] {
+  try {
+    const parsed = JSON.parse(value || "[]");
+    if (!Array.isArray(parsed)) return [];
+    return parsed.flatMap((item, index) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) return [];
+      const image = item as Record<string, unknown>;
+      const url = typeof image.url === "string" ? image.url.trim() : "";
+      if (!url) return [];
+      return [
+        {
+          id: typeof image.id === "string" && image.id.trim() ? image.id : `gallery-${index + 1}`,
+          url,
+          alt: typeof image.alt === "string" ? image.alt : "",
+          caption: typeof image.caption === "string" ? image.caption : "",
+        },
+      ];
+    });
+  } catch {
+    return [];
+  }
+}
+
+function newGalleryId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `image-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+async function compressAdminImage(file: File) {
+  if (
+    !file.type.startsWith("image/") ||
+    file.type === "image/webp" ||
+    file.type === "image/gif" ||
+    file.type === "image/svg+xml"
+  ) {
+    return file;
+  }
+
+  return new Promise<File>((resolve) => {
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const context = canvas.getContext("2d");
+      if (!context) return resolve(file);
+      context.drawImage(image, 0, 0);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return resolve(file);
+          const baseName = file.name.replace(/\.[^.]+$/, "") || "project-image";
+          resolve(new File([blob], `${baseName}.webp`, { type: "image/webp" }));
+        },
+        "image/webp",
+        0.85,
+      );
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(file);
+    };
+    image.src = objectUrl;
+  });
+}
+
+async function uploadAdminImage(file: File, token: string) {
+  const uploadFile = await compressAdminImage(file);
+  const formData = new FormData();
+  formData.append("file", uploadFile);
+  const response = await fetch("/api/admin/upload", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.error || `Upload failed with status ${response.status}`);
+  }
+  const payload = await response.json();
+  if (!payload.url) throw new Error("Upload succeeded without an image URL.");
+  return String(payload.url);
+}
+
+function ProjectMediaEditor({
+  draft,
+  setDraft,
+  sessionToken,
+}: {
+  draft: Draft;
+  setDraft: (draft: Draft) => void;
+  sessionToken?: string | null;
+}) {
+  const gallery = useMemo(() => parseProjectGallery(draft.gallery_images), [draft.gallery_images]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadErrors, setUploadErrors] = useState<Array<{ name: string; message: string }>>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const patchDraft = (values: Partial<Draft>) => setDraft({ ...draft, ...values });
+  const writeGallery = (items: ProjectGalleryItem[]) =>
+    patchDraft({ gallery_images: JSON.stringify(items, null, 2) });
+
+  const updateImage = (id: string, values: Partial<ProjectGalleryItem>) => {
+    writeGallery(gallery.map((image) => (image.id === id ? { ...image, ...values } : image)));
+  };
+
+  const moveImage = (from: number, to: number) => {
+    if (to < 0 || to >= gallery.length) return;
+    writeGallery(arrayMove(gallery, from, to));
+  };
+
+  const removeImage = (id: string) => {
+    const removed = gallery.find((image) => image.id === id);
+    const remaining = gallery.filter((image) => image.id !== id);
+    patchDraft({
+      gallery_images: JSON.stringify(remaining, null, 2),
+      ...(removed?.url === draft.cover_image_url
+        ? { cover_image_url: remaining[0]?.url || "" }
+        : {}),
+    });
+  };
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    const oldIndex = gallery.findIndex((image) => image.id === active.id);
+    const newIndex = gallery.findIndex((image) => image.id === over.id);
+    if (oldIndex >= 0 && newIndex >= 0) writeGallery(arrayMove(gallery, oldIndex, newIndex));
+  };
+
+  const handleFiles = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
+    setUploading(true);
+    setUploadErrors([]);
+    try {
+      let token = sessionToken;
+      if (!token) token = (await supabase.auth.getSession()).data.session?.access_token ?? null;
+      if (!token) throw new Error("กรุณาเข้าสู่ระบบใหม่ก่อนอัปโหลดภาพ");
+
+      const results = await Promise.allSettled(
+        files.map(async (file) => ({
+          file,
+          url: await uploadAdminImage(file, token as string),
+        })),
+      );
+      const successes: ProjectGalleryItem[] = [];
+      const errors: Array<{ name: string; message: string }> = [];
+      results.forEach((result, index) => {
+        if (result.status === "fulfilled") {
+          successes.push({
+            id: newGalleryId(),
+            url: result.value.url,
+            alt: "",
+            caption: "",
+          });
+        } else {
+          errors.push({
+            name: files[index].name,
+            message:
+              result.reason instanceof Error ? result.reason.message : "ไม่สามารถอัปโหลดภาพได้",
+          });
+        }
+      });
+
+      if (successes.length > 0) {
+        patchDraft({
+          gallery_images: JSON.stringify([...gallery, ...successes], null, 2),
+          cover_image_url: draft.cover_image_url || successes[0].url,
+        });
+        toast.success(`อัปโหลดสำเร็จ ${successes.length} ภาพ`);
+      }
+      if (errors.length > 0) {
+        setUploadErrors(errors);
+        toast.error(`อัปโหลดไม่สำเร็จ ${errors.length} ภาพ`);
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "ไม่สามารถอัปโหลดภาพได้";
+      setUploadErrors(files.map((file) => ({ name: file.name, message })));
+      toast.error(message);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const visible = draft.status === "published";
+  const missingForVisible = [
+    !(draft.title || "").trim() && "ชื่อผลงาน",
+    !(draft.slug || "").trim() && "slug",
+    !(draft.industry_slug || "").trim() && "หมวดผลงาน",
+    !(draft.cover_image_url || "").trim() && "รูปปก",
+  ].filter(Boolean) as string[];
+
+  const toggleVisible = () => {
+    if (!visible && missingForVisible.length > 0) {
+      toast.error(`กรุณากรอกข้อมูลก่อนเปิดแสดง: ${missingForVisible.join(", ")}`);
+      return;
+    }
+    patchDraft({ status: visible ? "draft" : "published" });
+  };
+
+  return (
+    <div className="grid gap-5">
+      <section className="overflow-hidden rounded-2xl border border-border bg-white">
+        <div className="flex flex-col gap-3 border-b border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="font-semibold text-primary">รูปปกและแกลเลอรี</h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              เลือกหลายภาพได้พร้อมกัน ลากหรือใช้ปุ่มขึ้น/ลงเพื่อกำหนดลำดับ
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {uploading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="mr-2 h-4 w-4" />
+            )}
+            {uploading ? "กำลังอัปโหลด..." : "อัปโหลดหลายภาพ"}
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={handleFiles}
+          />
+        </div>
+
+        {draft.cover_image_url && (
+          <div className="border-b border-border p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-accent">
+              รูปปกปัจจุบัน
+            </p>
+            <img
+              src={draft.cover_image_url}
+              alt=""
+              className="aspect-[16/9] max-h-64 w-full rounded-xl bg-muted object-cover"
+            />
+          </div>
+        )}
+
+        {gallery.length > 0 ? (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={gallery.map((image) => image.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="grid gap-3 p-4">
+                {gallery.map((image, index) => (
+                  <SortableProjectImage
+                    key={image.id}
+                    image={image}
+                    index={index}
+                    total={gallery.length}
+                    isCover={image.url === draft.cover_image_url}
+                    onMove={(direction) => moveImage(index, index + direction)}
+                    onSetCover={() => patchDraft({ cover_image_url: image.url })}
+                    onRemove={() => removeImage(image.id)}
+                    onChange={(values) => updateImage(image.id, values)}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        ) : (
+          <div className="p-8 text-center text-sm text-muted-foreground">
+            ยังไม่มีภาพในแกลเลอรี เริ่มต้นด้วยการอัปโหลดภาพอย่างน้อย 1 ภาพ
+          </div>
+        )}
+
+        {uploadErrors.length > 0 && (
+          <div className="border-t border-red-200 bg-red-50 p-4" role="alert">
+            <p className="text-sm font-semibold text-red-800">ภาพที่อัปโหลดไม่สำเร็จ</p>
+            <ul className="mt-2 space-y-1 text-xs text-red-700">
+              {uploadErrors.map((error) => (
+                <li key={`${error.name}-${error.message}`}>
+                  <strong>{error.name}:</strong> {error.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-4 rounded-2xl border border-border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span
+              className={`h-2.5 w-2.5 rounded-full ${visible ? "bg-emerald-500" : "bg-slate-300"}`}
+            />
+            <h3 className="font-semibold text-primary">แสดงบนเว็บไซต์</h3>
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            ผลงานใหม่จะถูกซ่อนไว้ก่อน เมื่อข้อมูลพร้อมแล้วจึงเปิดสวิตช์นี้
+          </p>
+          {!visible && missingForVisible.length > 0 && (
+            <p className="mt-2 text-xs text-amber-700">ยังขาด: {missingForVisible.join(", ")}</p>
+          )}
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={visible}
+          onClick={toggleVisible}
+          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+            visible ? "bg-emerald-500" : "bg-slate-300"
+          }`}
+        >
+          <span
+            className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+              visible ? "translate-x-6" : "translate-x-1"
+            }`}
+          />
+          <span className="sr-only">แสดงบนเว็บไซต์</span>
+        </button>
+      </section>
+    </div>
+  );
+}
+
+function SortableProjectImage({
+  image,
+  index,
+  total,
+  isCover,
+  onMove,
+  onSetCover,
+  onRemove,
+  onChange,
+}: {
+  image: ProjectGalleryItem;
+  index: number;
+  total: number;
+  isCover: boolean;
+  onMove: (direction: -1 | 1) => void;
+  onSetCover: () => void;
+  onRemove: () => void;
+  onChange: (values: Partial<ProjectGalleryItem>) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: image.id,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={`rounded-xl border bg-card p-3 shadow-sm ${isDragging ? "z-10 border-accent opacity-80" : "border-border"}`}
+    >
+      <div className="flex gap-3">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          aria-label={`ลากเพื่อจัดลำดับภาพที่ ${index + 1}`}
+          className="flex w-8 shrink-0 cursor-grab flex-col items-center justify-center gap-1 rounded-lg text-muted-foreground hover:bg-muted active:cursor-grabbing"
+        >
+          <span className="text-xs font-bold text-primary">{index + 1}</span>
+          <GripVertical className="h-4 w-4" />
+        </button>
+        <img
+          src={image.url}
+          alt=""
+          className="h-24 w-28 shrink-0 rounded-lg bg-muted object-cover sm:h-28 sm:w-40"
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            {isCover && (
+              <Badge className="bg-accent text-white">
+                <Star className="mr-1 h-3 w-3" /> รูปปก
+              </Badge>
+            )}
+            {!isCover && (
+              <Button type="button" variant="outline" size="sm" onClick={onSetCover}>
+                ตั้งเป็นรูปปก
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={index === 0}
+              onClick={() => onMove(-1)}
+              aria-label="เลื่อนภาพขึ้น"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={index === total - 1}
+              onClick={() => onMove(1)}
+              aria-label="เลื่อนภาพลง"
+            >
+              <ArrowDown className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="text-red-600 hover:bg-red-50 hover:text-red-700"
+              onClick={onRemove}
+            >
+              <Trash2 className="mr-1 h-4 w-4" /> ลบ
+            </Button>
+          </div>
+          <details className="mt-3 rounded-lg border border-border bg-muted/20">
+            <summary className="cursor-pointer px-3 py-2 text-xs font-medium text-primary">
+              Alt text และ Caption (ข้อมูลเสริม)
+            </summary>
+            <div className="grid gap-3 border-t border-border p-3">
+              <Field
+                label="Alt text"
+                value={image.alt || ""}
+                onChange={(value) => onChange({ alt: value })}
+                placeholder="อธิบายสิ่งที่อยู่ในภาพ"
+              />
+              <Field
+                label="Caption"
+                value={image.caption || ""}
+                onChange={(value) => onChange({ caption: value })}
+                placeholder="คำบรรยายใต้ภาพ (ถ้ามี)"
+              />
+            </div>
+          </details>
+        </div>
+      </div>
     </div>
   );
 }
@@ -5974,7 +6634,8 @@ function mergePreviewItem(item: ContentItem, draft: Draft, fields: FieldConfig[]
 }
 
 function defaultJsonValue(key: string) {
-  if (key === "blocks" || key === "highlights" || key === "best_for") return [];
+  if (key === "blocks" || key === "highlights" || key === "best_for" || key === "gallery_images")
+    return [];
   return {};
 }
 
@@ -6250,7 +6911,7 @@ function imageForHref(href: string, allContent: Partial<Record<ContentKind, Cont
 
 function previewDescription(kind: ContentKind, item: ContentItem) {
   if (kind === "products") return text(item.description_text);
-  if (kind === "articles") return text(item.excerpt);
+  if (kind === "articles" || kind === "projects") return text(item.excerpt);
   if (kind === "solutions") return solutionPreviewIntro(item);
   if (kind === "brandIntros") return text(item.description);
   if (kind === "navItems") return text(item.description);

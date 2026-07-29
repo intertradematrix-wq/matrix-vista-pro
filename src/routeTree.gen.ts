@@ -31,6 +31,7 @@ import { Route as IndustrySlugRouteImport } from './routes/industry.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as BrandsSlugRouteImport } from './routes/brands.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as IndustryIndustrySlugProjectSlugRouteImport } from './routes/industry.$industrySlug.$projectSlug'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 import { Route as ApiPublicChatbotRouteImport } from './routes/api/public/chatbot'
 import { Route as ApiAdminUploadRouteImport } from './routes/api/admin/upload'
@@ -151,6 +152,12 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IndustryIndustrySlugProjectSlugRoute =
+  IndustryIndustrySlugProjectSlugRouteImport.update({
+    id: '/industry/$industrySlug/$projectSlug',
+    path: '/industry/$industrySlug/$projectSlug',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicContactRoute = ApiPublicContactRouteImport.update({
   id: '/api/public/contact',
   path: '/api/public/contact',
@@ -230,6 +237,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/industry/$industrySlug/$projectSlug': typeof IndustryIndustrySlugProjectSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -263,6 +271,7 @@ export interface FileRoutesByTo {
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/industry/$industrySlug/$projectSlug': typeof IndustryIndustrySlugProjectSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -297,6 +306,7 @@ export interface FileRoutesById {
   '/api/admin/upload': typeof ApiAdminUploadRoute
   '/api/public/chatbot': typeof ApiPublicChatbotRoute
   '/api/public/contact': typeof ApiPublicContactRoute
+  '/industry/$industrySlug/$projectSlug': typeof IndustryIndustrySlugProjectSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
+    | '/industry/$industrySlug/$projectSlug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
+    | '/industry/$industrySlug/$projectSlug'
   id:
     | '__root__'
     | '/'
@@ -398,6 +410,7 @@ export interface FileRouteTypes {
     | '/api/admin/upload'
     | '/api/public/chatbot'
     | '/api/public/contact'
+    | '/industry/$industrySlug/$projectSlug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -431,6 +444,7 @@ export interface RootRouteChildren {
   ApiAdminUploadRoute: typeof ApiAdminUploadRoute
   ApiPublicChatbotRoute: typeof ApiPublicChatbotRoute
   ApiPublicContactRoute: typeof ApiPublicContactRoute
+  IndustryIndustrySlugProjectSlugRoute: typeof IndustryIndustrySlugProjectSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -589,6 +603,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/industry/$industrySlug/$projectSlug': {
+      id: '/industry/$industrySlug/$projectSlug'
+      path: '/industry/$industrySlug/$projectSlug'
+      fullPath: '/industry/$industrySlug/$projectSlug'
+      preLoaderRoute: typeof IndustryIndustrySlugProjectSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/contact': {
       id: '/api/public/contact'
       path: '/api/public/contact'
@@ -697,6 +718,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminUploadRoute: ApiAdminUploadRoute,
   ApiPublicChatbotRoute: ApiPublicChatbotRoute,
   ApiPublicContactRoute: ApiPublicContactRoute,
+  IndustryIndustrySlugProjectSlugRoute: IndustryIndustrySlugProjectSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

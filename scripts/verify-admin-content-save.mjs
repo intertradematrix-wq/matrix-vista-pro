@@ -5,12 +5,22 @@ dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const publishableKey =
+  process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-if (!supabaseUrl || !serviceRoleKey) {
-  throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.");
+if (!supabaseUrl || !serviceRoleKey || !publishableKey) {
+  throw new Error(
+    "SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY and SUPABASE_PUBLISHABLE_KEY are required.",
+  );
 }
 
 const supabase = createClient(supabaseUrl, serviceRoleKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+  },
+});
+const publicSupabase = createClient(supabaseUrl, publishableKey, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
@@ -26,6 +36,7 @@ const ids = {
   brand: `${prefix}-brand`,
   brandIntro: `${prefix}-brand-intro`,
   industry: `${prefix}-industry`,
+  project: `${prefix}-project`,
   navItem: `${prefix}-nav`,
   product: `${prefix}-product`,
   productSlug: `${prefix}-product-slug`,
@@ -232,6 +243,84 @@ async function run() {
   );
 
   await insertRow(
+    "content_projects",
+    {
+      slug: ids.project,
+      industry_slug: ids.industry,
+      title: "Codex Smoke Project",
+      excerpt: "Temporary project for admin save verification.",
+      cover_image_url: "https://example.com/project-cover.jpg",
+      gallery_images: [
+        {
+          id: "second",
+          url: "https://example.com/project-2.jpg",
+          alt: "Second image",
+          caption: "",
+        },
+        {
+          id: "first",
+          url: "https://example.com/project-1.jpg",
+          alt: "First image",
+          caption: "",
+        },
+      ],
+      content_html: "<p>Temporary project content.</p>",
+      sort_order: 9999,
+      status: "draft",
+    },
+    "slug",
+    ids.project,
+  );
+  const draftRead = await publicSupabase
+    .from("content_projects")
+    .select("slug")
+    .eq("slug", ids.project)
+    .maybeSingle();
+  if (draftRead.error || draftRead.data) {
+    throw new Error("draft project was readable through the public client");
+  }
+
+  const project = await updateAndVerify(
+    "content_projects",
+    "slug",
+    ids.project,
+    {
+      title: "Codex Smoke Project Updated",
+      gallery_images: [
+        {
+          id: "first",
+          url: "https://example.com/project-1.jpg",
+          alt: "First image",
+          caption: "",
+        },
+        {
+          id: "second",
+          url: "https://example.com/project-2.jpg",
+          alt: "Second image",
+          caption: "",
+        },
+      ],
+      status: "published",
+    },
+    { title: "Codex Smoke Project Updated", status: "published" },
+  );
+  if (project.gallery_images?.[0]?.id !== "first") {
+    throw new Error("project gallery order changed during save/readback");
+  }
+  const publishedRead = await publicSupabase
+    .from("content_projects")
+    .select("slug,gallery_images")
+    .eq("slug", ids.project)
+    .maybeSingle();
+  if (
+    publishedRead.error ||
+    publishedRead.data?.slug !== ids.project ||
+    publishedRead.data.gallery_images?.[0]?.id !== "first"
+  ) {
+    throw new Error("published project was not readable in saved gallery order");
+  }
+
+  await insertRow(
     "content_nav_items",
     {
       id: ids.navItem,
@@ -285,6 +374,7 @@ async function cleanup() {
   await deleteRows("content_articles", "slug", [ids.article]);
   await deleteRows("content_brand_category_intros", "category_id", [ids.brandIntro]);
   await deleteRows("content_solutions", "slug", [ids.solution]);
+  await deleteRows("content_projects", "slug", [ids.project]);
   await deleteRows("content_industries", "slug", [ids.industry]);
   await deleteRows("content_nav_items", "id", [ids.navItem]);
   await deleteRows("content_article_categories", "slug", [ids.articleCategory]);

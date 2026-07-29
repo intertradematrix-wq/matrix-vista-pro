@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { makeUniqueSlug, slugifySeoKeyword } from "@/lib/seo-slugs";
 
 const SlugSuggestSchema = z.object({
-  kind: z.enum(["products", "articles"]),
+  kind: z.enum(["products", "articles", "projects"]),
   sourceText: z.string().trim().min(1).max(400),
   context: z
     .object({
@@ -66,6 +66,12 @@ function fallbackPhrase(input: SlugSuggestInput) {
     const brand = input.context.brand?.trim() || "matrix";
     const sourceSlug = slugifySeoKeyword(input.sourceText, "");
     return sourceSlug ? `${brand} ${input.sourceText}` : `${brand} product ${productId}`;
+  }
+
+  if (input.kind === "projects") {
+    const category = input.context.category?.trim() || "project";
+    const sourceSlug = slugifySeoKeyword(input.sourceText, "");
+    return sourceSlug ? input.sourceText : `${category} project`;
   }
 
   const articleId = String(input.context.articleId ?? "").trim() || "article";
@@ -163,7 +169,7 @@ async function suggestWithOpenAI(input: SlugSuggestInput) {
     slug: makeUniqueSlug(
       phrase,
       input.existingSlugs,
-      input.kind === "products" ? "product" : "article",
+      input.kind === "products" ? "product" : input.kind === "projects" ? "project" : "article",
     ),
   };
 }
@@ -201,7 +207,11 @@ export const Route = createFileRoute("/api/admin/slug-suggest")({
           slug: makeUniqueSlug(
             phrase,
             input.existingSlugs,
-            input.kind === "products" ? "product" : "article",
+            input.kind === "products"
+              ? "product"
+              : input.kind === "projects"
+                ? "project"
+                : "article",
           ),
           source: "local-fallback",
         });

@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { CTASection } from "@/components/site/CTASection";
@@ -10,6 +10,12 @@ import { LazyImage } from "@/components/site/LazyImage";
 import heroSolutions from "@/assets/hero-solutions.jpg";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { buildSeoHead } from "@/lib/seo";
+import {
+  findPublishedProjectBySlug,
+  loadPublishedProjects,
+  type SiteProject,
+} from "@/lib/content/projects";
+import { ProjectCard } from "@/components/site/ProjectCard";
 const GRANDVIEW_IMAGE = "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg";
 const KRAMER_IMAGE = "/legacy-imports/53aa84128a4c-crop-1664270486366.jpg";
 const INTERACTIVE_IMAGE = "/legacy-imports/f7c323982191-interactive_display12.png";
@@ -28,9 +34,23 @@ const INDUSTRY_IMAGE_FALLBACKS: Record<string, string> = {
 
 export const Route = createFileRoute("/industry/$slug")({
   loader: async ({ params }) => {
+    if (params.slug === "phichit-hospital") {
+      const legacyProject = await findPublishedProjectBySlug(params.slug);
+      if (legacyProject) {
+        throw redirect({
+          to: "/industry/$industrySlug/$projectSlug",
+          params: {
+            industrySlug: legacyProject.industrySlug,
+            projectSlug: legacyProject.slug,
+          },
+          statusCode: 301,
+        });
+      }
+    }
     const ind = await loadIndustryDetailContent(params.slug);
     if (!ind) throw notFound();
-    return { ind };
+    const { projects, error: projectsError } = await loadPublishedProjects(ind.slug);
+    return { ind, projects, projectsError };
   },
   head: ({ loaderData }) => {
     const ind = loaderData?.ind;
@@ -51,7 +71,7 @@ export const Route = createFileRoute("/industry/$slug")({
 });
 
 function IndustryPage() {
-  const { ind } = Route.useLoaderData();
+  const { ind, projects, projectsError } = Route.useLoaderData();
   const { lang } = useLanguage();
   const detailPayload = mergeIndustryPayload(
     getIndustryDetailDefaults(ind.slug, ind.title, ind.desc),
@@ -62,6 +82,7 @@ function IndustryPage() {
   const Icon = (_props: { className?: string }) => null;
   const features: string[] = [];
   const industryImage = ind.imageUrl ?? INDUSTRY_IMAGE_FALLBACKS[ind.slug];
+  const archivedLegacyLayoutsEnabled = false;
   /*
   const Icon = resolveIcon(ind.icon);
   const isHotel = ind.slug === "hotel";
@@ -101,63 +122,132 @@ function IndustryPage() {
         ]}
         bgImage={heroSolutions}
       />
+      <ProjectListSection title={displayTitle} projects={projects} loadError={projectsError} />
       <DynamicIndustryContent payload={detailPayload} slug={ind.slug} />
-      {false && !["education", "hotel", "corporate", "video-conference"].includes(ind.slug) && (
-        <section className="py-16 md:py-20">
-          <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-2 gap-10 items-start">
-            <div>
-              <div className="mb-6 inline-grid h-14 w-14 place-items-center rounded-xl bg-gradient-accent text-white shadow-glow">
-                <Icon className="h-7 w-7" />
+      {archivedLegacyLayoutsEnabled &&
+        !["education", "hotel", "corporate", "video-conference"].includes(ind.slug) && (
+          <section className="py-16 md:py-20">
+            <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-2 gap-10 items-start">
+              <div>
+                <div className="mb-6 inline-grid h-14 w-14 place-items-center rounded-xl bg-gradient-accent text-white shadow-glow">
+                  <Icon className="h-7 w-7" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
+                  {t(lang, `โซลูชั่นสำหรับ${displayTitle}`, `Solutions for ${displayTitle}`)}
+                </h2>
+                <p className="mt-4 text-muted-foreground leading-relaxed">
+                  {displayDesc}{" "}
+                  {t(
+                    lang,
+                    "เราเข้าใจความต้องการเฉพาะของแต่ละองค์กร และออกแบบระบบที่ตอบโจทย์การใช้งานจริง",
+                    "We understand the unique needs of every organization and design systems that match real-world use.",
+                  )}
+                </p>
+                <ul className="mt-6 space-y-3">
+                  {features.map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 shadow-card"
+                    >
+                      <div className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/15 text-accent mt-0.5">
+                        <Check className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-sm text-foreground/85">{f}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-primary tracking-tight">
-                {t(lang, `โซลูชั่นสำหรับ${displayTitle}`, `Solutions for ${displayTitle}`)}
-              </h2>
-              <p className="mt-4 text-muted-foreground leading-relaxed">
-                {displayDesc}{" "}
-                {t(
-                  lang,
-                  "เราเข้าใจความต้องการเฉพาะของแต่ละองค์กร และออกแบบระบบที่ตอบโจทย์การใช้งานจริง",
-                  "We understand the unique needs of every organization and design systems that match real-world use.",
+              <div className="aspect-[4/3] rounded-3xl bg-gradient-hero relative overflow-hidden shadow-elev grid place-items-center group">
+                {industryImage ? (
+                  <img
+                    src={industryImage}
+                    alt={ind.title}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    width={1280}
+                    height={960}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+                  />
+                ) : (
+                  <Icon className="h-32 w-32 text-white/20" />
                 )}
-              </p>
-              <ul className="mt-6 space-y-3">
-                {features.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 shadow-card"
-                  >
-                    <div className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent/15 text-accent mt-0.5">
-                      <Check className="h-3.5 w-3.5" />
-                    </div>
-                    <span className="text-sm text-foreground/85">{f}</span>
-                  </li>
-                ))}
-              </ul>
+              </div>
             </div>
-            <div className="aspect-[4/3] rounded-3xl bg-gradient-hero relative overflow-hidden shadow-elev grid place-items-center group">
-              {industryImage ? (
-                <img
-                  src={industryImage}
-                  alt={ind.title}
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                  width={1280}
-                  height={960}
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
-                />
-              ) : (
-                <Icon className="h-32 w-32 text-white/20" />
-              )}
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
+      {archivedLegacyLayoutsEnabled && ind.slug === "education" && <EducationContent />}
+      {archivedLegacyLayoutsEnabled && ind.slug === "hotel" && <HotelContent />}
+      {archivedLegacyLayoutsEnabled && ind.slug === "corporate" && <CorporateContent />}
+      {archivedLegacyLayoutsEnabled && ind.slug === "video-conference" && (
+        <VideoConferenceContent />
       )}
-      {false && ind.slug === "education" && <EducationContent />}
-      {false && ind.slug === "hotel" && <HotelContent />}
-      {false && ind.slug === "corporate" && <CorporateContent />}
-      {false && ind.slug === "video-conference" && <VideoConferenceContent />}
       <CTASection />
     </>
+  );
+}
+
+function ProjectListSection({
+  title,
+  projects,
+  loadError,
+}: {
+  title: string;
+  projects: SiteProject[];
+  loadError: string | null;
+}) {
+  const { lang } = useLanguage();
+  return (
+    <section className="border-b border-border bg-background py-14 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+        <div className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+            {t(lang, "ผลงานของเรา", "Our projects")}
+          </p>
+          <h2 className="mt-3 text-2xl font-bold tracking-tight text-primary md:text-4xl">
+            {t(lang, `ผลงานในหมวด${title}`, `${title} projects`)}
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            {t(
+              lang,
+              "ตัวอย่างงานติดตั้งและโซลูชันที่ส่งมอบให้ลูกค้า เลือกผลงานเพื่อดูรายละเอียดและภาพเพิ่มเติม",
+              "Explore completed installations and delivered solutions in this category.",
+            )}
+          </p>
+        </div>
+
+        {loadError ? (
+          <div
+            className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900"
+            role="status"
+          >
+            {t(
+              lang,
+              "ไม่สามารถโหลดรายการผลงานได้ในขณะนี้ เนื้อหาหมวดด้านล่างยังใช้งานได้ตามปกติ",
+              "Projects are temporarily unavailable. The category content below is still available.",
+            )}
+          </div>
+        ) : projects.length > 0 ? (
+          <div className="mt-9 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => (
+              <ProjectCard key={project.slug} project={project} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-8 rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center">
+            <p className="font-semibold text-primary">
+              {t(lang, "กำลังรวบรวมผลงานในหมวดนี้", "Projects are being added")}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t(
+                lang,
+                "ระหว่างนี้สามารถดูข้อมูลโซลูชันและสินค้าแนะนำด้านล่างได้",
+                "You can still explore the solutions and recommended products below.",
+              )}
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -317,9 +407,7 @@ function EducationContent() {
                 variant="outline"
                 className="border-white/40 text-white hover:bg-white/10"
               >
-                <Link to="/interactive-display">
-                  ดูสินค้าทั้งหมด
-                </Link>
+                <Link to="/interactive-display">ดูสินค้าทั้งหมด</Link>
               </Button>
             </div>
           </div>
@@ -470,7 +558,7 @@ const CORP_PRODUCTS: BiProduct[] = [
     img: "/legacy-imports/84c6dde0fa04-crop-1664192588573.jpg",
     href: "/category/grandview",
   },
-      {
+  {
     title: "KRAMER",
     descTH:
       "อุปกรณ์ระบบ AV ครบวงจร สำหรับการนำเสนอภาพ เสียง และการแลกเปลี่ยนความเห็นในห้องประชุมยุคดิจิตอล 4.0",
@@ -775,13 +863,36 @@ function VideoConferenceContent() {
   );
 }
 
-function asPayloadRecord(value: unknown): Record<string, any> {
+type RuntimeIndustryPayload = {
+  banners?: string[];
+  highlight_1?: {
+    badge?: string;
+    imagePosition?: string;
+    title?: string;
+    desc?: string;
+    image?: string;
+    features?: string[];
+  };
+  productsTitle?: string;
+  productsDesc?: string;
+  products?: Array<{
+    title?: string;
+    desc?: string;
+    img?: string;
+    href?: string;
+  }>;
+};
+
+function asPayloadRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
-    ? (value as Record<string, any>)
+    ? (value as Record<string, unknown>)
     : {};
 }
 
-function mergeIndustryPayload(fallback: Record<string, any>, runtime: unknown) {
+function mergeIndustryPayload(
+  fallback: RuntimeIndustryPayload,
+  runtime: unknown,
+): RuntimeIndustryPayload {
   const source = asPayloadRecord(runtime);
   if (Object.keys(source).length === 0) return fallback;
   return {
@@ -789,12 +900,18 @@ function mergeIndustryPayload(fallback: Record<string, any>, runtime: unknown) {
     ...source,
     highlight_1: {
       ...(fallback.highlight_1 ?? {}),
-      ...(asPayloadRecord(source.highlight_1)),
+      ...asPayloadRecord(source.highlight_1),
     },
-  };
+  } as RuntimeIndustryPayload;
 }
 
-function DynamicIndustryContent({ payload, slug }: { payload?: any, slug: string }) {
+function DynamicIndustryContent({
+  payload,
+  slug,
+}: {
+  payload?: RuntimeIndustryPayload;
+  slug: string;
+}) {
   const { lang } = useLanguage();
   if (!payload || Object.keys(payload).length === 0) return null;
 
@@ -809,7 +926,10 @@ function DynamicIndustryContent({ payload, slug }: { payload?: any, slug: string
                   key={src}
                   src={src}
                   alt={"Banner " + (i + 1)}
-                  className={"aspect-[4/3] w-full object-cover rounded-2xl shadow-card " + (i === 0 && payload.banners.length > 3 ? "col-span-2 md:col-span-1" : "")}
+                  className={
+                    "aspect-[4/3] w-full object-cover rounded-2xl shadow-card " +
+                    (i === 0 && payload.banners.length > 3 ? "col-span-2 md:col-span-1" : "")
+                  }
                 />
               ))}
             </div>
@@ -820,7 +940,7 @@ function DynamicIndustryContent({ payload, slug }: { payload?: any, slug: string
       {payload.highlight_1 && (
         <section className="py-16 md:py-20">
           <div className="mx-auto max-w-7xl px-4 md:px-6 grid lg:grid-cols-2 gap-10 items-center">
-            {payload.highlight_1.imagePosition === 'left' && payload.highlight_1.image && (
+            {payload.highlight_1.imagePosition === "left" && payload.highlight_1.image && (
               <LazyImage
                 src={payload.highlight_1.image}
                 alt={payload.highlight_1.title}
@@ -854,12 +974,13 @@ function DynamicIndustryContent({ payload, slug }: { payload?: any, slug: string
               <div className="mt-7 flex gap-3 flex-wrap">
                 <Button asChild className="bg-gradient-accent text-white shadow-glow">
                   <Link to="/contactus">
-                    {t(lang, "ปรึกษาผู้เชี่ยวชาญ", "Talk to a specialist")} <ArrowRight className="ml-1 h-4 w-4" />
+                    {t(lang, "ปรึกษาผู้เชี่ยวชาญ", "Talk to a specialist")}{" "}
+                    <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
                 </Button>
               </div>
             </div>
-            {payload.highlight_1.imagePosition !== 'left' && payload.highlight_1.image && (
+            {payload.highlight_1.imagePosition !== "left" && payload.highlight_1.image && (
               <LazyImage
                 src={payload.highlight_1.image}
                 alt={payload.highlight_1.title}
@@ -882,7 +1003,7 @@ function DynamicIndustryContent({ payload, slug }: { payload?: any, slug: string
               </p>
             )}
             <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {payload.products.map((p: any, i: number) => (
+              {payload.products.map((p, i: number) => (
                 <article
                   key={i}
                   className="group rounded-2xl overflow-hidden border border-border bg-card shadow-card hover:shadow-elev transition-all flex flex-col"
@@ -902,7 +1023,8 @@ function DynamicIndustryContent({ payload, slug }: { payload?: any, slug: string
                     {p.href && (
                       <Button asChild variant="outline" size="sm" className="mt-5 self-start">
                         <Link to={p.href}>
-                          {t(lang, "ดูเพิ่มเติม", "Read more")} <ArrowRight className="ml-1 h-4 w-4" />
+                          {t(lang, "ดูเพิ่มเติม", "Read more")}{" "}
+                          <ArrowRight className="ml-1 h-4 w-4" />
                         </Link>
                       </Button>
                     )}

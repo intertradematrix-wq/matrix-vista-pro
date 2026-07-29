@@ -42,6 +42,7 @@ export type Database = {
       content_brands: GenericContentTable;
       content_industries: GenericContentTable;
       content_nav_items: GenericContentTable;
+      content_projects: GenericContentTable;
       content_products: GenericContentTable;
       content_solutions: GenericContentTable;
     };
