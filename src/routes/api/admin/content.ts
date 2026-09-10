@@ -4,6 +4,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Database } from "@/integrations/supabase/types";
 import { slugifyText, CATEGORY_IDS_BY_SLUG } from "@/lib/seo-slugs";
+import { CompanyProfilePayloadSchema } from "@/lib/company-profile";
 
 type ContentKind =
   | "products"
@@ -60,7 +61,7 @@ const INDUSTRY_BRAND_CARD_FIELDS = [
 const INDUSTRY_PRE_CARD_SELECT =
   "slug,title,icon,description,image_url,payload,seo_title,seo_description,seo_keywords,og_title,og_description,og_image_url,seo_canonical_url,seo_no_index,updated_at";
 
-const UPSERTABLE_SITE_SECTIONS = new Set(["contact_page", "footer_settings"]);
+const UPSERTABLE_SITE_SECTIONS = new Set(["company_profile", "contact_page", "footer_settings"]);
 
 const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
   products: {
@@ -1179,6 +1180,18 @@ export const Route = createFileRoute("/api/admin/content")({
             400,
             { missingMigration: "20260616110000_add_industry_showcase_admin_fields.sql" },
           );
+        }
+
+        if (parsed.data.kind === "siteSections" && id === "company_profile") {
+          const profile = CompanyProfilePayloadSchema.safeParse(values.payload);
+          if (!profile.success) {
+            return jsonError(
+              "ข้อมูลบริษัทยังไม่ครบหรือมีรูปแบบไม่ถูกต้อง",
+              400,
+              profile.error.flatten(),
+            );
+          }
+          values.payload = profile.data;
         }
 
         if (Object.keys(values).length === 0) {

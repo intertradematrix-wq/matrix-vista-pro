@@ -17,6 +17,7 @@ import educationImage from "@/assets/about/industries/education.jpg";
 import hotelImage from "@/assets/about/industries/hotel-events.jpg";
 import corporateImage from "@/assets/about/industries/office-business.jpg";
 import videoConferenceImage from "@/assets/about/industries/video-conference.jpg";
+import { formatThaiPhone } from "@/lib/company-profile";
 
 type HeaderSubItem = { label: string; href: string; desc?: string; image?: string };
 
@@ -54,7 +55,7 @@ export function Header() {
   const [hover, setHover] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const { location } = useRouterState();
-  const { nav: originalNavItems, brands, solutions } = useSiteContent();
+  const { nav: originalNavItems, brands, solutions, companyProfile } = useSiteContent();
 
   const navItems = originalNavItems.map((item) => {
     if (item.label === "สินค้า" || item.href === "/category/all-products") {
@@ -123,7 +124,7 @@ export function Header() {
           <div className="flex items-center gap-5 opacity-80">
             <span className="inline-flex items-center gap-1.5">
               <Phone className="h-3 w-3 text-cyan" />
-              <span>02-129-6193</span>
+              <span>{formatThaiPhone(companyProfile.officePhone)}</span>
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Sparkles className="h-3 w-3 text-cyan" />

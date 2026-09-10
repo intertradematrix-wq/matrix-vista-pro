@@ -16,21 +16,31 @@ import {
   fallbackContactPage,
   loadSiteContent,
   type SiteContactPage,
+  type SiteCompanyProfile,
 } from "@/lib/content/site";
-import { useSiteContent } from "@/lib/content/use-site-content";
 import { absoluteUrl, buildSeoHead } from "@/lib/seo";
+import {
+  buildLocalBusinessJsonLd,
+  companyAddress,
+  companyMapEmbedUrl,
+  companyPhoneDisplay,
+  companyPhoneHref,
+  fallbackCompanyProfile,
+} from "@/lib/company-profile";
 
 type ContactLoaderData = {
   contactPage: SiteContactPage;
+  companyProfile: SiteCompanyProfile;
 };
 
 export const Route = createFileRoute("/contactus")({
   loader: async () => {
     const content = await loadSiteContent();
-    return { contactPage: content.contactPage };
+    return { contactPage: content.contactPage, companyProfile: content.companyProfile };
   },
   head: (ctx: { loaderData?: ContactLoaderData }) => {
     const contact = ctx.loaderData?.contactPage ?? fallbackContactPage;
+    const company = ctx.loaderData?.companyProfile ?? fallbackCompanyProfile;
     const seo = buildSeoHead({
       title: contact.metaTitleTh,
       description: contact.metaDescriptionTh,
@@ -42,28 +52,7 @@ export const Route = createFileRoute("/contactus")({
       scripts: [
         {
           type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            name: "Matrix Intertrade Co., Ltd.",
-            image: absoluteUrl(heroContact),
-            url: absoluteUrl("/contactus"),
-            telephone: contact.phone,
-            email: contact.email,
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: contact.addressTh,
-              addressCountry: "TH",
-            },
-            openingHoursSpecification: [
-              {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                opens: "08:30",
-                closes: "17:30",
-              },
-            ],
-          }),
+          children: JSON.stringify(buildLocalBusinessJsonLd(company, absoluteUrl(heroContact))),
         },
       ],
     };
@@ -73,10 +62,13 @@ export const Route = createFileRoute("/contactus")({
 
 function ContactPage() {
   const { lang } = useLanguage();
-  const { contactPage: initialContact } = Route.useLoaderData() as ContactLoaderData;
-  const { contactPage: hydratedContact } = useSiteContent();
-  const contact = hydratedContact ?? initialContact ?? fallbackContactPage;
+  const { contactPage: initialContact, companyProfile: initialCompany } =
+    Route.useLoaderData() as ContactLoaderData;
+  const contact = initialContact ?? fallbackContactPage;
+  const company = initialCompany ?? fallbackCompanyProfile;
   const local = (th: string, en: string) => t(lang, th, en);
+  const address = companyAddress(company, lang);
+  const phone = companyPhoneDisplay(company);
 
   return (
     <>
@@ -108,19 +100,19 @@ function ContactPage() {
                 {
                   Icon: MapPin,
                   label: t(lang, "ที่อยู่", "Address"),
-                  d: local(contact.addressTh, contact.addressEn),
+                  d: address,
                 },
                 {
                   Icon: Phone,
                   label: t(lang, "โทรศัพท์", "Phone"),
-                  d: contact.phone,
+                  d: phone,
                 },
                 {
                   Icon: Mail,
                   label: t(lang, "อีเมล", "Email"),
-                  d: contact.email,
+                  d: company.publicEmail,
                 },
-                { Icon: MessageCircle, label: "Line OA", d: contact.line },
+                { Icon: MessageCircle, label: "Line OA", d: company.lineId },
               ].map(({ Icon, label, d }) => (
                 <div
                   key={label}
@@ -183,21 +175,21 @@ function ContactPage() {
               <div className="sr-only">
                 <h3>Matrix Intertrade Co., Ltd.</h3>
                 <p>
-                  {local(contact.addressTh, contact.addressEn)}
+                  {address}
                 </p>
-                <p>{local(contact.businessHoursTh, contact.businessHoursEn)}</p>
-                <p>{contact.phone}</p>
+                <p>{local(company.businessHoursTh, company.businessHoursEn)}</p>
+                <p>{phone}</p>
                 <p>{local(contact.parkingTh, contact.parkingEn)}</p>
               </div>
               <a
-                href={contact.directionsUrl}
+                href={company.directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={t(lang, "นำทาง Google Maps", "Google Maps Directions")}
                 className="absolute bottom-[6.2%] left-[5.8%] h-[8.5%] w-[44.8%] rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f5c542]"
               />
               <a
-                href={contact.phoneHref}
+                href={companyPhoneHref(company.officePhone)}
                 aria-label={t(lang, "โทรสอบถาม 02-129-6193", "Call 02-129-6193")}
                 className="absolute bottom-[6.2%] right-[5.8%] h-[8.5%] w-[40.5%] rounded-2xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff3333]"
               />
@@ -207,7 +199,7 @@ function ContactPage() {
             <div className="relative rounded-3xl overflow-hidden shadow-elev ring-1 ring-border bg-card min-h-[420px] lg:min-h-[520px] group">
               <iframe
                 title="Matrix Intertrade Location Map"
-                src={contact.mapEmbedUrl}
+                src={companyMapEmbedUrl(company)}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen

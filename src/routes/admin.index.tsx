@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState, useRef } from "react";
 import {
   DndContext,
   KeyboardSensor,
@@ -90,6 +90,12 @@ import {
 import { solutionImages } from "@/data/solution-images";
 import { CATEGORY_IDS_BY_SLUG } from "@/lib/seo-slugs";
 import { fallbackContactPage, fallbackFooterSettings } from "@/lib/content/site";
+import {
+  companyAddress,
+  companyPhoneDisplay,
+  CompanyProfilePayloadSchema,
+  fallbackCompanyProfile,
+} from "@/lib/company-profile";
 import imgEducation from "@/assets/article-smart-classroom.jpg";
 import imgHotel from "@/assets/hero-av.jpg";
 import imgCorporate from "@/assets/article-meeting-room.jpg";
@@ -112,6 +118,7 @@ type ContentKind =
 
 type AdminTab =
   | ContentKind
+  | "companyProfileSettings"
   | "contactPageSettings"
   | "footerSettings"
   | "lineSettings"
@@ -255,10 +262,13 @@ type RuntimeSettingsField = {
   type?: "text" | "textarea";
   rows?: number;
   placeholder?: string;
+  helperText?: string;
+  section?: string;
 };
 
 function isRuntimeSettingsTabValue(tab: AdminTab) {
   return (
+    tab === "companyProfileSettings" ||
     tab === "contactPageSettings" ||
     tab === "footerSettings" ||
     tab === "lineSettings" ||
@@ -275,20 +285,10 @@ const CONTACT_PAGE_SETTINGS_FIELDS: RuntimeSettingsField[] = [
   { key: "sectionTitleEn", label: "Contact Section Title (EN)" },
   { key: "sectionDescriptionTh", label: "Contact Section Description (TH)" },
   { key: "sectionDescriptionEn", label: "Contact Section Description (EN)" },
-  { key: "addressTh", label: "Address (TH)", type: "textarea", rows: 3 },
-  { key: "addressEn", label: "Address (EN)", type: "textarea", rows: 3 },
-  { key: "phone", label: "Phone" },
-  { key: "email", label: "Email" },
-  { key: "line", label: "LINE" },
   { key: "mapTitleTh", label: "Map Title (TH)" },
   { key: "mapTitleEn", label: "Map Title (EN)" },
   { key: "mapDescriptionTh", label: "Map Description (TH)", type: "textarea", rows: 3 },
   { key: "mapDescriptionEn", label: "Map Description (EN)", type: "textarea", rows: 3 },
-  { key: "mapEmbedUrl", label: "Google Maps Embed URL", type: "textarea", rows: 4 },
-  { key: "directionsUrl", label: "Google Maps Directions URL" },
-  { key: "phoneHref", label: "Phone Link", placeholder: "tel:021296193" },
-  { key: "businessHoursTh", label: "Business Hours (TH)" },
-  { key: "businessHoursEn", label: "Business Hours (EN)" },
   { key: "parkingTh", label: "Parking Note (TH)" },
   { key: "parkingEn", label: "Parking Note (EN)" },
   { key: "metaTitleTh", label: "SEO Title (TH)" },
@@ -304,18 +304,64 @@ const FOOTER_SETTINGS_FIELDS: RuntimeSettingsField[] = [
   { key: "ctaDescriptionEn", label: "CTA Description (EN)", type: "textarea", rows: 2 },
   { key: "companyDescriptionTh", label: "Company Description (TH)", type: "textarea", rows: 4 },
   { key: "companyDescriptionEn", label: "Company Description (EN)", type: "textarea", rows: 4 },
-  { key: "addressTh", label: "Address (TH)", type: "textarea", rows: 2 },
-  { key: "addressEn", label: "Address (EN)", type: "textarea", rows: 2 },
-  { key: "phone", label: "Phone" },
-  { key: "email", label: "Email" },
-  { key: "line", label: "LINE" },
-  { key: "facebookUrl", label: "Facebook URL" },
-  { key: "youtubeUrl", label: "YouTube URL" },
-  { key: "tiktokUrl", label: "TikTok URL" },
   { key: "newsletterDescriptionTh", label: "Newsletter Text (TH)", type: "textarea", rows: 2 },
   { key: "newsletterDescriptionEn", label: "Newsletter Text (EN)", type: "textarea", rows: 2 },
   { key: "newsletterPlaceholderTh", label: "Newsletter Placeholder (TH)" },
   { key: "newsletterPlaceholderEn", label: "Newsletter Placeholder (EN)" },
+];
+
+const COMPANY_PROFILE_SETTINGS_FIELDS: RuntimeSettingsField[] = [
+  { key: "shortName", label: "ชื่อที่ใช้บนเว็บไซต์", section: "ชื่อและคำอธิบาย" },
+  { key: "legalNameTh", label: "ชื่อบริษัทตามกฎหมาย (TH)" },
+  { key: "legalNameEn", label: "ชื่อบริษัทตามกฎหมาย (EN)" },
+  { key: "descriptionTh", label: "คำอธิบายบริษัท (TH)", type: "textarea", rows: 3 },
+  { key: "descriptionEn", label: "คำอธิบายบริษัท (EN)", type: "textarea", rows: 3 },
+  { key: "logoUrl", label: "Logo URL" },
+
+  { key: "streetAddressTh", label: "บ้านเลขที่และหมู่ (TH)", section: "ที่อยู่ทางการ" },
+  { key: "streetAddressEn", label: "บ้านเลขที่และหมู่ (EN)" },
+  { key: "subdistrictTh", label: "ตำบล (TH)" },
+  { key: "subdistrictEn", label: "ตำบล (EN)" },
+  { key: "districtTh", label: "อำเภอ (TH)" },
+  { key: "districtEn", label: "อำเภอ (EN)" },
+  { key: "provinceTh", label: "จังหวัด (TH)" },
+  { key: "provinceEn", label: "จังหวัด (EN)" },
+  { key: "postalCode", label: "รหัสไปรษณีย์", helperText: "ตัวเลข 5 หลัก" },
+  { key: "countryCode", label: "รหัสประเทศ", helperText: "ISO 2 ตัวอักษร เช่น TH" },
+  { key: "countryTh", label: "ประเทศ (TH)" },
+  { key: "countryEn", label: "ประเทศ (EN)" },
+
+  {
+    key: "officePhone",
+    label: "โทรศัพท์สำนักงาน",
+    section: "ช่องทางติดต่อ",
+    helperText: "กรอกเฉพาะตัวเลข เช่น 021296193",
+  },
+  {
+    key: "mobilePhone",
+    label: "โทรศัพท์ฝ่ายขาย",
+    helperText: "กรอกเฉพาะตัวเลข เช่น 0948887041",
+  },
+  { key: "publicEmail", label: "อีเมลที่แสดงบนเว็บไซต์" },
+  { key: "websiteUrl", label: "Website URL" },
+  { key: "lineId", label: "LINE ID" },
+
+  { key: "facebookUrl", label: "Facebook URL", section: "Social Media" },
+  { key: "youtubeUrl", label: "YouTube URL" },
+  { key: "tiktokUrl", label: "TikTok URL" },
+  {
+    key: "linkedinUrl",
+    label: "LinkedIn URL",
+    helperText: "เว้นว่างจนกว่าจะยืนยันว่าเป็นบัญชีทางการ",
+  },
+
+  { key: "latitude", label: "Latitude", section: "แผนที่และเวลาทำการ" },
+  { key: "longitude", label: "Longitude" },
+  { key: "directionsUrl", label: "ลิงก์นำทาง Google Maps", type: "textarea", rows: 2 },
+  { key: "businessHoursTh", label: "เวลาทำการ (TH)" },
+  { key: "businessHoursEn", label: "เวลาทำการ (EN)" },
+  { key: "businessHoursOpens", label: "เวลาเปิด", helperText: "รูปแบบ HH:mm" },
+  { key: "businessHoursCloses", label: "เวลาปิด", helperText: "รูปแบบ HH:mm" },
 ];
 
 type AboutStat = {
@@ -1131,13 +1177,6 @@ const CONTENT_CONFIG: Record<ContentKind, ContentConfig> = {
       { key: "vision_th", label: "Vision (TH)", type: "textarea", rows: 3 },
       { key: "values_th", label: "Values (TH)", type: "textarea", rows: 3 },
 
-      { key: "address_th", label: "Address (TH)", type: "textarea", rows: 2 },
-      { key: "phone", label: "Phone" },
-      { key: "email", label: "Email" },
-      { key: "website", label: "Website" },
-      { key: "facebook", label: "Facebook" },
-      { key: "map_url", label: "Google Map URL", type: "textarea", rows: 3 },
-
       { key: "stats_payload", label: "Stats (JSON)", type: "json", rows: 8, group: "advanced" },
     ],
   },
@@ -1231,12 +1270,17 @@ function AdminPage() {
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [isCreating, setIsCreating] = useState(false);
 
+  const isCompanyProfileSettingsTab = activeTab === "companyProfileSettings";
   const isContactPageSettingsTab = activeTab === "contactPageSettings";
   const isFooterSettingsTab = activeTab === "footerSettings";
   const isLineSettingsTab = activeTab === "lineSettings";
   const isTrackingSettingsTab = activeTab === "trackingSettings";
   const isSettingsTab =
-    isContactPageSettingsTab || isFooterSettingsTab || isLineSettingsTab || isTrackingSettingsTab;
+    isCompanyProfileSettingsTab ||
+    isContactPageSettingsTab ||
+    isFooterSettingsTab ||
+    isLineSettingsTab ||
+    isTrackingSettingsTab;
   const config = CONTENT_CONFIG[activeKind];
   const activeSchemaWarning = loadWarnings[activeKind];
   const activeFields = useMemo(() => {
@@ -1699,6 +1743,10 @@ function AdminPage() {
                 {CONTENT_CONFIG[kind].label} ({content[kind]?.length ?? 0})
               </TabsTrigger>
             ))}
+            <TabsTrigger value="companyProfileSettings">
+              <Globe className="mr-2 h-4 w-4" />
+              ข้อมูลบริษัท
+            </TabsTrigger>
             <TabsTrigger value="contactPageSettings">
               <Mail className="mr-2 h-4 w-4" />
               หน้าติดต่อ (Contact Us)
@@ -1719,7 +1767,9 @@ function AdminPage() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                {isContactPageSettingsTab
+                {isCompanyProfileSettingsTab
+                  ? "แก้ข้อมูลบริษัทส่วนกลางที่ใช้ร่วมกันทั้งหน้าบ้านและ Schema"
+                  : isContactPageSettingsTab
                   ? "Edit runtime content used by the public /contactus page."
                   : isFooterSettingsTab
                     ? "Edit shared footer CTA, contact details, social links and newsletter copy."
@@ -1729,7 +1779,7 @@ function AdminPage() {
                         ? "Manage Google Analytics and Meta Pixel tracking for the public website."
                         : config.description}
               </p>
-              {!isSettingsTab && (activeKind === "siteSections" || activeKind === "aboutUs") && (
+              {!isSettingsTab && activeKind === "siteSections" && (
                 <div className="flex max-w-3xl flex-col gap-3 rounded-xl border border-accent/20 bg-white px-4 py-3 text-sm text-muted-foreground shadow-sm md:flex-row md:items-center md:justify-between">
                   <div>
                     <p className="font-semibold text-primary">
@@ -1751,6 +1801,27 @@ function AdminPage() {
                     }}
                   >
                     Edit cards in Industries
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              {(isContactPageSettingsTab ||
+                isFooterSettingsTab ||
+                (!isSettingsTab && activeKind === "aboutUs")) && (
+                <div className="flex max-w-3xl flex-col gap-3 rounded-xl border border-cyan/35 bg-cyan/10 px-4 py-3 text-sm text-primary md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="font-semibold">ข้อมูลติดต่อใช้จากเมนูข้อมูลบริษัท</p>
+                    <p className="text-muted-foreground">
+                      ที่อยู่ โทรศัพท์ อีเมล แผนที่ และ Social Media แก้จากจุดเดียวเพื่อให้ Schema ตรงกับหน้าบ้าน
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="shrink-0 bg-background"
+                    onClick={() => setActiveTab("companyProfileSettings")}
+                  >
+                    แก้ข้อมูลบริษัท
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -1872,10 +1943,27 @@ function AdminPage() {
         <TabsContent value="lineSettings" className="mt-5">
           <LineSettingsPanel sessionToken={sessionToken} />
         </TabsContent>
+        <TabsContent value="companyProfileSettings" className="mt-5">
+          <RuntimeSiteSectionSettingsPanel
+            title="ข้อมูลบริษัท"
+            description="ข้อมูลหลักที่แสดงใน Header, Footer, Contact, About, หน้าสินค้า, Chatbot และ Structured Data"
+            sectionKey="company_profile"
+            previewHref="/contactus"
+            sessionToken={sessionToken}
+            fields={COMPANY_PROFILE_SETTINGS_FIELDS}
+            fallbackPayload={fallbackCompanyProfile}
+            item={(content.siteSections ?? []).find(
+              (item) => text(item.section_key) === "company_profile",
+            )}
+            onSaved={() => {
+              if (sessionToken) void loadAdminContent(sessionToken);
+            }}
+          />
+        </TabsContent>
         <TabsContent value="contactPageSettings" className="mt-5">
           <RuntimeSiteSectionSettingsPanel
             title="Contact Us page"
-            description="Edit the public /contactus hero, contact details, map and SEO copy."
+            description="แก้ Hero, หัวข้อส่วนติดต่อ, ข้อความแผนที่ และ SEO ของหน้า /contactus"
             sectionKey="contact_page"
             previewHref="/contactus"
             sessionToken={sessionToken}
@@ -1892,7 +1980,7 @@ function AdminPage() {
         <TabsContent value="footerSettings" className="mt-5">
           <RuntimeSiteSectionSettingsPanel
             title="Footer"
-            description="Edit shared footer CTA, company summary, contact details, social links and newsletter copy."
+            description="แก้ CTA, คำอธิบายบริษัท และข้อความ Newsletter ใน Footer"
             sectionKey="footer_settings"
             previewHref="/"
             sessionToken={sessionToken}
@@ -1942,7 +2030,7 @@ function RuntimeSiteSectionSettingsPanel({
 }: {
   title: string;
   description: string;
-  sectionKey: "contact_page" | "footer_settings";
+  sectionKey: "company_profile" | "contact_page" | "footer_settings";
   previewHref: string;
   sessionToken: string;
   fields: RuntimeSettingsField[];
@@ -1976,6 +2064,18 @@ function RuntimeSiteSectionSettingsPanel({
 
   const isDirty = JSON.stringify(draft) !== JSON.stringify(initialPayload);
   const filledCount = fields.filter((field) => draft[field.key]?.trim()).length;
+  const companyPreviewResult =
+    sectionKey === "company_profile" ? CompanyProfilePayloadSchema.safeParse(draft) : null;
+  const companyPreview = companyPreviewResult?.success ? companyPreviewResult.data : null;
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const warnBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+    window.addEventListener("beforeunload", warnBeforeUnload);
+    return () => window.removeEventListener("beforeunload", warnBeforeUnload);
+  }, [isDirty]);
 
   async function saveSettings() {
     setSaving(true);
@@ -2031,32 +2131,43 @@ function RuntimeSiteSectionSettingsPanel({
         </CardHeader>
         <CardContent className="grid gap-4 p-4 sm:p-6 md:grid-cols-2">
           {fields.map((field) => (
-            <label
-              key={field.key}
-              className={`grid gap-1.5 text-sm font-medium text-primary ${
-                field.type === "textarea" ? "md:col-span-2" : ""
-              }`}
-            >
-              {field.label}
-              {field.type === "textarea" ? (
-                <Textarea
-                  value={draft[field.key] ?? ""}
-                  rows={field.rows ?? 3}
-                  placeholder={field.placeholder}
-                  onChange={(event) =>
-                    setDraft((current) => ({ ...current, [field.key]: event.target.value }))
-                  }
-                />
-              ) : (
-                <Input
-                  value={draft[field.key] ?? ""}
-                  placeholder={field.placeholder}
-                  onChange={(event) =>
-                    setDraft((current) => ({ ...current, [field.key]: event.target.value }))
-                  }
-                />
+            <Fragment key={field.key}>
+              {field.section && (
+                <div className="md:col-span-2 border-b border-border pb-2 pt-3 first:pt-0">
+                  <h3 className="text-base font-semibold text-primary">{field.section}</h3>
+                </div>
               )}
-            </label>
+              <label
+                className={`grid content-start gap-1.5 text-sm font-medium text-primary ${
+                  field.type === "textarea" ? "md:col-span-2" : ""
+                }`}
+              >
+                {field.label}
+                {field.type === "textarea" ? (
+                  <Textarea
+                    value={draft[field.key] ?? ""}
+                    rows={field.rows ?? 3}
+                    placeholder={field.placeholder}
+                    onChange={(event) =>
+                      setDraft((current) => ({ ...current, [field.key]: event.target.value }))
+                    }
+                  />
+                ) : (
+                  <Input
+                    value={draft[field.key] ?? ""}
+                    placeholder={field.placeholder}
+                    onChange={(event) =>
+                      setDraft((current) => ({ ...current, [field.key]: event.target.value }))
+                    }
+                  />
+                )}
+                {field.helperText && (
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {field.helperText}
+                  </span>
+                )}
+              </label>
+            </Fragment>
           ))}
 
           {status && (
@@ -2072,7 +2183,7 @@ function RuntimeSiteSectionSettingsPanel({
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              Save Settings
+              {sectionKey === "company_profile" ? "บันทึกข้อมูลบริษัท" : "Save Settings"}
             </Button>
             <Button
               type="button"
@@ -2080,7 +2191,7 @@ function RuntimeSiteSectionSettingsPanel({
               onClick={() => setDraft(initialPayload)}
               disabled={saving || !isDirty}
             >
-              Reset
+              ยกเลิกการแก้ไข
             </Button>
           </div>
         </CardContent>
@@ -2106,11 +2217,40 @@ function RuntimeSiteSectionSettingsPanel({
               here will create it in Supabase.
             </p>
           </div>
-          <div className="max-h-[360px] overflow-auto rounded-lg border border-border bg-secondary/35 p-3">
-            <pre className="whitespace-pre-wrap break-words text-xs leading-relaxed text-muted-foreground">
-              {JSON.stringify(draft, null, 2)}
-            </pre>
-          </div>
+          {sectionKey === "company_profile" ? (
+            companyPreview ? (
+              <div className="space-y-3 rounded-xl bg-secondary/55 p-4">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">ชื่อบริษัท</p>
+                  <p className="mt-1 font-semibold text-primary">{companyPreview.legalNameTh}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">ที่อยู่ที่จะแสดง</p>
+                  <p className="mt-1 leading-relaxed text-primary">
+                    {companyAddress(companyPreview, "TH")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground">ช่องทางติดต่อ</p>
+                  <p className="mt-1 text-primary">{companyPhoneDisplay(companyPreview)}</p>
+                  <p className="break-all text-primary">{companyPreview.publicEmail}</p>
+                </div>
+                <Badge variant="outline" className="border-emerald-300 bg-emerald-50 text-emerald-700">
+                  พร้อมสร้าง Structured Data
+                </Badge>
+              </div>
+            ) : (
+              <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900">
+                ตรวจสอบข้อมูลที่อยู่ อีเมล URL เบอร์โทร พิกัด และรูปแบบเวลา ก่อนบันทึก
+              </div>
+            )
+          ) : (
+            <div className="max-h-[360px] overflow-auto rounded-lg border border-border bg-secondary/35 p-3">
+              <pre className="whitespace-pre-wrap break-words text-xs leading-relaxed text-muted-foreground">
+                {JSON.stringify(draft, null, 2)}
+              </pre>
+            </div>
+          )}
           <Button asChild type="button" variant="outline" className="w-full">
             <a href={previewHref} target="_blank" rel="noreferrer">
               Open public page

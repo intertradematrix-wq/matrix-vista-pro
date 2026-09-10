@@ -4,6 +4,12 @@ import { Button } from "@/components/ui/button";
 import matrixLogo from "@/assets/matrix-logo.jpg";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
+import {
+  companyAddress,
+  companyPhoneDisplay,
+  companyPhoneHref,
+  formatThaiPhone,
+} from "@/lib/company-profile";
 
 const FOOTER_BRANDS = [
   { slug: "grandview", label: "Grandview" },
@@ -15,10 +21,10 @@ const FOOTER_BRANDS = [
 ] as const;
 
 export function Footer() {
-  const { solutions, articleCategories, footerSettings } = useSiteContent();
+  const { solutions, articleCategories, footerSettings, companyProfile } = useSiteContent();
   const { lang } = useLanguage();
   const local = (th: string, en: string) => t(lang, th, en);
-  const phoneHref = `tel:${footerSettings.phone.split("/")[0].replace(/\D/g, "") || "021296193"}`;
+  const phoneHref = companyPhoneHref(companyProfile.officePhone);
   const footerBrandItems = FOOTER_BRANDS.map((footerBrand) => ({
     label: footerBrand.label,
     href: `/category/${footerBrand.slug}`,
@@ -57,7 +63,7 @@ export function Footer() {
             >
               <a href={phoneHref}>
                 <Phone className="mr-1.5 h-4 w-4" />
-                {footerSettings.phone.split("/")[0].trim() || footerSettings.phone}
+                {formatThaiPhone(companyProfile.officePhone)}
               </a>
             </Button>
           </div>
@@ -78,42 +84,42 @@ export function Footer() {
                 <MapPin className="h-4 w-4 text-cyan" />
               </div>
               <span className="min-w-0 break-words pt-1">
-                {local(footerSettings.addressTh, footerSettings.addressEn)}
+                {companyAddress(companyProfile, lang)}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white/75">
                 <Phone className="h-4 w-4 text-cyan" />
               </div>
-              <span className="min-w-0 break-words">{footerSettings.phone}</span>
+              <span className="min-w-0 break-words">{companyPhoneDisplay(companyProfile)}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white/75">
                 <Mail className="h-4 w-4 text-cyan" />
               </div>
-              <span className="min-w-0 break-all">{footerSettings.email}</span>
+              <span className="min-w-0 break-all">{companyProfile.publicEmail}</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-sky-200 bg-white/75">
                 <span className="text-[10px] font-extrabold text-[#06C755]">LINE</span>
               </div>
-              <span className="min-w-0 break-words">{footerSettings.line}</span>
+              <span className="min-w-0 break-words">{companyProfile.lineId}</span>
             </div>
           </div>
           <div className="flex gap-2 pt-1">
             {[
               {
                 Icon: Facebook,
-                href: footerSettings.facebookUrl,
+                href: companyProfile.facebookUrl,
                 label: "Facebook",
               },
               {
                 Icon: Youtube,
-                href: footerSettings.youtubeUrl,
+                href: companyProfile.youtubeUrl,
                 label: "Youtube",
               },
-              { Icon: Music2, href: footerSettings.tiktokUrl, label: "TikTok" },
-            ].map(({ Icon, href, label }) => (
+              { Icon: Music2, href: companyProfile.tiktokUrl, label: "TikTok" },
+            ].filter((item) => item.href).map(({ Icon, href, label }) => (
               <a
                 key={label}
                 href={href}

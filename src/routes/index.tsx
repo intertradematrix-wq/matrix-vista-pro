@@ -21,6 +21,8 @@ import { articleImages } from "@/data/article-images";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import heroPoster from "@/assets/hero-led.jpg";
 import { buildSeoHead } from "@/lib/seo";
+import { loadCompanyProfile, type SiteCompanyProfile } from "@/lib/content/site";
+import { buildOrganizationJsonLd, fallbackCompanyProfile } from "@/lib/company-profile";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -34,13 +36,26 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  head: () =>
-    buildSeoHead({
+  loader: async () => ({ companyProfile: await loadCompanyProfile() }),
+  head: ({ loaderData }: { loaderData?: { companyProfile: SiteCompanyProfile } }) => {
+    const seo = buildSeoHead({
       title: "Matrix Intertrade | ผู้เชี่ยวชาญจอ LED Display และระบบ AV",
       description: "จำหน่าย ออกแบบ ติดตั้ง และดูแลจอ LED Display, Interactive Display, Projector และระบบ AV ครบวงจรสำหรับองค์กรทั่วประเทศไทย",
       path: "/",
       image: heroPoster,
-    }),
+    });
+    return {
+      ...seo,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(
+            buildOrganizationJsonLd(loaderData?.companyProfile ?? fallbackCompanyProfile),
+          ),
+        },
+      ],
+    };
+  },
   component: HomePage,
 });
 

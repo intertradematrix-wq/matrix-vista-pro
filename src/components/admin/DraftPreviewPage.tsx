@@ -15,6 +15,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useSiteContent } from "@/lib/content/use-site-content";
+import { companyPhoneHref, formatThaiPhone } from "@/lib/company-profile";
 
 type PreviewKind = "products" | "articles";
 type PreviewItem = Record<string, unknown>;
@@ -189,6 +191,7 @@ function PreviewFrame({
 }
 
 function ProductDraftPreview({ item }: { item: PreviewItem }) {
+  const { companyProfile } = useSiteContent();
   const name = text(item.name) || "Untitled product";
   const brand = text(item.brand);
   const price = text(item.price_text);
@@ -230,13 +233,13 @@ function ProductDraftPreview({ item }: { item: PreviewItem }) {
                 <a href="/contactus">ขอใบเสนอราคา</a>
               </Button>
               <Button asChild variant="outline">
-                <a href="tel:0941887041">
+                <a href={companyPhoneHref(companyProfile.mobilePhone)}>
                   <Phone className="mr-2 h-4 w-4" />
-                  094-888-7041
+                  {formatThaiPhone(companyProfile.mobilePhone)}
                 </a>
               </Button>
               <Button asChild variant="outline">
-                <a href="mailto:matrixintertrade2026@gmail.com">
+                <a href={`mailto:${companyProfile.publicEmail}`}>
                   <Mail className="mr-2 h-4 w-4" />
                   Email
                 </a>

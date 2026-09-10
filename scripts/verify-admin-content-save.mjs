@@ -41,6 +41,7 @@ const ids = {
   product: `${prefix}-product`,
   productSlug: `${prefix}-product-slug`,
   solution: `${prefix}-solution`,
+  siteSection: `${prefix}-company-profile`,
 };
 
 const contactIds = [];
@@ -344,6 +345,27 @@ async function run() {
     { label: "Codex Smoke Nav Updated" },
   );
 
+  await insertRow(
+    "content_site_sections",
+    {
+      section_key: ids.siteSection,
+      is_enabled: true,
+      payload: {
+        kind: "company-profile-smoke-test",
+        publicEmail: `${prefix}@example.com`,
+      },
+    },
+    "section_key",
+    ids.siteSection,
+  );
+  await updateAndVerify(
+    "content_site_sections",
+    "section_key",
+    ids.siteSection,
+    { is_enabled: false },
+    { is_enabled: false },
+  );
+
   const contact = await insertRow(
     "contact_submissions",
     {
@@ -377,6 +399,7 @@ async function cleanup() {
   await deleteRows("content_projects", "slug", [ids.project]);
   await deleteRows("content_industries", "slug", [ids.industry]);
   await deleteRows("content_nav_items", "id", [ids.navItem]);
+  await deleteRows("content_site_sections", "section_key", [ids.siteSection]);
   await deleteRows("content_article_categories", "slug", [ids.articleCategory]);
   await deleteRows("content_brands", "slug", [ids.brand]);
 }

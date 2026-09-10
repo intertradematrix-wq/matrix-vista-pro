@@ -19,6 +19,8 @@ import { loadProductDetailContent } from "@/lib/content/products";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { CATEGORY_SLUGS } from "@/lib/seo-slugs";
 import { absoluteUrl, buildSeoHead } from "@/lib/seo";
+import { useSiteContent } from "@/lib/content/use-site-content";
+import { companyPhoneHref, formatThaiPhone } from "@/lib/company-profile";
 
 type ProductLoaderData = {
   product: Product;
@@ -109,6 +111,7 @@ export const Route = createFileRoute("/product/$slug")({
 
 function ProductPage() {
   const { lang } = useLanguage();
+  const { companyProfile } = useSiteContent();
   const { product: p, relatedProducts: related } = Route.useLoaderData() as ProductLoaderData;
   const hasPrice = p.price && p.price !== "0.00";
   const detail = productDetailById(p.id);
@@ -199,12 +202,12 @@ function ProductPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="min-h-11 min-w-0">
-                <a href="tel:0941887041">
-                  <Phone className="mr-1 h-4 w-4" /> 094-888-7041
+                <a href={companyPhoneHref(companyProfile.mobilePhone)}>
+                  <Phone className="mr-1 h-4 w-4" /> {formatThaiPhone(companyProfile.mobilePhone)}
                 </a>
               </Button>
               <Button asChild variant="outline" size="lg" className="min-h-11 min-w-0">
-                <a href="mailto:matrixintertrade2026@gmail.com">
+                <a href={`mailto:${companyProfile.publicEmail}`}>
                   <Mail className="mr-1 h-4 w-4" /> Email
                 </a>
               </Button>

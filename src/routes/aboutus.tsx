@@ -27,6 +27,11 @@ import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { useSiteContent } from "@/lib/content/use-site-content";
 import { resolveIcon } from "@/lib/icon-map";
 import { buildSeoHead } from "@/lib/seo";
+import {
+  companyAddress,
+  companyMapEmbedUrl,
+  companyPhoneDisplay,
+} from "@/lib/company-profile";
 
 const industryImages: Record<string, string> = {
   education: imgEducation,
@@ -134,7 +139,7 @@ const industries = [
 
 function AboutPage() {
   const { lang } = useLanguage();
-  const { aboutUs, industries: runtimeIndustries } = useSiteContent();
+  const { aboutUs, industries: runtimeIndustries, companyProfile } = useSiteContent();
 
   if (!aboutUs) return null;
 
@@ -342,16 +347,12 @@ function AboutPage() {
                 {
                   Icon: MapPin,
                   t: t(lang, "ที่อยู่", "Address"),
-                  d: t(
-                    lang,
-                    "111/51 หมู่ที่ 8 ตำบลบางกร่าง อ.เมือง จ.นนทบุรี 11000 ประเทศไทย",
-                    "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000, Thailand",
-                  ),
+                  d: companyAddress(companyProfile, lang),
                 },
-                { Icon: Phone, t: t(lang, "โทรศัพท์", "Phone"), d: "02-129-6193 / 092-932-8649" },
-                { Icon: Mail, t: t(lang, "อีเมล", "Email"), d: "matrixintertrade2026@gmail.com" },
-                { Icon: Globe, t: t(lang, "เว็บไซต์", "Website"), d: "www.matrixintertrade.com" },
-                { Icon: Facebook, t: "Facebook", d: "facebook.com/MatrixIntertrade" },
+                { Icon: Phone, t: t(lang, "โทรศัพท์", "Phone"), d: companyPhoneDisplay(companyProfile) },
+                { Icon: Mail, t: t(lang, "อีเมล", "Email"), d: companyProfile.publicEmail },
+                { Icon: Globe, t: t(lang, "เว็บไซต์", "Website"), d: companyProfile.websiteUrl },
+                { Icon: Facebook, t: "Facebook", d: companyProfile.facebookUrl },
               ].map(({ Icon, t: title, d }) => (
                 <div
                   key={title}
@@ -381,7 +382,7 @@ function AboutPage() {
           <div className="rounded-3xl overflow-hidden shadow-elev ring-1 ring-border bg-card min-h-[420px]">
             <iframe
               title="Matrix Intertrade Location"
-              src={aboutUs.mapUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3873.5!2d100.45374869999999!3d13.843674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2sMatrix%20Intertrade%20Co.%2CLtd.!5e0!3m2!1sth!2sth!4v1780061893336!5m2!1sth!2sth"}
+              src={companyMapEmbedUrl(companyProfile)}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen

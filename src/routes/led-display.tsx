@@ -6,6 +6,7 @@ import {
 } from "@/lib/content/site";
 import { buildSeoHead } from "@/lib/seo";
 import heroLed from "@/assets/hero-led.jpg";
+import { COMPANY_SCHEMA_ID } from "@/lib/company-profile";
 
 const siteUrl = "https://www.matrixintertrade.com";
 
@@ -52,8 +53,7 @@ const serviceJsonLd = {
   url: `${siteUrl}/led-display`,
   provider: {
     "@type": "Organization",
-    name: "Matrix Intertrade",
-    url: `${siteUrl}/`,
+    "@id": COMPANY_SCHEMA_ID,
   },
   areaServed: {
     "@type": "Country",

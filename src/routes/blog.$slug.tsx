@@ -11,6 +11,7 @@ import { incrementArticleView, useArticleViews, formatViews } from "@/lib/articl
 import { useQueryClient } from "@tanstack/react-query";
 import { useLanguage, t } from "@/components/i18n/LanguageProvider";
 import { absoluteUrl, buildSeoHead } from "@/lib/seo";
+import { COMPANY_SCHEMA_ID } from "@/lib/company-profile";
 
 const ledDisplayHubArticleSlugs = new Set([
   "led-led-display",
@@ -67,16 +68,11 @@ export const Route = createFileRoute("/blog/$slug")({
                 dateModified: article.updatedAt || article.date,
                 author: {
                   "@type": "Organization",
-                  name: "ทีม Matrix Intertrade",
-                  url: absoluteUrl("/aboutus"),
+                  "@id": COMPANY_SCHEMA_ID,
                 },
                 publisher: {
                   "@type": "Organization",
-                  name: "Matrix Intertrade",
-                  logo: {
-                    "@type": "ImageObject",
-                    url: absoluteUrl("/web-app-manifest-512x512.png"),
-                  },
+                  "@id": COMPANY_SCHEMA_ID,
                 },
                 mainEntityOfPage: absoluteUrl(canonicalPath),
               }),

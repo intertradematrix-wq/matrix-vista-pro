@@ -6,8 +6,9 @@ import { brands, solutions } from "@/data/site";
 import { solutionImages } from "@/data/solution-images";
 
 import { loadProductListContent } from "@/lib/content/products";
-import { loadSiteContent } from "@/lib/content/site";
+import { loadCompanyProfile, loadSiteContent } from "@/lib/content/site";
 import { loadArticleListContent } from "@/lib/content/articles";
+import { companyPhoneDisplay, type SiteCompanyProfile } from "@/lib/company-profile";
 
 export type ChatbotResultType = "product" | "solution" | "brand" | "article";
 
@@ -281,7 +282,12 @@ function extractOpenAIText(payload: unknown): string | null {
   return chunks.join("").trim() || null;
 }
 
-async function askOpenAI(message: string, history: string[], results: ChatbotResult[]) {
+async function askOpenAI(
+  message: string,
+  history: string[],
+  results: ChatbotResult[],
+  companyProfile: SiteCompanyProfile,
+) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return null;
 
@@ -303,7 +309,7 @@ async function askOpenAI(message: string, history: string[], results: ChatbotRes
             "Answer in polite and professional Thai. Use formal but friendly tone.",
             "Do NOT invent prices, specs, warranty terms, or products not in the context.",
             "If a product price is missing or 0, inform the user to contact sales for a custom project quotation.",
-            "Contact info: Tel 094-888-7041, Email matrixintertrade2026@gmail.com",
+            `Contact info: Tel ${companyPhoneDisplay(companyProfile)}, Email ${companyProfile.publicEmail}`,
             "CRITICAL: Always end your response with ONE follow-up question to qualify the lead (e.g., ask about their room size, number of attendees, specific use case, or budget).",
             "Format nicely with bullet points if listing multiple items or specs.",
           ].join("\n"),
@@ -337,11 +343,14 @@ export async function answerChatbot(
   message: string,
   history: string[] = [],
 ): Promise<ChatbotAnswer> {
-  const results = await searchKnowledge(message, 5);
+  const [results, companyProfile] = await Promise.all([
+    searchKnowledge(message, 5),
+    loadCompanyProfile(),
+  ]);
   const fallback = buildFallbackAnswer(message, results);
 
   try {
-    const aiAnswer = await askOpenAI(message, history, results);
+    const aiAnswer = await askOpenAI(message, history, results, companyProfile);
     if (aiAnswer) {
       return { answer: aiAnswer, results, source: "openai" };
     }

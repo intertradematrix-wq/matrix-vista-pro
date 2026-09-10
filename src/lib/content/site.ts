@@ -14,6 +14,13 @@ import {
 } from "@/data/brand-intros";
 import { CATEGORY_SLUGS } from "@/lib/seo-slugs";
 import type { ManagedSeoFields } from "@/lib/seo";
+import {
+  fallbackCompanyProfile,
+  parseCompanyProfile,
+  type SiteCompanyProfile,
+} from "@/lib/company-profile";
+
+export type { SiteCompanyProfile } from "@/lib/company-profile";
 
 export type SiteBrand = (typeof fallbackBrands)[number] & ManagedSeoFields & {
   imageUrl?: string | null;
@@ -200,6 +207,7 @@ export type SiteContent = {
   articleCategories: SiteArticleCategory[];
   brandIntrosByCategoryId: Record<string, SiteBrandIntro>;
   aboutUs: SiteAboutUs | null;
+  companyProfile: SiteCompanyProfile;
   contactPage: SiteContactPage;
   footerSettings: SiteFooterSettings;
   source: "files" | "supabase";
@@ -384,8 +392,8 @@ const fallbackAboutUs: SiteAboutUs = {
   valuesEn: "Integrity, expertise, and customer care throughout the product lifecycle.",
   addressTh: "111/51 หมู่ที่ 8 ตำบลบางกร่าง อ.เมือง จ.นนทบุรี 11000 ประเทศไทย",
   addressEn: "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000, Thailand",
-  phone: "02-129-6193 / 092-932-8649",
-  email: "matrixintertrade2026@gmail.com",
+  phone: "02-129-6193 / 094-888-7041",
+  email: "info@matrixintertrade.co.th",
   website: "www.matrixintertrade.com",
   facebook: "facebook.com/MatrixIntertrade",
   mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3873.5!2d100.45374869999999!3d13.843674!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2sMatrix%20Intertrade%20Co.%2CLtd.!5e0!3m2!1sth!2sth!4v1780061893336!5m2!1sth!2sth",
@@ -398,7 +406,7 @@ const fallbackAboutUs: SiteAboutUs = {
 };
 
 const CONTACT_MAP_EMBED_URL =
-  "https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d208564.31411982139!2d100.08820455287514!3d13.754200668610048!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2zTWF0cml4IEludGVydHJhZGUgQ28uLEx0ZC4gRmFjdG9yeSBGb3J3YXJkIDExMS81NiDguKvguKHguLnguYjguJfguLXguYggOCDguJUg4LiV4Liz4Lia4LilIOC4muC4suC4h-C4geC4o-C5iOC4suC4hyDguK0u4LmA4Lih4Li34Lit4LiHIOC4meC4meC4l-C4muC4uOC4o-C4tSAxMTAwMA!3m2!1d13.843674!2d100.45374869999999!4m5!1s0x30e29b41eaa4a621%3A0xdc28c2b815205d5b!2zTWF0cml4IEludGVydHJhZGUgQ28uLEx0ZC4gRmFjdG9yeSBGb3J3YXJkIDExMS81NiDguKvguKHguLnguYjguJfguLXguYggOCDguJUg4LiV4Liz4Lia4LilIOC4muC4suC4h-C4geC4o-C5iOC4suC4hyDguK0u4LmA4Lih4Li34Lit4LiHIOC4meC4meC4l-C4muC4uOC4o-C4tSAxMTAwMA!3m2!1d13.843674!2d100.45374869999999!5e0!3m2!1sth!2sth!4v1780061893336!5m2!1sth!2sth";
+  "https://www.google.com/maps?q=13.843674%2C100.4537487&z=17&output=embed";
 
 export const fallbackContactPage: SiteContactPage = {
   heroTitleTh: "ติดต่อทีมผู้เชี่ยวชาญของเรา",
@@ -419,7 +427,7 @@ export const fallbackContactPage: SiteContactPage = {
     "บจก.แมทริกซ์ อินเตอร์เทรด 111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000",
   addressEn: "Matrix Intertrade 111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000",
   phone: "02-129-6193 / 094-888-7041",
-  email: "matrixintertrade2026@gmail.com",
+  email: "info@matrixintertrade.co.th",
   line: "@MatrixIntertrade",
   mapTitleTh: "แผนที่บริษัท & เส้นทางเดินทาง",
   mapTitleEn: "Office Map & Directions",
@@ -428,7 +436,7 @@ export const fallbackContactPage: SiteContactPage = {
   mapDescriptionEn:
     "Schedule a visit to our Showroom and Warehouse in Nonthaburi. Our team is ready to welcome you and provide live demonstrations.",
   mapEmbedUrl: CONTACT_MAP_EMBED_URL,
-  directionsUrl: "https://maps.app.goo.gl/1SFM9izkXdenp7LYA",
+  directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=13.843674,100.4537487",
   phoneHref: "tel:021296193",
   businessHoursTh: "เวลาทำการ จันทร์-ศุกร์ 08:30-17:30 น.",
   businessHoursEn: "Business hours Monday-Friday 08:30-17:30",
@@ -448,7 +456,7 @@ export const fallbackFooterSettings: SiteFooterSettings = {
   addressTh: "111/51 หมู่ที่ 8 ต.บางกร่าง อ.เมือง จ.นนทบุรี 11000",
   addressEn: "111/51 Moo 8, Bang Krang, Mueang, Nonthaburi 11000",
   phone: "02-129-6193 / 094-888-7041",
-  email: "matrixintertrade2026@gmail.com",
+  email: "info@matrixintertrade.co.th",
   line: "@MatrixIntertrade",
   facebookUrl: "https://www.facebook.com/MatrixIntertrade",
   youtubeUrl: "https://www.youtube.com/@matrixintertrade",
@@ -576,6 +584,7 @@ export const fallbackSiteContent: SiteContent = {
   articleCategories: fallbackArticleCategories,
   brandIntrosByCategoryId: fallbackBrandIntrosByCategoryId,
   aboutUs: fallbackAboutUs,
+  companyProfile: fallbackCompanyProfile,
   contactPage: fallbackContactPage,
   footerSettings: fallbackFooterSettings,
   source: "files",
@@ -613,6 +622,11 @@ function mapContactPage(rows: SiteSectionRow[] | null | undefined): SiteContactP
 function mapFooterSettings(rows: SiteSectionRow[] | null | undefined): SiteFooterSettings {
   const row = rows?.find((item) => item.section_key === "footer_settings");
   return mergeStringPayload(fallbackFooterSettings, row?.payload);
+}
+
+function mapCompanyProfile(rows: SiteSectionRow[] | null | undefined): SiteCompanyProfile {
+  const row = rows?.find((item) => item.section_key === "company_profile");
+  return parseCompanyProfile(row?.payload);
 }
 
 function asSolutionSeoSections(value: unknown): SolutionDetailSeoSection[] | undefined {
@@ -1212,6 +1226,7 @@ export async function loadSiteContent(): Promise<SiteContent> {
         brands,
       ),
       aboutUs: aboutUsResult.data ? mapAboutUs(aboutUsResult.data as AboutUsRow) : fallbackAboutUs,
+      companyProfile: mapCompanyProfile(siteSectionsResult.data as SiteSectionRow[] | null),
       contactPage: mapContactPage(siteSectionsResult.data as SiteSectionRow[] | null),
       footerSettings: mapFooterSettings(siteSectionsResult.data as SiteSectionRow[] | null),
       source: "supabase",
@@ -1261,6 +1276,16 @@ export async function loadSolutionDetailContent(
     seoNoIndex: solution?.seoNoIndex,
     updatedAt: solution?.updatedAt,
   });
+}
+
+export async function loadCompanyProfile(): Promise<SiteCompanyProfile> {
+  try {
+    const result = await loadSiteSectionRows();
+    return mapCompanyProfile(result.data as SiteSectionRow[] | null);
+  } catch (error) {
+    console.warn("[content] Falling back to file-based company profile", error);
+    return fallbackCompanyProfile;
+  }
 }
 
 function mapAboutUs(row: AboutUsRow): SiteAboutUs {
