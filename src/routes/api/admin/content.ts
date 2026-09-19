@@ -577,6 +577,20 @@ function normalizeId(config: ContentConfig, id: string) {
   return config.key === "slug" ? slugifyText(trimmed, "") : trimmed;
 }
 
+function productIdSequence(productId: unknown) {
+  const match = String(productId ?? "").match(/(\d+)$/);
+  return match ? Number(match[1]) : -1;
+}
+
+function sortProductsNewestFirst(items: Record<string, unknown>[]) {
+  return [...items].sort((left, right) => {
+    const sequenceDifference =
+      productIdSequence(right.product_id) - productIdSequence(left.product_id);
+    if (sequenceDifference !== 0) return sequenceDifference;
+    return String(right.product_id ?? "").localeCompare(String(left.product_id ?? ""));
+  });
+}
+
 function isPlainObject(value: unknown) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -1043,7 +1057,8 @@ export const Route = createFileRoute("/api/admin/content")({
             }
             return jsonError(`Failed to load ${kind}`, 500, result.error);
           }
-          payload[kind] = result.data ?? [];
+          const data = (result.data ?? []) as Record<string, unknown>[];
+          payload[kind] = kind === "products" ? sortProductsNewestFirst(data) : data;
           if ("warning" in result && result.warning) {
             loadWarnings[kind] = String(result.warning);
           }
@@ -1236,16 +1251,19 @@ export const Route = createFileRoute("/api/admin/content")({
 
         // Auto-generate product_id for new products (when sent as "new-{timestamp}")
         if (action === "create" && parsed.data.kind === "products" && id.startsWith("new-")) {
-          const { data: maxIdData } = await supabaseAdmin
+          const { data: productIds, error: productIdsError } = await supabaseAdmin
             .from("content_products")
-            .select("product_id")
-            .order("product_id", { ascending: false })
-            .limit(1)
-            .maybeSingle();
+            .select("product_id");
 
-          const maxId = maxIdData?.product_id || "prod-0";
-          const numPart = parseInt(String(maxId).replace(/\D/g, "") || "0", 10);
-          const newId = `prod-${numPart + 1}`;
+          if (productIdsError) {
+            return jsonError("Failed to generate product ID", 500, productIdsError);
+          }
+
+          const maxSequence = (productIds ?? []).reduce(
+            (maximum, item) => Math.max(maximum, productIdSequence(item.product_id)),
+            0,
+          );
+          const newId = `prod-${maxSequence + 1}`;
 
           // Replace the temporary ID with the generated one
           return executeWrite(config, action, newId, values).then((result) => {

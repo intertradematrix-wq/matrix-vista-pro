@@ -1501,7 +1501,15 @@ function AdminPage() {
         return {
           ...current,
           [activeKind]: isCreating
-            ? [saved, ...list.filter((item) => text(item[config.key]) !== text(saved[config.key]))]
+            ? activeKind === "products" || activeKind === "articles"
+              ? [
+                  saved,
+                  ...list.filter((item) => text(item[config.key]) !== text(saved[config.key])),
+                ]
+              : [
+                  ...list.filter((item) => text(item[config.key]) !== text(saved[config.key])),
+                  saved,
+                ]
             : list.map((item) =>
                 text(item[config.key]) === (isCreating ? id : text(selectedItem[config.key]))
                   ? saved
@@ -1770,14 +1778,14 @@ function AdminPage() {
                 {isCompanyProfileSettingsTab
                   ? "แก้ข้อมูลบริษัทส่วนกลางที่ใช้ร่วมกันทั้งหน้าบ้านและ Schema"
                   : isContactPageSettingsTab
-                  ? "Edit runtime content used by the public /contactus page."
-                  : isFooterSettingsTab
-                    ? "Edit shared footer CTA, contact details, social links and newsletter copy."
-                    : isLineSettingsTab
-                      ? "Manage LINE notification credentials used by the contact form."
-                      : isTrackingSettingsTab
-                        ? "Manage Google Analytics and Meta Pixel tracking for the public website."
-                        : config.description}
+                    ? "Edit runtime content used by the public /contactus page."
+                    : isFooterSettingsTab
+                      ? "Edit shared footer CTA, contact details, social links and newsletter copy."
+                      : isLineSettingsTab
+                        ? "Manage LINE notification credentials used by the contact form."
+                        : isTrackingSettingsTab
+                          ? "Manage Google Analytics and Meta Pixel tracking for the public website."
+                          : config.description}
               </p>
               {!isSettingsTab && activeKind === "siteSections" && (
                 <div className="flex max-w-3xl flex-col gap-3 rounded-xl border border-accent/20 bg-white px-4 py-3 text-sm text-muted-foreground shadow-sm md:flex-row md:items-center md:justify-between">
@@ -1812,7 +1820,8 @@ function AdminPage() {
                   <div>
                     <p className="font-semibold">ข้อมูลติดต่อใช้จากเมนูข้อมูลบริษัท</p>
                     <p className="text-muted-foreground">
-                      ที่อยู่ โทรศัพท์ อีเมล แผนที่ และ Social Media แก้จากจุดเดียวเพื่อให้ Schema ตรงกับหน้าบ้าน
+                      ที่อยู่ โทรศัพท์ อีเมล แผนที่ และ Social Media แก้จากจุดเดียวเพื่อให้ Schema
+                      ตรงกับหน้าบ้าน
                     </p>
                   </div>
                   <Button
@@ -2235,7 +2244,10 @@ function RuntimeSiteSectionSettingsPanel({
                   <p className="mt-1 text-primary">{companyPhoneDisplay(companyPreview)}</p>
                   <p className="break-all text-primary">{companyPreview.publicEmail}</p>
                 </div>
-                <Badge variant="outline" className="border-emerald-300 bg-emerald-50 text-emerald-700">
+                <Badge
+                  variant="outline"
+                  className="border-emerald-300 bg-emerald-50 text-emerald-700"
+                >
                   พร้อมสร้าง Structured Data
                 </Badge>
               </div>
